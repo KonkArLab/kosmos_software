@@ -1,4 +1,6 @@
 # Software KOSMOS
+# Lancer l'installation 
+bash install.sh
 
 Le software du KOSMOS correspond au dépôt destiné au KOSMOS 3.O dont la documentation disponible :
  - [Sa version lisible read the doc](https://kosmos30.readthedocs.io/fr/latest/)
