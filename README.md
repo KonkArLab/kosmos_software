@@ -4,10 +4,9 @@
   chmod u+x install.sh<br>
 2-lancer l'installation<br>
   ./install.sh<br>
-  <br>
 
 install lance : update,upgrade, installe: git, python 3, pip, vitualenv, tree ...<br>
-et active l'environnement virtuel: kosmosV3-env.<br>
+et active l'environnement virtuel: kosmosV3-env + installe tous les packages requis pour le Kosmos<br>
 <br>
 3- mise en route du kosmos<br>
   ./lancement.sh<br>
