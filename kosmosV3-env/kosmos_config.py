@@ -9,7 +9,7 @@ from datetime import datetime
 
 
 CONF_FILE = "kosmos_config.ini"
-USB_ROOT_PATH = "/media/pi"
+USB_ROOT_PATH = "/media/kosmos2" # Modifier "kosmos2" par le nom d'utilisateur
 BASIC_SECTION = "KOSMOS"
 
 
