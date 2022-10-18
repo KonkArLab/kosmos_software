@@ -1,6 +1,7 @@
 #!/bin/bash
 # recherche clef usb
 # D. Hanon 7 novembre 2020
+# Ligne 34 modifier "kosmos2" par le nom d'utilisateur
 
 #recherche le nom de la clef
 function find_USB
@@ -30,7 +31,7 @@ function find_USB
 }
 function find_USB_1
 {
-	ls /media/pi/ | { read a _; echo "$a"; }
+	ls /media/kosmos2/ | { read a _; echo "$a"; }
 }
 
 find_USB $1
