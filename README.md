@@ -8,7 +8,8 @@
 install lance : update,upgrade, installe: git, python 3, pip, vitualenv, tree ...<br>
 et active l'environnement virtuel: kosmosV3-env + installe tous les packages requis pour le Kosmos<br>
 <br>
-3- mise en route du kosmos<br>
+3- Remplacer "kosmos2" dans les chemins des fichiers lancement.sh, kosmos_find_usb.py et kosmos_config.sh
+4- mise en route du kosmos<br>
   ./lancement.sh<br>
 <br>
   ... démarrage<br>
