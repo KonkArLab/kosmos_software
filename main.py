@@ -1,20 +1,20 @@
 #!/usr/bin/env python3 -- coding: utf-8 --
 """ Programme principal du KOSMOS en mode rotation Utilse une machine d'états D Hanon 12 décembre 2020 """
 
+from distutils.command.config import config
 import logging
 import time
 from threading import Event
 from enum import Enum, unique
 import RPi.GPIO as GPIO
 import os
-
-
-import kosmos_config as KConf
-import kosmos_csv as KCsv
-import kosmos_led as KLed
-import kosmos_cam as KCam
-import kosmos_esc_motor as KMotor
 import sys
+
+from src.config import KosmosConfig
+from src.csv import kosmosCSV
+from src.led import kosmos_led
+from src.cam import KosmosCam
+from src.esc_motor import komosEscMotor
 
 # logging.basicConfig(level=logging.DEBUG)
 logging.basicConfig(level=logging.DEBUG,
@@ -37,12 +37,12 @@ class kosmos_main():
 
     def __init__(self):
         # Lecture du fichier de configuration
-        self._conf = KConf.KosmosConfig()
+        self._conf = KosmosConfig()
         self.state = KState.STARTING
 
         # LEDs
-        self._ledB = KLed.kosmos_led(self._conf.get_val_int("SETT_LED_B"))
-        self._ledR = KLed.kosmos_led(self._conf.get_val_int("SETT_LED_R"))
+        self._ledB = kosmos_led(self._conf.get_val_int("SETT_LED_B"))
+        self._ledR = kosmos_led(self._conf.get_val_int("SETT_LED_R"))
         self._ledB.start()
         self._ledR.set_off()
 
@@ -65,8 +65,8 @@ class kosmos_main():
         self.vitesse_moteur=self._conf.get_val_int("SETT_ESC_MOTOR_FAVORITE_VAL")
         self.MODE=self._conf.get_val_int("SETT_MODE") # à mettre dans le ini
         self.tps_record=self._conf.get_val_int("SETT_RECORD_TIME")
-        self.motorThread = KMotor.komosEscMotor(self._conf)
-        self.thread_camera = KCam.KosmosCam(self._conf)
+        self.motorThread = komosEscMotor(self._conf)
+        self.thread_camera = KosmosCam(self._conf)
         
     def clear_events(self):
         """Mise à 0 des evenements attachés aux boutons"""
@@ -79,7 +79,7 @@ class kosmos_main():
         """Le kosmos est en train de démarrer"""
         logging.info("ETAT : Kosmos en train de démarrer")
         self.motorThread.autoArm()  # Arment du moteur
-        self.thread_csv = KCsv.kosmosCSV(self._conf)
+        self.thread_csv = kosmosCSV(self._conf)
         self.thread_csv.start()
         self._ledB.pause()
         if (self.MODE == 1) :
