@@ -1,16 +1,16 @@
 #!/usr/bin/python
 # coding: utf-8
 from datetime import datetime
+from distutils.command.config import config
 
 from threading import Thread
 from threading import Event
 
 import logging
 import os
-import ms5837  # librairie du catpeur de pression et temperature
+from src import ms5837  # librairie du catpeur de pression et temperature
 
-from kosmos_config import *
-
+from src.config import KosmosConfig
 
 class kosmosCSV(Thread):
     """Classe dérivée de Thread qui gère l'enregistrement du CSV"""
