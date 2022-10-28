@@ -15,7 +15,7 @@ import pigpio  # importing GPIO library
 from threading import Thread
 from threading import Event
 
-from kosmos_config import *
+from src.config import KosmosConfig
 import subprocess
 
 

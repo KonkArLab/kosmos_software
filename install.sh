@@ -1,18 +1,19 @@
 #!/bin/bash
 
-echo "******************* Install Kosmos-config ********************* "
+echo "Install Kosmos-config"
 
+# Installer les mises à jour de l'OS
 sudo apt update
 sudo apt upgrade
-sudo apt install git python3-pip virtualenv tree -y
-# Activate Python3 env
-source kosmosV3-env/bin/activate
-# install required packages
-cd kosmosV3-env
+
+sudo apt install python3-pip tree -y
+
+# Création de l'environnement virtuel
+python3 -m venv env
+source env/bin/activate # Activation
+
+# Installation des packages
 pip install -r requirements.txt
 
-# create folder for install code from github
-mkdir kospython
-
-echo " --------------- End install Kosmos-camera ----------------------------"
+echo "End install Kosmos-config"
 reboot

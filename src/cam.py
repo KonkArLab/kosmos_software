@@ -3,13 +3,14 @@
 """ Camera KOSMOS
  D. Hanon 21 novembre 2020 """
 
+from distutils.command.config import config
 from threading import Thread, Event
 import subprocess
 import logging
 import picamera
 import os
-from kosmos_config import *
 
+from src.config import KosmosConfig
 
 logging.basicConfig(level=logging.DEBUG)
 

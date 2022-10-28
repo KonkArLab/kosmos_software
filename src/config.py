@@ -3,14 +3,14 @@
 
 import logging
 import configparser
-import os.path
+from os import path, environ
 import subprocess
 from datetime import datetime
 
 
-CONF_FILE = "kosmos_config.ini"
-USB_ROOT_PATH = "/media/pi"
-BASIC_SECTION = "KOSMOS"
+CONF_FILE = environ("CONF_FILE")
+USB_ROOT_PATH = environ("USB_ROOT_PATH")
+BASIC_SECTION = environ("BASIC_SECTION")
 
 
 class KosmosConfig:
