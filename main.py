@@ -137,7 +137,10 @@ class kosmos_main():
                             self.motor_event.clear()
                             break #on sort le boucle while globale
                         self.motorThread.set_speed(vitesse_mot)
-                        time.sleep(4)
+                        time.sleep(KosmosConfig.get_val(
+                            aKey="SETT_MOTOR_WAIT_TIME",
+                            aSection="KOSMOS"
+                        ))
                         self.motor_event.clear()
                     else:
                         print('pass')
