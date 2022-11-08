@@ -3,10 +3,11 @@
 echo "Install Kosmos-config"
 
 # Installer les mises à jour de l'OS
-sudo apt update
-sudo apt upgrade
+sudo apt update -y 
+sudo apt upgrade -y
 
-sudo apt install python3-pip tree -y
+# Installer des "dependencies"
+sudo apt install python3-pip python3-venv -y
 
 # Création de l'environnement virtuel
 python3 -m venv env
