@@ -3,7 +3,7 @@
 
 import logging
 import configparser
-from os import path, environ
+from os import path, environ, getenv
 import subprocess
 from datetime import datetime
 
@@ -49,8 +49,8 @@ class KosmosConfig:
         logging.debug("DEBUT INIT config")
         self.config = configparser.ConfigParser()
         self._usb_path = self.find_usb_path()
-        self._cur_dir = os.getenv("PWD")  # Repertoire courant
-        if self._usb_path != "" and os.path.isfile(self._usb_path + "/" + CONF_FILE):
+        self._cur_dir = getenv("PWD")  # Repertoire courant
+        if self._usb_path != "" and path.isfile(self._usb_path + "/" + CONF_FILE):
             self.config.read(self._usb_path + "/" + CONF_FILE)
             logging.info(
                 f"Fichier de configuration lu sur USB {self._usb_path}/{CONF_FILE}"
@@ -59,7 +59,7 @@ class KosmosConfig:
             logging.debug(
                 f"Recherche fichier de configuration local {self._cur_dir}/{CONF_FILE}"
             )
-            if self._cur_dir is not None and os.path.isfile(
+            if self._cur_dir is not None and path.isfile(
                 self._cur_dir + "/" + CONF_FILE
             ):
                 self.config.read(self._cur_dir + "/" + CONF_FILE)
