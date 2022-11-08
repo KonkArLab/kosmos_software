@@ -7,7 +7,7 @@ sudo apt update -y
 sudo apt upgrade -y
 
 # Installer des "dependencies"
-sudo apt install python3-pip python3-venv -y
+sudo apt install python3-pip python3-venv pigpio -y
 
 # Création de l'environnement virtuel
 python3 -m venv env
