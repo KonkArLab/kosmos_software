@@ -27,11 +27,9 @@ class KosmosConfig:
     def find_usb_path(self):
         """cherche et retourne le repertoire de la clef usb"""
         logging.debug(
-            f"Recherche clef usb lancement script : ./kosmos_find_usb.sh {USB_ROOT_PATH}"
+            f"Recherche clef usb lancement script : ../usb.sh {USB_ROOT_PATH}"
         )
-        result = subprocess.run(
-            ["./kosmos_find_usb.sh", USB_ROOT_PATH], capture_output=True
-        )
+        result = subprocess.run(["../usb.sh", USB_ROOT_PATH], capture_output=True)
         logging.debug(f"code retour recherche clef {result.returncode}")
         logging.debug(f"rech clef {result.stdout.decode()}")
         if result.returncode == 0:
