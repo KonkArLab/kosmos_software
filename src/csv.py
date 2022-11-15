@@ -36,9 +36,7 @@ class kosmosCSV(Thread):
         self._file_name = (
             aConf.get_val("SETT_CSV_FILE_NAME") + "_" + aConf.get_date() + ".csv"
         )
-        os.chdir("..")
-        os.chdir("..")
-        os.chdir("..")
+        os.chdir("/")
         os.chdir(USB_ROOT_PATH)
         os.chdir(KOSMOS_NAME)
         os.chdir("00clef")
@@ -47,13 +45,9 @@ class kosmosCSV(Thread):
         ligne = "heure ; pression (mb); température °C ; profondeur (m)"
         logging.debug(f"Ecriture CSV : {ligne}")
         self._cvs_file.write(ligne + "\n")
-        os.chdir("..")
-        os.chdir("..")
-        os.chdir("..")
-        os.chdir("..")
-        os.chdir("home")
+        os.chdir("/home")
         os.chdir(KOSMOS_NAME)
-        os.chdir("kospython")
+        os.chdir("kosmos_software")
 
         self._press_sensor_ok = False
         try:
