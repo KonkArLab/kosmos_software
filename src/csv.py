@@ -38,7 +38,6 @@ class kosmosCSV(Thread):
         )
         os.chdir("/")
         os.chdir(USB_ROOT_PATH)
-        os.chdir(KOSMOS_NAME)
         os.chdir("00clef")
         os.chdir("CSV")
         self._cvs_file = open(self._file_name, "w")
