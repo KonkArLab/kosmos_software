@@ -9,8 +9,10 @@ from datetime import datetime
 
 
 CONF_FILE = environ["CONF_FILE"]
+KOSMOS_NAME = environ["KOSMOS_NAME"]
 USB_ROOT_PATH = environ["USB_ROOT_PATH"]
 BASIC_SECTION = environ["BASIC_SECTION"]
+USB_PATH = USB_ROOT_PATH + KOSMOS_NAME
 
 
 class Config:
@@ -26,8 +28,8 @@ class KosmosConfig:
 
     def find_usb_path(self):
         """cherche et retourne le repertoire de la clef usb"""
-        logging.debug(f"Recherche clef usb lancement script : ./usb.sh {USB_ROOT_PATH}")
-        result = subprocess.run(["./usb.sh", USB_ROOT_PATH], capture_output=True)
+        logging.debug(f"Recherche clef usb lancement script : ./usb.sh {USB_PATH}")
+        result = subprocess.run(["./usb.sh", USB_PATH], capture_output=True)
         logging.debug(f"code retour recherche clef {result.returncode}")
         logging.debug(f"rech clef {result.stdout.decode()}")
         if result.returncode == 0:
