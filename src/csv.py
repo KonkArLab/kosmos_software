@@ -66,6 +66,7 @@ class kosmosCSV(Thread):
         while self.stop is False:
             pressStr = ""
             tempStr = ""
+            profStr = ""
             if self._press_sensor_ok:
                 if self.pressure_sensor.read():
                     press = (
