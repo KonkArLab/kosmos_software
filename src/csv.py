@@ -38,7 +38,6 @@ class kosmosCSV(Thread):
         )
         os.chdir("/")
         os.chdir(USB_ROOT_PATH)
-        os.chdir(KOSMOS_NAME)
         os.chdir("00clef")
         os.chdir("CSV")
         self._cvs_file = open(self._file_name, "w")
@@ -67,6 +66,7 @@ class kosmosCSV(Thread):
         while self.stop is False:
             pressStr = ""
             tempStr = ""
+            profStr = ""
             if self._press_sensor_ok:
                 if self.pressure_sensor.read():
                     press = (
