@@ -34,19 +34,15 @@ class kosmosCSV(Thread):
 
         self._time_step = aConf.get_val_int("SETT_CSV_STEP_TIME")
         self._file_name = (
-            aConf.get_val("SETT_CSV_FILE_NAME") + "_" + aConf.get_date() + ".csv"
+            USB_ROOT_PATH
+            + "00clef/"
+            + (aConf.get_val("SETT_CSV_FILE_NAME") + "_" + aConf.get_date() + ".csv")
         )
-        os.chdir("/")
-        os.chdir(USB_ROOT_PATH)
-        os.chdir("00clef")
-        os.chdir("CSV")
-        self._cvs_file = open(self._file_name, "w")
-        ligne = "heure ; pression (mb); température °C ; profondeur (m)"
-        logging.debug(f"Ecriture CSV : {ligne}")
-        self._cvs_file.write(ligne + "\n")
-        os.chdir("/home")
-        os.chdir(KOSMOS_NAME)
-        os.chdir("kosmos_software")
+
+        with open(self._file_name, "w") as self._cvs_file:
+            ligne = "heure ; pression (mb); température °C ; profondeur (m)"
+            logging.debug(f"Ecriture CSV : {ligne}")
+            self._cvs_file.write(ligne + "\n")
 
         self._press_sensor_ok = False
         try:
@@ -85,7 +81,8 @@ class kosmosCSV(Thread):
             vHeure = date.strftime("%H:%M:%S")
             ligne = f"{vHeure} ; {pressStr} ; {tempStr} ; {profStr}"
             logging.debug(f"Ecriture CSV : {ligne}")
-            self._cvs_file.write(ligne + "\n")
+            with open(self._file_name, "a") as self._cvs_file:
+                self._cvs_file.write(ligne + "\n")
 
             # Attendre le prochain enregistrement ou l'évènement d'arrêt.
             self._stopevent.wait(self._time_step)
