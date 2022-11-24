@@ -14,13 +14,16 @@ from src.config import KosmosConfig
 
 logging.basicConfig(level=logging.DEBUG)
 
+USB_ROOT_PATH = os.environ["USB_ROOT_PATH"]
+
 
 class KosmosCam(Thread):
     """
     Classe dérivée de Thread qui gère l'enregistrement video.
     """
+
     def __init__(self, aConf: KosmosConfig):
-        """ constructeur de la classe ... initialise les paramètres
+        """constructeur de la classe ... initialise les paramètres
             Parameters:
                 Conf (KosmosConfig) : gestionaire de la config
                 aDate date : utilistée juste pour fixer le nom du fichier vidéo
@@ -45,46 +48,38 @@ class KosmosCam(Thread):
         self._record_time = aConf.get_val_int("SETT_RECORD_TIME")
         self._end = False
         self._start_again = Event()
-        self.MODE= aConf.get_val_int("SETT_MODE")
+        self.MODE = aConf.get_val_int("SETT_MODE")
 
     def getRecordTime(self) -> int:
         return self._record_time
 
     def run(self):
-        """  Lance l'enregistrement vidéo
+        """Lance l'enregistrement vidéo
         vers un fichier donné dans le fichier de conf (SETT_VIDEO_FILE_NAME)
         pour un temps donné dans le fichier de conf (SETT_RECORD_TIME)
 
         """
         while not self._end:
-            self._base_name = self._Conf.get_val("SETT_VIDEO_FILE_NAME") + '_' + self._Conf.get_date()
-            self._file_name = self._base_name + '.h264'
-            if (self.MODE==0) :
-                logging.info(f"enregistrement caméra lancé pour : {self._record_time} secondes")
+            self._base_name = (
+                self._Conf.get_val("SETT_VIDEO_FILE_NAME") + "_" + self._Conf.get_date()
+            )
+            self._file_name = USB_ROOT_PATH + "00clef/" + self._base_name + ".h264"
+            if self.MODE == 0:
+                logging.info(
+                    f"enregistrement caméra lancé pour : {self._record_time} secondes"
+                )
             if self._PREVIEW == 1:
                 self._camera.start_preview(fullscreen=False, window=(50, 50, 640, 480))
-            os.chdir("..")
-            os.chdir("..")
-            os.chdir("..")
-            os.chdir("media")
-            os.chdir("pi")
-            os.chdir("00clef")
-            os.chdir("Video")
+
             self._camera.start_recording(self._file_name)
-            os.chdir("..")
-            os.chdir("..")
-            os.chdir("..")
-            os.chdir("..")
-            os.chdir("home")
-            os.chdir("pi")
-            os.chdir("kospython")
+
             self._camera.wait_recording(self._record_time)
             logging.info(f"Fin de l'enregistrement video {self._file_name}")
             self._start_again.wait()
             self._start_again.clear()
 
     def stopCam(self):
-        """  Demande la fin de l'enregistrement et ferme l'objet caméra."""
+        """Demande la fin de l'enregistrement et ferme l'objet caméra."""
         if self._camera.recording is True:
             # terminer l'enregistrement video
             if self._PREVIEW == 1:
@@ -105,15 +100,15 @@ class KosmosCam(Thread):
             self.start()
 
     def get_raw_file_name(self) -> str:
-        """ retourne le nom du fichier h264 """
+        """retourne le nom du fichier h264"""
         return self._file_name
 
     def get_mepg_file(self) -> str:
-        """ retourne le nom du fichier mp4 """
-        return self._base_name + '.mp4'
+        """retourne le nom du fichier mp4"""
+        return self._base_name + ".mp4"
 
     def convert_to_mepg(self) -> bool:
-        """ Conversion en mpeg 4.
+        """Conversion en mpeg 4.
         Utilise la commande x264 dans le repertoire courant.
         Génère un fichier de même nom mais à l'extension mp4.
         La conversion est assez gourmande en temps ...
