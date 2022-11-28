@@ -1,15 +1,19 @@
 #!/usr/bin/python
 # coding: utf-8
 from datetime import datetime
+from distutils.command.config import config
 
 from threading import Thread
 from threading import Event
 
 import logging
 import os
-import ms5837  # librairie du catpeur de pression et temperature
+from src import ms5837  # librairie du catpeur de pression et temperature
 
-from kosmos_config import *
+from src.config import KosmosConfig
+
+USB_ROOT_PATH = os.environ["USB_ROOT_PATH"]
+KOSMOS_NAME = os.environ["KOSMOS_NAME"]
 
 
 class kosmosCSV(Thread):
@@ -29,25 +33,16 @@ class kosmosCSV(Thread):
         self._stopevent = Event()
 
         self._time_step = aConf.get_val_int("SETT_CSV_STEP_TIME")
-        self._file_name = aConf.get_val("SETT_CSV_FILE_NAME") + "_" + aConf.get_date() + ".csv"
-        os.chdir("..")
-        os.chdir("..")
-        os.chdir("..")
-        os.chdir("media")
-        os.chdir("pi")
-        os.chdir("00clef")
-        os.chdir("CSV")
-        self._cvs_file = open(self._file_name, 'w')
-        ligne = "heure ; pression (mb); température °C ; profondeur (m)"
-        logging.debug(f"Ecriture CSV : {ligne}")
-        self._cvs_file.write(ligne + '\n')
-        os.chdir("..")
-        os.chdir("..")
-        os.chdir("..")
-        os.chdir("..")
-        os.chdir("home")
-        os.chdir("pi")
-        os.chdir("kospython")
+        self._file_name = (
+            USB_ROOT_PATH
+            + "00clef/"
+            + (aConf.get_val("SETT_CSV_FILE_NAME") + "_" + aConf.get_date() + ".csv")
+        )
+
+        with open(self._file_name, "w") as self._cvs_file:
+            ligne = "heure ; pression (mb); température °C ; profondeur (m)"
+            logging.debug(f"Ecriture CSV : {ligne}")
+            self._cvs_file.write(ligne + "\n")
 
         self._press_sensor_ok = False
         try:
@@ -63,25 +58,31 @@ class kosmosCSV(Thread):
     def run(self):
         """Ecriture des données sur le fichier CSV
         Corps du thread; s'arrête lorque le self.stop est vrai (appeler stop_thread())
-        https://python.developpez.com/faq/index.php?page=Thread """
+        https://python.developpez.com/faq/index.php?page=Thread"""
         while self.stop is False:
             pressStr = ""
             tempStr = ""
+            profStr = ""
             if self._press_sensor_ok:
                 if self.pressure_sensor.read():
-                    press = self.pressure_sensor.pressure()  # Default is mbar (no arguments)
-                    pressStr = f'{press:.1f}'
-                    temp = self.pressure_sensor.temperature()  # Default is degrees C (no arguments)
-                    tempStr = f'{temp:.2f}'
-                    prof=(press-1000)/100
-                    profStr=f'{prof:2f}'
+                    press = (
+                        self.pressure_sensor.pressure()
+                    )  # Default is mbar (no arguments)
+                    pressStr = f"{press:.1f}"
+                    temp = (
+                        self.pressure_sensor.temperature()
+                    )  # Default is degrees C (no arguments)
+                    tempStr = f"{temp:.2f}"
+                    prof = (press - 1000) / 100
+                    profStr = f"{prof:2f}"
             vDate = datetime.now()
             # vHeure = str(vDate.hour) + ':' + str(vDate.minute) + ':' + str(vDate.second)
             date = datetime.now()
             vHeure = date.strftime("%H:%M:%S")
-            ligne = f'{vHeure} ; {pressStr} ; {tempStr} ; {profStr}'
+            ligne = f"{vHeure} ; {pressStr} ; {tempStr} ; {profStr}"
             logging.debug(f"Ecriture CSV : {ligne}")
-            self._cvs_file.write(ligne + '\n')
+            with open(self._file_name, "a") as self._cvs_file:
+                self._cvs_file.write(ligne + "\n")
 
             # Attendre le prochain enregistrement ou l'évènement d'arrêt.
             self._stopevent.wait(self._time_step)
@@ -90,7 +91,7 @@ class kosmosCSV(Thread):
         return 0
 
     def get_file_name(self) -> str:
-        """ retourne le nom du fichier CSV généré"""
+        """retourne le nom du fichier CSV généré"""
         return self._file_name
 
     def stop_thread(self):

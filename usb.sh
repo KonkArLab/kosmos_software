@@ -2,6 +2,9 @@
 # recherche clef usb
 # D. Hanon 7 novembre 2020
 
+#Dotenv
+set -a; source .env; set +a
+
 #recherche le nom de la clef
 function find_USB
 {
@@ -30,7 +33,7 @@ function find_USB
 }
 function find_USB_1
 {
-	ls /media/pi/ | { read a _; echo "$a"; }
+	ls ${USB_ROOT_PATH} | { read a _; echo "$a"; }
 }
 
 find_USB $1

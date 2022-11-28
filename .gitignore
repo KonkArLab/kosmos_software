@@ -1,1 +1,5 @@
 fichiers-anexe
+
+# Virtual environment
+env/
+notes.md
