@@ -73,7 +73,7 @@ class komosEscMotor(Thread):
         logging.debug(f"Moteur vitesse {aSpeed}. {aTime} secondes")
         time.sleep(aTime)
     
-    def calibrate(self):
+    def calibrate(self): #utile ??
         """Procedure de calibration de l'esc"""
         self.set_speed(0)
         print("Déconnectez la batterie de l\'ESC et appuyez sur Enter")
@@ -109,8 +109,8 @@ class komosEscMotor(Thread):
             return -1
         logging.info('Calibatrion moteur et ESC OK.')
         return 0
-    
-    def autoCal(self):
+
+    def autoCal(self): #utile ??
         """Procedure de calibration de l'esc"""
         
         self.set_speed(0)        
@@ -128,9 +128,10 @@ class komosEscMotor(Thread):
         
         logging.info('Calibatrion moteur et ESC OK.')
         return 0
-
+    
+    
     def arm(self):
-        """This is the arming procedure of an ESC"""
+        #This is the arming procedure of an ESC
         logging.debug('Armement moteur !')
         self.moove(self.min_value, 10) #10s vitesse min
         #self.moove(self.fav_value, self._run_time) #tourner temps d'un cycle
@@ -139,17 +140,20 @@ class komosEscMotor(Thread):
 
         self.set_speed(0)
         logging.info('Moteur et ESC prêts !')
-
+    
+    
     def autoArm(self): 
         self.power_on()
         self.arm()
-      
+    
+    
     def arret_complet(self):
-        """This will stop every action your Pi is performing for ESC ofcourse."""
+        #This will stop every action your Pi is performing for ESC ofcourse.
         self.set_speed(0)
         self._gpio.stop()
         logging.info('Moteur arrêt total')
-
+    
+    
     def run(self):
         """ Corps du thread; s'arrête lorque le stopevent est vrai
         https://python.developpez.com/faq/index.php?page=Thread """
@@ -157,12 +161,12 @@ class komosEscMotor(Thread):
 
         while not self._t_stop:
             self.set_speed(0)
-            logging.debug(f'Thred moteur arrêt : attente {self._wait_time} secondes.')
+            logging.debug(f'Thread moteur arrêt : attente {self._wait_time} secondes.')
             self._pause_event.wait(self._wait_time)
             if not self._pause_event.isSet():
                 # Si on n'est pas en pause on continue
                 self.set_speed(self.fav_value)
-                logging.debug(f'Thred moteur tourne : attente {self._run_time} secondes.')
+                logging.debug(f'Thread moteur tourne : attente {self._run_time} secondes.')
                 # Ne pas stopper le moteur en vol autrement on met la croix de malte HS ...
                 if not self._t_stop:
                     time.sleep(self._run_time)

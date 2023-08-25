@@ -122,6 +122,7 @@ class kosmos_main():
                     if myMain.motor_event.isSet():
                         print('moteuuur')
                         self.motorThread.set_speed(0)
+                        self.thread_camera.do_capture("/home/"+os.listdir("/home")[0]+"/Images/img_correction.jpg")
                         i=0
                         while i!=temps_pose:
                             if myMain.record_event.isSet():
@@ -142,6 +143,7 @@ class kosmos_main():
                     else:
                         print('pass')
                         self.motorThread.set_speed(0)
+                        self.thread_camera.do_capture("/home/"+os.listdir("/home")[0]+"/Images/img_correction.jpg")
                         self.motor_event.clear()
                         i=0
                         while i!=temps_pose:

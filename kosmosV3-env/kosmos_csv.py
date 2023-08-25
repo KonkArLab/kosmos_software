@@ -7,7 +7,7 @@ from threading import Event
 
 import logging
 import os
-import ms5837  # librairie du catpeur de pression et temperature
+import ms5837  # librairie du capteur de pression et temperature
 
 from kosmos_config import *
 
@@ -33,10 +33,17 @@ class kosmosCSV(Thread):
         os.chdir("..")
         os.chdir("..")
         os.chdir("..")
+        os.chdir("..")
         os.chdir("media")
-        os.chdir("pi")
-        os.chdir("00clef")
-        os.chdir("CSV")
+        os.chdir(os.listdir("/home")[0]) 
+        os.chdir(os.listdir(os.getcwd())[0])  
+        if os.getenv("CSV"): 
+            os.chdir("CSV")
+        else:
+            if not os.path.exists("CSV"): 
+                os.mkdir("CSV")
+            os.chdir("CSV")
+        
         self._cvs_file = open(self._file_name, 'w')
         ligne = "heure ; pression (mb); température °C ; profondeur (m)"
         logging.debug(f"Ecriture CSV : {ligne}")
@@ -46,8 +53,9 @@ class kosmosCSV(Thread):
         os.chdir("..")
         os.chdir("..")
         os.chdir("home")
-        os.chdir("pi")
-        os.chdir("kospython")
+        os.chdir(os.listdir("/home")[0])
+        os.chdir("kosmos_software")
+        os.chdir("kosmosV3-env")
 
         self._press_sensor_ok = False
         try:
@@ -67,6 +75,7 @@ class kosmosCSV(Thread):
         while self.stop is False:
             pressStr = ""
             tempStr = ""
+            profStr = ""
             if self._press_sensor_ok:
                 if self.pressure_sensor.read():
                     press = self.pressure_sensor.pressure()  # Default is mbar (no arguments)
@@ -80,7 +89,7 @@ class kosmosCSV(Thread):
             date = datetime.now()
             vHeure = date.strftime("%H:%M:%S")
             ligne = f'{vHeure} ; {pressStr} ; {tempStr} ; {profStr}'
-            logging.debug(f"Ecriture CSV : {ligne}")
+            #logging.debug(f"Ecriture CSV : {ligne}")
             self._cvs_file.write(ligne + '\n')
 
             # Attendre le prochain enregistrement ou l'évènement d'arrêt.
@@ -88,11 +97,14 @@ class kosmosCSV(Thread):
 
         self._cvs_file.close()
         return 0
-
+    
+    #Fonction(s) non utilisée(s) - commenter le 18/07/23 par Ion
+    """
     def get_file_name(self) -> str:
-        """ retourne le nom du fichier CSV généré"""
+        # retourne le nom du fichier CSV généré
         return self._file_name
-
+    """
+    
     def stop_thread(self):
         """positionne l'évènement qui va provoquer l'arrêt du thread"""
         self.stop = True
