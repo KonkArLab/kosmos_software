@@ -78,7 +78,8 @@ class kosmos_main():
     def starting(self):
         """Le kosmos est en train de démarrer"""
         logging.info("ETAT : Kosmos en train de démarrer")
-        self.motorThread.autoArm()  # Arment du moteur
+        time.sleep(1) # temporise pour éviter de trop tirer d'ampère et de faire sauter le relai (si utilisation d'une alim labo, s'assurer qu'elle délivre au moins 2A  à 12.5 V)
+        self.motorThread.autoArm()  # Armement du moteur
         self.thread_csv = KCsv.kosmosCSV(self._conf)
         self.thread_csv.start()
         self._ledB.pause()

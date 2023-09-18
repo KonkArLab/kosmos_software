@@ -44,8 +44,10 @@ class KosmosCam(Thread):
         # (1024,768)
         self._camera.resolution = (self._X_RESOLUTION, self._Y_RESOLUTION)
         self._camera.framerate = self._FRAMERATE
-        self._camera.awb_mode='off'
-        self._camera.awb_gains=(3,5)
+        
+        #self._camera.awb_mode='off'
+        #self._camera.awb_gains=(2,3)
+        
         self._record_time = aConf.get_val_int("SETT_RECORD_TIME")
         self._end = False
         self._start_again = Event()

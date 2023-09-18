@@ -144,6 +144,7 @@ class komosEscMotor(Thread):
     
     def autoArm(self): 
         self.power_on()
+        time.sleep(1)
         self.arm()
     
     
