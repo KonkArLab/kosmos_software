@@ -44,7 +44,7 @@ class KosmosConfig:
     def __init__(self):
         logging.debug("DEBUT INIT config")
         self.config = configparser.ConfigParser()
-        self._usb_path = USB_ROOT_PATH
+        self._usb_path = os.path.join(USB_ROOT_PATH, os.listdir(USB_ROOT_PATH)[0])
         self._cur_dir = "/home/"+(os.listdir("/home")[0])#os.getenv('PWD')  # Repertoire courant
         if self._usb_path != "" and os.path.isfile(self._usb_path + '/' + CONF_FILE):
             self.config.read(self._usb_path + '/' + CONF_FILE)

@@ -44,10 +44,12 @@ class kosmosCSV(Thread):
                 os.mkdir("CSV")
             os.chdir("CSV")
         
-        self._cvs_file = open(self._file_name, 'w')
+        self._csv_file = open(self._file_name, 'w')
         ligne = "heure ; pression (mb); température °C ; profondeur (m)"
         logging.debug(f"Ecriture CSV : {ligne}")
-        self._cvs_file.write(ligne + '\n')
+        self._csv_file.write(ligne + '\n')
+        self._csv_file.flush()
+        
         os.chdir("..")
         os.chdir("..")
         os.chdir("..")
@@ -90,21 +92,27 @@ class kosmosCSV(Thread):
             vHeure = date.strftime("%H:%M:%S")
             ligne = f'{vHeure} ; {pressStr} ; {tempStr} ; {profStr}'
             #logging.debug(f"Ecriture CSV : {ligne}")
-            self._cvs_file.write(ligne + '\n')
+            try:
+                self._csv_file.write(ligne + '\n')
+                self._csv_file.flush()
+                #logging.error("Ligne ecrite")
+                
+            except Exception as e:
+                logging.error(f"Error writing to CSV file: {e}")
 
             # Attendre le prochain enregistrement ou l'évènement d'arrêt.
             self._stopevent.wait(self._time_step)
 
-        self._cvs_file.close()
+        self._csv_file.close()
         return 0
     
     #Fonction(s) non utilisée(s) - commenter le 18/07/23 par Ion
     """
     def get_file_name(self) -> str:
-        # retourne le nom du fichier CSV généré
-        return self._file_name
+            # retourne le nom du fichier CSV généré
+            return self._file_name
     """
-    
+        
     def stop_thread(self):
         """positionne l'évènement qui va provoquer l'arrêt du thread"""
         self.stop = True
