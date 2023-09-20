@@ -12,7 +12,7 @@ from kosmos_config import *
 
 
 logging.basicConfig(level=logging.DEBUG)
-VIDEO_ROOT_PATH = os.path.join(USB_ROOT_PATH, os.listdir(USB_ROOT_PATH)[0], "Video")
+#VIDEO_ROOT_PATH = os.path.join(USB_ROOT_PATH, os.listdir(USB_ROOT_PATH)[0], "Video")
 
 class KosmosCam(Thread):
     """
@@ -74,7 +74,8 @@ class KosmosCam(Thread):
         
         except subprocess.CalledProcessError as e:
             print("Error during conversion:", e, " !!!")
-        
+       
+    
     def run(self):
         """  Lance l'enregistrement vidéo
         vers un fichier donné dans le fichier de conf (SETT_VIDEO_FILE_NAME)
@@ -116,8 +117,8 @@ class KosmosCam(Thread):
             logging.info(f"Fin de l'enregistrement video {self._file_name}")
             
             input_video = self._file_name
-            path = VIDEO_ROOT_PATH
-            self.convert_to_mp4(input_video, path)
+            #path = VIDEO_ROOT_PATH
+            #self.convert_to_mp4(input_video, path)
             
             self._start_again.wait()
             self._start_again.clear()

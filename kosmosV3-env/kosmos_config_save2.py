@@ -9,7 +9,7 @@ from datetime import datetime
 
 
 CONF_FILE = "kosmos_config.ini"
-USB_ROOT_PATH = "/media/"+(os.listdir("/home")[0])
+USB_ROOT_PATH = "/media/kosmos"
 BASIC_SECTION = "KOSMOS"
 
 
@@ -28,7 +28,6 @@ class KosmosConfig:
         logging.debug(f"code retour recherche clef {result.returncode}")
         logging.debug(f"rech clef {result.stdout.decode()}")
         if result.returncode == 0:
-            logging.debug("returncode = 0")
             return result.stdout.decode()
         return ""
 
@@ -46,11 +45,6 @@ class KosmosConfig:
         self.config = configparser.ConfigParser()
         self._usb_path = self.find_usb_path()
         self._cur_dir = os.getenv('PWD')  # Repertoire courant
-        if self._usb_path != "":
-            logging.debug("ouiiii")
-            logging.debug(self._usb_path + '/' + CONF_FILE)
-        if os.path.isfile(self._usb_path + '/' + CONF_FILE):
-            logging.debug("noooooon")
         if self._usb_path != "" and os.path.isfile(self._usb_path + '/' + CONF_FILE):
             self.config.read(self._usb_path + '/' + CONF_FILE)
             logging.info(f"Fichier de configuration lu sur USB {self._usb_path}/{CONF_FILE}")

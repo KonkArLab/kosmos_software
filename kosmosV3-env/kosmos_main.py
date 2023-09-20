@@ -139,7 +139,7 @@ class kosmos_main():
                             self.motor_event.clear()
                             break #on sort le boucle while globale
                         self.motorThread.set_speed(vitesse_mot)
-                        time.sleep(4)
+                        time.sleep(3)
                         self.motor_event.clear()
                     else:
                         print('pass')
@@ -152,7 +152,7 @@ class kosmos_main():
                                 arret=1  #on met l'arret à 1. Cela permet de savoir qu'on a break la première boucle while
                                 break
                             else :
-                                time.sleep(3)
+                                time.sleep(1)
                                 i=i+1
                         if (arret==1): # si on a break la première boucle while il faut sortir de la boucle while globale
                             arret=0 #on remet l'arret à 0 au cas où on relancerai après le STANDBY
