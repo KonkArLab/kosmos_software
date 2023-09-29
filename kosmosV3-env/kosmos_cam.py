@@ -12,7 +12,7 @@ from kosmos_config import *
 
 
 logging.basicConfig(level=logging.DEBUG)
-#VIDEO_ROOT_PATH = os.path.join(USB_ROOT_PATH, os.listdir(USB_ROOT_PATH)[0], "Video")
+VIDEO_ROOT_PATH = os.path.join(USB_ROOT_PATH, os.listdir(USB_ROOT_PATH)[0], "Video")
 
 class KosmosCam(Thread):
     """
@@ -44,8 +44,10 @@ class KosmosCam(Thread):
         # (1024,768)
         self._camera.resolution = (self._X_RESOLUTION, self._Y_RESOLUTION)
         self._camera.framerate = self._FRAMERATE
-        #self._camera.awb_mode='off'
-        #self._camera.awb_gains=(2,3)
+        
+        self._camera.awb_mode='off' # à décommenter pour activer la convertion mp4
+        self._camera.awb_gains=(2,3) # à décommenter pour activer la convertion mp4
+        
         self._record_time = aConf.get_val_int("SETT_RECORD_TIME")
         self._end = False
         self._start_again = Event()
@@ -117,8 +119,8 @@ class KosmosCam(Thread):
             logging.info(f"Fin de l'enregistrement video {self._file_name}")
             
             input_video = self._file_name
-            #path = VIDEO_ROOT_PATH
-            #self.convert_to_mp4(input_video, path)
+            path = VIDEO_ROOT_PATH # à décommenter pour activer la convertion mp4
+            self.convert_to_mp4(input_video, path) # à décommenter pour activer la convertion mp4
             
             self._start_again.wait()
             self._start_again.clear()
