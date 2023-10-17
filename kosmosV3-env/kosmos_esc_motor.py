@@ -136,7 +136,8 @@ class komosEscMotor(Thread):
         self.moove(self.min_value, 10) #10s vitesse min
         #self.moove(self.fav_value, self._run_time) #tourner temps d'un cycle
         #self.moove(self.min_value, 1) #10s vitesse min
-        self.moove(self.fav_value, 1) #tourner temps d'un cycle
+        
+        #self.moove(self.fav_value, 1) #tourner temps d'un cycle (commente le 17/10/23 par Antoine)
 
         self.set_speed(0)
         logging.info('Moteur et ESC prêts !')
