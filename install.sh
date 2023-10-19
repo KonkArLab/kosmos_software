@@ -27,7 +27,7 @@ cd ..
 echo "#!/bin/bash" > lancement.sh
 
 #Ajout de la commande de lancement du programme
-sudo echo "sleep 15
+sudo echo "sleep 20
 
 #Deplacement du fichier kosmos_config.ini dans la cle USB
 sudo cp -n /home/$nom_raspberry/kosmos_software/kosmos_config.ini /media/$nom_raspberry/$USB_NAME
