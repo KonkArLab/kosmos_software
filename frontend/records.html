@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="styles.css">
+  <title>Kosmos</title>
+</head>
+
+<body>
+  <header>
+    <nav>
+      <ul>
+        <li><a href="./index.html">Camera</a></li>
+        <li><a href="./records.html">Records</a></li>
+        <li><a href="./config.html">Configuration</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div class="container">
+    <h1>State</h1>
+    <p>Etat : <span id="etat">Unknown</span></p>
+  </div>
+
+  <table border="1" id="fileTable">
+    <tr>
+      <td>Filename</td>
+      <td>Size (MB)</td>
+      <td>End Time of Recording</td>
+    </tr>
+  </Table>
+  <script src="records.js"></script>
+  <script src="state.js"></script>
+</body>
+
+</html>

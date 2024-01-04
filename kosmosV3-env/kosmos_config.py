@@ -46,18 +46,21 @@ class KosmosConfig:
         self.config = configparser.ConfigParser()
         self._usb_path = self.find_usb_path()
         self._cur_dir = os.getenv('PWD')  # Repertoire courant
+        self._file_path=""
         if self._usb_path != "":
             logging.debug("ouiiii")
             logging.debug(self._usb_path + '/' + CONF_FILE)
         if os.path.isfile(self._usb_path + '/' + CONF_FILE):
             logging.debug("noooooon")
         if self._usb_path != "" and os.path.isfile(self._usb_path + '/' + CONF_FILE):
-            self.config.read(self._usb_path + '/' + CONF_FILE)
+            self._file_path=self._usb_path + '/' + CONF_FILE
+            self.config.read(self._file_path)
             logging.info(f"Fichier de configuration lu sur USB {self._usb_path}/{CONF_FILE}")
         else:
             logging.debug(f"Recherche fichier de configuration local {self._cur_dir}/{CONF_FILE}")
             if self._cur_dir is not None and os.path.isfile(self._cur_dir + '/' + CONF_FILE):
-                self.config.read(self._cur_dir + '/' + CONF_FILE)
+                self._file_path=self._cur_dir + '/' + CONF_FILE
+                self.config.read(self._file_path)
                 logging.info(f"Fichier de configuration lu en local {self._cur_dir}/{CONF_FILE}")
             else:
                 logging.error("Pas de fichier de configuration")
@@ -96,6 +99,13 @@ class KosmosConfig:
                     le paramètre de config.
         """
         return self.config.getint(aSection, aKey)
+    
+    def set_val(self,aKey,aValue ,aSection=BASIC_SECTION):
+        self.config.set(aSection, aKey,str(aValue))
+    
+    def update_file(self):
+        with open(self._file_path, 'w') as configfile:
+            self.config.write(configfile)
 
     def copy_file(self, aFileName: str) -> bool:
         """ copy le fichier vers la clef USB """

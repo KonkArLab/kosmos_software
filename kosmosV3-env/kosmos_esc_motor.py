@@ -52,6 +52,8 @@ class komosEscMotor(Thread):
         self._continue_event = Event()
         self._t_stop = False
     
+
+    
     def power_on(self):
         """Commande le relai d'alimentation de l'ESC"""
         GPIO.output(self.gpio_power_port, GPIO.HIGH) # Coupure du relai

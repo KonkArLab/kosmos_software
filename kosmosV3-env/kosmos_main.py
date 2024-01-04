@@ -1,13 +1,19 @@
 #!/usr/bin/env python3 -- coding: utf-8 --
 """ Programme principal du KOSMOS en mode rotation Utilse une machine d'états D Hanon 12 décembre 2020 """
-
 import logging
 import time
 from threading import Event
-from enum import Enum, unique
 import RPi.GPIO as GPIO
 import os
 
+#Le programme est divisé en deux threads donc on a besoind du bibliotheque Thread
+from threading import Thread
+
+#Tous les methodes de l'API sont dans le fichier kosmos_backend.py
+import kosmos_backend as KBackend
+
+#Isolation du class KState dans le fichier kosmos_state.py
+from komos_state import KState
 
 import kosmos_config as KConf
 import kosmos_csv as KCsv
@@ -23,19 +29,24 @@ logging.basicConfig(level=logging.DEBUG,
                     filename='kosmos.log')
 
 
-@unique
-class KState(Enum):
-    """Etats du kosmos"""
-    STARTING = 0
-    STANDBY = 1
-    WORKING = 2
-    STOPPING = 3
-    SHUTDOWN = 4
 
 
 class kosmos_main():
 
+    """ 
+        On a diviser l'initialisation on deux methodes:
+        Dans le constructeur, on a conservé la creation des evenement qui doit s'executé seulement une fois dans tous le programme.
+        Une methode init() qui contient le reste d'initialisation qui peut étre appeler plusieur fois au besoin.
+    """
     def __init__(self):
+         # évènements
+        self.button_event = Event()  # un ILS a été activé
+        self.record_event = Event()  # l'ILS start or stop record été activé
+        self.stop_event = Event()    # l'ILS du shutdown or stop record activé
+        self.motor_event = Event()  # l'ILS du moteur activé
+        self.init()
+
+    def init(self):
         # Lecture du fichier de configuration
         self._conf = KConf.KosmosConfig()
         self.state = KState.STARTING
@@ -45,12 +56,6 @@ class kosmos_main():
         self._ledR = KLed.kosmos_led(self._conf.get_val_int("SETT_LED_R"))
         self._ledB.start()
         self._ledR.set_off()
-
-        # évènements
-        self.button_event = Event()  # un ILS a été activé
-        self.record_event = Event()  # l'ILS start or stop record été activé
-        self.stop_event = Event()    # l'ILS du shutdown or stop record activé
-        self.motor_event = Event()  # l'ILS du moteur activé
 
         # Boutons
         self.STOP_BUTTON_GPIO = self._conf.get_val_int("SETT_STOP_BUTTON_GPIO")
@@ -67,7 +72,7 @@ class kosmos_main():
         self.tps_record=self._conf.get_val_int("SETT_RECORD_TIME")
         self.motorThread = KMotor.komosEscMotor(self._conf)
         self.thread_camera = KCam.KosmosCam(self._conf)
-        
+
     def clear_events(self):
         """Mise à 0 des evenements attachés aux boutons"""
         self.record_event.clear()
@@ -246,6 +251,7 @@ class kosmos_main():
     def modeRotatif(self):
         """programme principal du mode rotatif"""
         while True:
+            print("recherche sate",self.state)          
             if self.state == KState.STARTING:
                 self.starting()
                 time.sleep(1)
@@ -293,12 +299,32 @@ def motor_cb(channel):
         myMain.motor_event.set()
         myMain.button_event.set()
 
+#Instance du classe principale
 myMain = kosmos_main()
 
-# Liens entre les boutons et les fonction de callback
-GPIO.add_event_detect(myMain.STOP_BUTTON_GPIO, GPIO.FALLING, callback=stop_cb, bouncetime=500)
-GPIO.add_event_detect(myMain.RECORD_BUTTON_GPIO, GPIO.FALLING, callback=record_cb, bouncetime=500)
-GPIO.add_event_detect(myMain.MOTOR_BUTTON_GPIO, GPIO.FALLING, callback=motor_cb, bouncetime=500)
+#Instance du classe Server
+server = KBackend.Server(myMain)
 
-# Debut prog principal :
-myMain.modeRotatif()
+
+
+#Le targuet du Thread t2 qui est le thread du backend.
+def flaskMain():
+    server.run()
+    
+#Le targuet du Thread t1 qui est le thread du programme principale.
+def main():
+    # Liens entre les boutons et les fonction de callback
+    GPIO.add_event_detect(myMain.STOP_BUTTON_GPIO, GPIO.FALLING, callback=stop_cb, bouncetime=500)
+    GPIO.add_event_detect(myMain.RECORD_BUTTON_GPIO, GPIO.FALLING, callback=record_cb, bouncetime=500)
+    GPIO.add_event_detect(myMain.MOTOR_BUTTON_GPIO, GPIO.FALLING, callback=motor_cb, bouncetime=500)
+
+    # Debut prog principal :
+    myMain.modeRotatif()
+
+#Creation des deux threads t1 et t2
+t1=Thread(target=main,args=[])
+t2=Thread(target=flaskMain,args=[])
+
+#Lancement des deux threads
+t1.start()
+t2.start()

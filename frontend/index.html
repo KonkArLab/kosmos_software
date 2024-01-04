@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width initial-scale=1.0">
+	<link rel="stylesheet" type="text/css" href="styles.css">
+	<title>Kosmos</title>
+</head>
+
+<body>
+	<header>
+		<nav>
+			<ul>
+				<li><a href="./index.html">Camera</a></li>
+				<li><a href="./records.html">Records</a></li>
+				<li><a href="./config.html">Configuration</a></li>
+		</nav>
+	</header>
+	<div class="container">
+		<h1>State</h1>
+		<p>Etat : <span id="etat">Unknown</span></p>
+	</div>
+	<div class="container">
+		<h1>Buttons</h1>
+		<button onClick="start()">Start</button>
+		<button onClick="stop()">Stop</button>
+	</div>
+	<div class="container">
+		<h1>Live video</h1>
+		<button onClick="setLive(true)">Start Live</button>
+		<button onClick="setLive(false)">Stop Live</button>
+		<br>
+		<img id="frame">
+	</div>
+	<script src="cameraScript.js"></script>
+	<script src="state.js"></script>
+</body>
+
+</html>
