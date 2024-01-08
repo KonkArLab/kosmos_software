@@ -117,8 +117,9 @@ class KosmosCam(Thread):
             logging.info(f"Fin de l'enregistrement video {self._file_name}")
             
             input_video = self._file_name
-            #path = VIDEO_ROOT_PATH
-            #self.convert_to_mp4(input_video, path)
+            path = VIDEO_ROOT_PATH
+            print(input_video,path)
+            self.convert_to_mp4(input_video, path)
             
             self._start_again.wait()
             self._start_again.clear()

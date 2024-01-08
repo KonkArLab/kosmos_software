@@ -10,7 +10,9 @@ from datetime import datetime
 
 CONF_FILE = "kosmos_config.ini"
 USB_ROOT_PATH = "/media/"+(os.listdir("/home")[0])
+USB_NAME=os.listdir(USB_ROOT_PATH)[0]
 BASIC_SECTION = "KOSMOS"
+VIDEO_ROOT_PATH=USB_ROOT_PATH+"/"+USB_NAME+"/Video"
 
 
 class KosmosConfig:
