@@ -17,6 +17,7 @@ class Server:
         self.app.add_url_rule("/state", view_func=self.state)
         self.app.add_url_rule("/start", view_func=self.start)
         self.app.add_url_rule("/stop", view_func=self.stop)
+        self.app.add_url_rule("/shutdown", view_func=self.shutdown)
         self.app.add_url_rule("/getRecords", view_func=self.getRecords)
         self.app.add_url_rule("/changeConfig", view_func=self.changeConfig,methods=['POST'])
         self.app.add_url_rule("/getConfig", view_func=self.getConfig)
@@ -56,6 +57,17 @@ class Server:
                 "status" : "error"
             }
     
+    def shutdown(self):
+        if(self.myMain.state==KState.STANDBY):
+            self.myMain.stop_event.set()
+            self.myMain.button_event.set()
+            return {
+                "status" : "ok"
+            }
+        else :
+            return {
+                "status" : "error"
+            }
     def changeConfig(self):
         if(self.myMain.state==KState.STANDBY):
             data = request.json

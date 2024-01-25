@@ -20,6 +20,13 @@ async function stop() {
   console.log(body);
 }
 
+// Function to send a shutdown request to the server
+async function shutdown() {
+  const response = await fetch(serverUrl + "/shutdown");
+  const body = await response.json();
+  console.log(body);
+}
+
 // Function to fetch an image from the server and display it
 async function getImage() {
   const response = await fetch(serverUrl + "/frame");
