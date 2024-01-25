@@ -22,7 +22,8 @@ Enregistrer
 
 
 Mettre le dossier kosmos_software dans le home (via le git ou par copie depuis une clé usb)
-git https://github.com/KonkArLab/kosmos_software.git
+git clone https://github.com/KonkArLab/kosmos_software.git
+cd kosmos_software
 git checkout dev_imt_groupe2
 
 Ouvir un terminal et taper :
