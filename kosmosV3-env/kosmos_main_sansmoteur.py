@@ -28,13 +28,10 @@ logging.basicConfig(level=logging.DEBUG,
                     datefmt='%d/%m %I:%M:%S',
                     filename='kosmos.log')
 
-
-
-
 class kosmos_main():
 
     """ 
-        On a diviser l'initialisation on deux methodes:
+        On a divisé l'initialisation en deux methodes:
         Dans le constructeur, on a conservé la creation des evenement qui doit s'executé seulement une fois dans tous le programme.
         Une methode init() qui contient le reste d'initialisation qui peut étre appeler plusieur fois au besoin.
     """
