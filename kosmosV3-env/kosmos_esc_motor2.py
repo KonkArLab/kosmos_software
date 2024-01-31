@@ -18,6 +18,20 @@ from threading import Event
 from kosmos_config import *
 import subprocess
 
+#Paramètres moteurs demandés par KosmosConfig
+"""
+SETT_ESC_MOTOR_GPIO=22
+SETT_POWER_MOTOR_GPIO=27
+SETT_ESC_MOTOR_MAX_VAL=2100
+SETT_ESC_MOTOR_MIN_VAL=1000
+SETT_ESC_MOTOR_FAVORITE_VAL=1350
+SETT_MOTOR_STOP_TIME=27
+SETT_MOTOR_RUN_TIME=5
+
+sett_motor_button_gpio = 21
+
+"""
+
 
 class komosEscMotor(Thread):
 
@@ -46,7 +60,16 @@ class komosEscMotor(Thread):
         self._wait_time = aConf.get_val_int("SETT_MOTOR_STOP_TIME")
         # temps de fonctionnement (à ajuster pour avoir 60°)
         self._run_time = aConf.get_val_int("SETT_MOTOR_RUN_TIME")
-
+        
+        self.motor_event = Event()  # l'ILS du moteur activé
+        self.init()
+        
+        #bouton moteur
+        self.MOTOR_BUTTON_GPIO = self._conf.get_val_int("SETT_MOTOR_BUTTON_GPIO")
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(self.MOTOR_BUTTON_GPIO, GPIO.IN)
+        
+        
         # Evénement pour commander l'arrêt du Thread
         self._pause_event = Event()
         self._continue_event = Event()

@@ -5,7 +5,7 @@ from PIL import Image
 import io
 import os
 
-from komos_state import KState
+from kosmos_state import KState
 
 class Server:
     
