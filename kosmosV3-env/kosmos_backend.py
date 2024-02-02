@@ -5,6 +5,10 @@ from PIL import Image
 import io
 import os
 
+import logging
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
+
 from kosmos_state import KState
 
 class Server:
@@ -26,7 +30,7 @@ class Server:
     def run(self) :
         print("server is running !")
         self.app.run(host="0.0.0.0",port=5000,debug=False)
-    
+            
     def state(self):
         return {
             "status" : "ok",

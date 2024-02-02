@@ -70,7 +70,7 @@ class kosmos_main():
         self.tps_POSE=self._conf.get_val_int("SETT_MOTOR_STOP_TIME")
         self.tps_ROTATION60=self._conf.get_val_int("SETT_MOTOR_RUN_TIME")
         self.vitesse_moteur=self._conf.get_val_int("SETT_ESC_MOTOR_FAVORITE_VAL")
-        self.motorThread = KMotor.komosEscMotor(self._conf)
+        self.motorThread = KMotor.kosmosEscMotor(self._conf)
         
         #Mode 1 pour staviro
         self.MODE=self._conf.get_val_int("SETT_MODE") # à mettre dans le ini

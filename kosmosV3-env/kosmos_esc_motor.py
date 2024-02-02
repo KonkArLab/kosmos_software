@@ -19,7 +19,7 @@ from kosmos_config import *
 import subprocess
 
 
-class komosEscMotor(Thread):
+class kosmosEscMotor(Thread):
 
     def __init__(self, aConf: KosmosConfig):
         Thread.__init__(self)

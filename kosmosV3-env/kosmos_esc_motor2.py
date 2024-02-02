@@ -33,7 +33,9 @@ sett_motor_button_gpio = 21
 """
 
 
-class komosEscMotor(Thread):
+
+
+class kosmosEscMotor(Thread):
 
     def __init__(self, aConf: KosmosConfig):
         Thread.__init__(self)
@@ -61,21 +63,36 @@ class komosEscMotor(Thread):
         # temps de fonctionnement (à ajuster pour avoir 60°)
         self._run_time = aConf.get_val_int("SETT_MOTOR_RUN_TIME")
         
-        self.motor_event = Event()  # l'ILS du moteur activé
-        self.init()
-        
-        #bouton moteur
-        self.MOTOR_BUTTON_GPIO = self._conf.get_val_int("SETT_MOTOR_BUTTON_GPIO")
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setup(self.MOTOR_BUTTON_GPIO, GPIO.IN)
-        
-        
         # Evénement pour commander l'arrêt du Thread
         self._pause_event = Event()
         self._continue_event = Event()
         self._t_stop = False
-    
+        
+        self.button_event = Event()
+        self.motor_event = Event()  # l'ILS du moteur activé
+        
+        #bouton moteur
+        self.MOTOR_BUTTON_GPIO = aConf.get_val_int("SETT_MOTOR_BUTTON_GPIO")
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(self.MOTOR_BUTTON_GPIO, GPIO.IN)
+        
+        def motor_cb(channel,self):
+            """Callback du bp stop moteur"""
+            if not self.motor_event.isSet():
+                logging.debug("bp stop moteur pressé")
+                self.motor_event.set()
+                self.button_event.set()    
+        
+        GPIO.add_event_detect(self.MOTOR_BUTTON_GPIO, GPIO.FALLING, callback=motor_cb, bouncetime=500)
 
+        # Paramètres Moteur
+        self.tps_POSE=aConf.get_val_int("SETT_MOTOR_STOP_TIME")
+        self.tps_ROTATION60=aConf.get_val_int("SETT_MOTOR_RUN_TIME")
+        self.vitesse_moteur=aConf.get_val_int("SETT_ESC_MOTOR_FAVORITE_VAL")
+        
+        
+    
+    
     
     def power_on(self):
         """Commande le relai d'alimentation de l'ESC"""
@@ -90,6 +107,9 @@ class komosEscMotor(Thread):
         1000 < vitesse < 2100 """
         self._gpio.set_servo_pulsewidth(self.gpio_port, aSpeed)
         logging.debug(f"Moteur vitesse {aSpeed}.")
+        
+    def mise_en_route(self):
+        self.set_speed(self.vitesse_moteur)
     
     def moove(self, aSpeed, aTime):
         """Lancement à la vitesse et temps passés en paramètre
@@ -223,3 +243,10 @@ class komosEscMotor(Thread):
             self._continue_event.set()
         else:
             self.start()
+            
+    def clear_events_motor(self):
+        """Mise à 0 des evenements attachés aux boutons"""
+        self.button_event.clear()
+        self.motor_event.clear()
+        
+        
