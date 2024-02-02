@@ -109,7 +109,10 @@ class kosmos_main():
         self.motorThread.mise_en_route()
         while True :
             self.clear_events()
+            self.button_event.wait()
             if myMain.record_event.isSet():
+                self.motorThread.pause()
+                self.motorThread.set_speed(0)
                 print('break')
                 break
             else:

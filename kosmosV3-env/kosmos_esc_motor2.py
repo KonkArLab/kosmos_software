@@ -68,7 +68,7 @@ class kosmosEscMotor(Thread):
         self._continue_event = Event()
         self._t_stop = False
         
-        self.button_event = Event()
+        self.button_event = Event() # Un ILS a été activé
         self.motor_event = Event()  # l'ILS du moteur activé
         
         #bouton moteur
@@ -76,7 +76,7 @@ class kosmosEscMotor(Thread):
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(self.MOTOR_BUTTON_GPIO, GPIO.IN)
         
-        def motor_cb(channel,self):
+        def motor_cb(channel):
             """Callback du bp stop moteur"""
             if not self.motor_event.isSet():
                 logging.debug("bp stop moteur pressé")
@@ -91,9 +91,6 @@ class kosmosEscMotor(Thread):
         self.vitesse_moteur=aConf.get_val_int("SETT_ESC_MOTOR_FAVORITE_VAL")
         
         
-    
-    
-    
     def power_on(self):
         """Commande le relai d'alimentation de l'ESC"""
         GPIO.output(self.gpio_power_port, GPIO.HIGH) # Coupure du relai
@@ -110,14 +107,17 @@ class kosmosEscMotor(Thread):
         
     def mise_en_route(self):
         self.set_speed(self.vitesse_moteur)
-    
+        
     def moove(self, aSpeed, aTime):
         """Lancement à la vitesse et temps passés en paramètre
         0 < vitesse < 2100 """
         self._gpio.set_servo_pulsewidth(self.gpio_port, aSpeed)
         logging.debug(f"Moteur vitesse {aSpeed}. {aTime} secondes")
         time.sleep(aTime)
-    
+        
+        
+        
+    '''
     def calibrate(self): #utile ??
         """Procedure de calibration de l'esc"""
         self.set_speed(0)
@@ -154,7 +154,9 @@ class kosmosEscMotor(Thread):
             return -1
         logging.info('Calibatrion moteur et ESC OK.')
         return 0
-
+    '''
+    
+    '''
     def autoCal(self): #utile ??
         """Procedure de calibration de l'esc"""
         
@@ -173,7 +175,7 @@ class kosmosEscMotor(Thread):
         
         logging.info('Calibatrion moteur et ESC OK.')
         return 0
-    
+    '''
     
     def arm(self):
         #This is the arming procedure of an ESC
@@ -185,8 +187,7 @@ class kosmosEscMotor(Thread):
 
         self.set_speed(0)
         logging.info('Moteur et ESC prêts !')
-    
-    
+        
     def autoArm(self): 
         self.power_on()
         time.sleep(1)
@@ -199,7 +200,7 @@ class kosmosEscMotor(Thread):
         self._gpio.stop()
         logging.info('Moteur arrêt total')
     
-    
+    '''
     def run(self):
         """ Corps du thread; s'arrête lorque le stopevent est vrai
         https://python.developpez.com/faq/index.php?page=Thread """
@@ -224,7 +225,8 @@ class kosmosEscMotor(Thread):
         self.set_speed(0)
         self.arret_complet()
         logging.info('Fin du thread moteur ESC.')
-
+    '''
+    
     def stop_thread(self):
         """positionne l'évènement qui va provoquer l'arrêt du thread"""
         self._t_stop = True
@@ -245,7 +247,7 @@ class kosmosEscMotor(Thread):
             self.start()
             
     def clear_events_motor(self):
-        """Mise à 0 des evenements attachés aux boutons"""
+        """Mise à 0 des evenements attachés aux boutons moteur"""
         self.button_event.clear()
         self.motor_event.clear()
         
