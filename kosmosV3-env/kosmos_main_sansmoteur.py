@@ -3,6 +3,7 @@
 import logging
 import time
 from threading import Event
+import threading
 import RPi.GPIO as GPIO
 import os
 
@@ -106,14 +107,13 @@ class kosmos_main():
         logging.info("ETAT : Kosmos en enregistrement")
         self._ledB.set_off()
         self.thread_camera.restart()
-        self.motorThread.mise_en_route()
+        #self.motorThread.start()
+        print('on avance')
         while True :
             self.clear_events()
             self.button_event.wait()
             if myMain.record_event.isSet():
-                self.motorThread.pause()
-                self.motorThread.set_speed(0)
-                print('break')
+                print('Bouton Arret du Working Presse')
                 break
             else:
                 continue                   
@@ -122,9 +122,8 @@ class kosmos_main():
     def stopping(self):
         logging.info("ETAT : Kosmos termine son enregistrement")
         self._ledR.startAgain()
-        self.motorThread.pause()
+        # Arret du moteur 
         self.motorThread.set_speed(0)
-
         # Demander la fin de l'enregistrement
         self.thread_camera.stopCam()
         logging.info("thread caméra terminé")
@@ -138,7 +137,7 @@ class kosmos_main():
     def shutdown(self):
         logging.info("ETAT : Kosmos passe à l'arrêt total")
                 
-        self.motorThread.stop_thread()
+        #self.motorThread.stop_thread() # Utilité ?
         self.thread_camera.closeCam()   # Stop caméra
 
         self.thread_csv.stop_thread()  # Arrêt de l'écriture du CVS
@@ -148,8 +147,8 @@ class kosmos_main():
         if self.thread_camera.is_alive():
             self.thread_camera.join()   # Caméra stoppée
 
-        if self.motorThread.is_alive():
-            self.motorThread.join()
+        #if self.motorThread.is_alive(): #? utilité
+        #    self.motorThread.join() # utilité ?
         self.motorThread.power_off()
 
         if self._ledB.is_alive():
