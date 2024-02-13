@@ -106,12 +106,11 @@ class kosmosEscMotor(Thread):
         logging.debug(f"Moteur vitesse {aSpeed}.")
         
     def mise_en_route(self):
-        while True:
+        self._t_stop=False
+        while not self._t_stop:
             self.set_speed(self.vitesse_moteur)
-            time.sleep(2)
-            self.set_speed(0)
-            time.sleep(2)
-
+        # End While
+        self.set_speed(0)    
         
     def moove(self, aSpeed, aTime):
         """Lancement à la vitesse et temps passés en paramètre
