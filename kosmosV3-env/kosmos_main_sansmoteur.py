@@ -85,17 +85,13 @@ class kosmos_main():
         self.thread_csv = KCsv.kosmosCSV(self._conf)
         self.thread_csv.start()
         self._ledB.pause()
-        if (self.MODE == 1) :
-            self.state = KState.STANDBY
-        else :
-            self.state = KState.WORKING
-
+        self.state = KState.STANDBY
+    
     def standby(self):
         """Le kosmos est en attente du lancement de l'enregistrement"""
         logging.info("ETAT : Kosmos prêt")
         self._ledB.set_on()
         self.button_event.wait()
-        #self.motorThread.set_speed(0)
         if myMain.stop_event.isSet():
             self.state = KState.SHUTDOWN
         else:
@@ -107,7 +103,7 @@ class kosmos_main():
         logging.info("ETAT : Kosmos en enregistrement")
         self._ledB.set_off()
         self.thread_camera.restart()
-        #self.motorThread.start()
+        self.motorThread.mise_en_route()
         print('on avance')
         while True :
             self.clear_events()
@@ -123,17 +119,13 @@ class kosmos_main():
         logging.info("ETAT : Kosmos termine son enregistrement")
         self._ledR.startAgain()
         # Arret du moteur 
-        self.motorThread.set_speed(0)
+        self.motorThread.stop_thread()
         # Demander la fin de l'enregistrement
         self.thread_camera.stopCam()
         logging.info("thread caméra terminé")
         self._ledR.pause()
-        if (self.MODE == 1 ):
-            # prochain état : stopping
-            self.state = KState.STANDBY
-        else:
-            self.state = KState.SHUTDOWN
-
+        self.state = KState.STANDBY
+        
     def shutdown(self):
         logging.info("ETAT : Kosmos passe à l'arrêt total")
                 
