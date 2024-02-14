@@ -31,10 +31,6 @@ SETT_MOTOR_RUN_TIME=5
 sett_motor_button_gpio = 21
 
 """
-
-
-
-
 class kosmosEscMotor(Thread):
 
     def __init__(self, aConf: KosmosConfig):
@@ -89,8 +85,7 @@ class kosmosEscMotor(Thread):
         self.tps_POSE=aConf.get_val_int("SETT_MOTOR_STOP_TIME")
         self.tps_ROTATION60=aConf.get_val_int("SETT_MOTOR_RUN_TIME")
         self.vitesse_moteur=aConf.get_val_int("SETT_ESC_MOTOR_FAVORITE_VAL")
-        
-        
+               
     def power_on(self):
         """Commande le relai d'alimentation de l'ESC"""
         GPIO.output(self.gpio_power_port, GPIO.HIGH) # Coupure du relai
@@ -98,35 +93,27 @@ class kosmosEscMotor(Thread):
     def power_off(self):
         """Commande le relai d'alimentation de l'ESC"""
         GPIO.output(self.gpio_power_port, GPIO.LOW) # Coupure du relai
-
+        
     def set_speed(self, aSpeed):
         """Lancement à la vitesse passée en paramètre
         1000 < vitesse < 2100 """
         self._gpio.set_servo_pulsewidth(self.gpio_port, aSpeed)
-        logging.debug(f"Moteur vitesse {aSpeed}.")
-        
-    def mise_en_route(self):
-        self._t_stop=False
-        while not self._t_stop:
-            self.set_speed(self.vitesse_moteur)
-        # End While
-        self.set_speed(0)    
+        logging.debug(f"Moteur vitesse {aSpeed}.")    
         
     def moove(self, aSpeed, aTime):
         """Lancement à la vitesse et temps passés en paramètre
         0 < vitesse < 2100 """
         self._gpio.set_servo_pulsewidth(self.gpio_port, aSpeed)
-        logging.debug(f"Moteur vitesse {aSpeed}. {aTime} secondes")
+        #logging.debug(f"Moteur vitesse {aSpeed}. {aTime} secondes")
         time.sleep(aTime)
     
     def arm(self):
         #This is the arming procedure of an ESC
         logging.debug('Armement moteur !')
-        self.moove(self.min_value, 10) #10s vitesse min
+        self.moove(self.min_value, 2) #10s vitesse min
         #self.moove(self.fav_value, self._run_time) #tourner temps d'un cycle
         #self.moove(self.min_value, 1) #10s vitesse min
-        self.moove(self.fav_value, 1) #tourner temps d'un cycle
-
+        self.moove(self.fav_value, 2) #tourner temps d'un cycle
         self.set_speed(0)
         logging.info('Moteur et ESC prêts !')
         
@@ -142,14 +129,15 @@ class kosmosEscMotor(Thread):
         self._gpio.stop()
         logging.info('Moteur arrêt total')
     
-    
     def run(self):
-        """ Corps du thread; s'arrête lorque le stopevent est vrai
-        https://python.developpez.com/faq/index.php?page=Thread """
         logging.info('Debut du thread moteur ESC.')
 
         while not self._t_stop:
             self.set_speed(self.vitesse_moteur)
+            time.sleep(2)
+            self.set_speed(0)
+            time.sleep(2)
+            """
             logging.debug(f'Thread moteur arrêt : attente {self._wait_time} secondes.')
             self._pause_event.wait(self._wait_time)
             if not self._pause_event.isSet():
@@ -163,8 +151,8 @@ class kosmosEscMotor(Thread):
                 # Si on est pas en pause on attend la reprise.
                 logging.debug(f'Moteur attente reprise')
                 self._continue_event.wait()
-        # End While
-        self.set_speed(0)
+            """
+        # End While        
         self.arret_complet()
         logging.info('Fin du thread moteur ESC.')
     
@@ -175,6 +163,7 @@ class kosmosEscMotor(Thread):
         self._continue_event.set()
         self._pause_event.set()
 
+    '''
     def pause(self):
         """suspend le thread pour pouvoir le redémarrer."""
         self._continue_event.clear()
@@ -187,10 +176,10 @@ class kosmosEscMotor(Thread):
             self._continue_event.set()
         else:
             self.start()
-            
+           
     def clear_events_motor(self):
         """Mise à 0 des evenements attachés aux boutons moteur"""
         self.button_event.clear()
         self.motor_event.clear()
-        
+    ''' 
         

@@ -62,15 +62,16 @@ class kosmos_main():
         GPIO.setup(self.RECORD_BUTTON_GPIO, GPIO.IN)
         
         #Mode 1 pour staviro
-        self.MODE=self._conf.get_val_int("SETT_MODE") # à mettre dans le ini
+        #self.MODE=self._conf.get_val_int("SETT_MODE") # à mettre dans le ini
         
-        #Paramètres camera
+        #Paramètres camera & définition Thread Camera
         self.tps_record=self._conf.get_val_int("SETT_RECORD_TIME")
         self.thread_camera = KCam.KosmosCam(self._conf)
         
-        #Definition 
+        #Definition Thread Moteur
         self.motorThread = KMotor.kosmosEscMotor(self._conf)
-
+    
+    
     def clear_events(self):
         """Mise à 0 des evenements attachés aux boutons"""
         self.record_event.clear()
@@ -78,17 +79,16 @@ class kosmos_main():
         self.stop_event.clear()
 
     def starting(self):
-        """Le kosmos est en train de démarrer"""
         logging.info("ETAT : Kosmos en train de démarrer")
         time.sleep(1) # temporise pour éviter de trop tirer d'ampère et de faire sauter le relai (si utilisation d'une alim labo, s'assurer qu'elle délivre au moins 2A  à 12.5 V)
         self.motorThread.autoArm()
+        
         self.thread_csv = KCsv.kosmosCSV(self._conf)
         self.thread_csv.start()
         self._ledB.pause()
         self.state = KState.STANDBY
     
     def standby(self):
-        """Le kosmos est en attente du lancement de l'enregistrement"""
         logging.info("ETAT : Kosmos prêt")
         self._ledB.set_on()
         self.button_event.wait()
@@ -103,13 +103,11 @@ class kosmos_main():
         logging.info("ETAT : Kosmos en enregistrement")
         self._ledB.set_off()
         self.thread_camera.restart()
-        self.motorThread.mise_en_route()
-        print('on avance')
+        self.motorThread.start()
         while True :
             self.clear_events()
             self.button_event.wait()
             if myMain.record_event.isSet():
-                print('Bouton Arret du Working Presse')
                 break
             else:
                 continue                   
@@ -117,32 +115,37 @@ class kosmos_main():
     
     def stopping(self):
         logging.info("ETAT : Kosmos termine son enregistrement")
-        self._ledR.startAgain()
-        # Arret du moteur 
+        self._ledR.startAgain()        
+        # Vitesse moteur 0
         self.motorThread.stop_thread()
+        logging.info("Vitesse Moteur 0")
         # Demander la fin de l'enregistrement
         self.thread_camera.stopCam()
-        logging.info("thread caméra terminé")
+        logging.info("Caméra fermée")
         self._ledR.pause()
         self.state = KState.STANDBY
         
     def shutdown(self):
         logging.info("ETAT : Kosmos passe à l'arrêt total")
-                
-        #self.motorThread.stop_thread() # Utilité ?
-        self.thread_camera.closeCam()   # Stop caméra
-
-        self.thread_csv.stop_thread()  # Arrêt de l'écriture du CVS
+        
+        # Arrêt de l'écriture du CSV
+        self.thread_csv.stop_thread()  
         self.thread_csv.join()
-        logging.info("Thread csv terminé.")
-
+        logging.info("Thread csv terminé.")       
+        
+        # Arrêt de la caméra
+        self.thread_camera.closeCam()   # Stop caméra
         if self.thread_camera.is_alive():
             self.thread_camera.join()   # Caméra stoppée
+        logging.info("Thread cam terminé.")       
 
-        #if self.motorThread.is_alive(): #? utilité
-        #    self.motorThread.join() # utilité ?
+        # Arrêt du moteur
+        if self.motorThread.is_alive(): 
+            self.motorThread.join() 
         self.motorThread.power_off()
-
+        logging.info("Thread moteur terminé.")
+        
+        # Arrêt des LEDs
         if self._ledB.is_alive():
             self._ledB.stop()
             self._ledB.join()
@@ -191,14 +194,14 @@ class kosmos_main():
 def stop_cb(channel):
     """Callback du bp shutdown"""
     if not myMain.stop_event.isSet():
-        logging.debug("bp shutdown pressé")
+        logging.debug("Bouton Shutdown pressé")
         myMain.stop_event.set()
         myMain.button_event.set()
 
 def record_cb(channel):
     """Callback du bp start/stop record"""
     if not myMain.record_event.isSet():
-        logging.debug("bp start/stop record pressé")
+        logging.debug("Bouton start/stop pressé")
         myMain.record_event.set()
         myMain.button_event.set()
 
