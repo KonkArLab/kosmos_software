@@ -3,6 +3,7 @@
 import logging
 import time
 from threading import Event
+import threading
 import RPi.GPIO as GPIO
 import os
 
@@ -22,19 +23,14 @@ import kosmos_cam as KCam
 import kosmos_esc_motor as KMotor
 import sys
 
-# logging.basicConfig(level=logging.DEBUG)
-logging.basicConfig(level=logging.DEBUG,
+logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)s : %(message)s',
-                    datefmt='%d/%m %I:%M:%S',
-                    filename='kosmos.log')
-
-
-
+                    datefmt='%d/%m %I:%M:%S')#,filename='kosmos.log')
 
 class kosmos_main():
 
     """ 
-        On a diviser l'initialisation on deux methodes:
+        On a divisé l'initialisation en deux methodes:
         Dans le constructeur, on a conservé la creation des evenement qui doit s'executé seulement une fois dans tous le programme.
         Une methode init() qui contient le reste d'initialisation qui peut étre appeler plusieur fois au besoin.
     """
@@ -43,7 +39,6 @@ class kosmos_main():
         self.button_event = Event()  # un ILS a été activé
         self.record_event = Event()  # l'ILS start or stop record été activé
         self.stop_event = Event()    # l'ILS du shutdown or stop record activé
-        self.motor_event = Event()  # l'ILS du moteur activé
         self.init()
 
     def init(self):
@@ -60,50 +55,38 @@ class kosmos_main():
         # Boutons
         self.STOP_BUTTON_GPIO = self._conf.get_val_int("SETT_STOP_BUTTON_GPIO")
         self.RECORD_BUTTON_GPIO = self._conf.get_val_int("SETT_RECORD_BUTTON_GPIO")
-        self.MOTOR_BUTTON_GPIO = self._conf.get_val_int("SETT_MOTOR_BUTTON_GPIO")
         GPIO.setmode(GPIO.BCM)  # on utilise les n° de GPIO et pas les broches
         GPIO.setup(self.STOP_BUTTON_GPIO, GPIO.IN)
         GPIO.setup(self.RECORD_BUTTON_GPIO, GPIO.IN)
-        GPIO.setup(self.MOTOR_BUTTON_GPIO, GPIO.IN)
-        
-        # Paramètres Moteur
-        self.tps_POSE=self._conf.get_val_int("SETT_MOTOR_STOP_TIME")
-        self.tps_ROTATION60=self._conf.get_val_int("SETT_MOTOR_RUN_TIME")
-        self.vitesse_moteur=self._conf.get_val_int("SETT_ESC_MOTOR_FAVORITE_VAL")
-        self.motorThread = KMotor.kosmosEscMotor(self._conf)
         
         #Mode 1 pour staviro
-        self.MODE=self._conf.get_val_int("SETT_MODE") # à mettre dans le ini
+        #self.MODE=self._conf.get_val_int("SETT_MODE") # à mettre dans le ini
         
-        #Paramètres camera
+        #Paramètres camera & définition Thread Camera
         self.tps_record=self._conf.get_val_int("SETT_RECORD_TIME")
         self.thread_camera = KCam.KosmosCam(self._conf)
         
-        
-
+        #Definition Thread Moteur
+        self.motorThread = KMotor.kosmosEscMotor(self._conf)
+    
+    
     def clear_events(self):
         """Mise à 0 des evenements attachés aux boutons"""
         self.record_event.clear()
         self.button_event.clear()
         self.stop_event.clear()
-        self.motor_event.clear()
 
     def starting(self):
-        """Le kosmos est en train de démarrer"""
-        logging.info("ETAT : Kosmos en train de démarrer")
+        logging.info("STARTING : Kosmos en train de démarrer")
         time.sleep(1) # temporise pour éviter de trop tirer d'ampère et de faire sauter le relai (si utilisation d'une alim labo, s'assurer qu'elle délivre au moins 2A  à 12.5 V)
-        self.motorThread.autoArm()  # Armement du moteur
+        self.motorThread.autoArm()       
         self.thread_csv = KCsv.kosmosCSV(self._conf)
         self.thread_csv.start()
         self._ledB.pause()
-        if (self.MODE == 1) :
-            self.state = KState.STANDBY
-        else :
-            self.state = KState.WORKING
-
+        self.state = KState.STANDBY
+    
     def standby(self):
-        """Le kosmos est en attente du lancement de l'enregistrement"""
-        logging.info("ETAT : Kosmos prêt")
+        logging.info("STAND BY : Kosmos prêt")
         self._ledB.set_on()
         self.button_event.wait()
         if myMain.stop_event.isSet():
@@ -114,132 +97,52 @@ class kosmos_main():
         self._ledB.set_off()
       
     def working(self):
-        logging.info("ETAT : Kosmos en enregistrement")
         self._ledB.set_off()
-        vitesse_mot=self.vitesse_moteur
+        self.motorThread.restart()
         self.thread_camera.restart()
-        self.motorThread.set_speed(vitesse_mot)
-        temps_pose=self.tps_POSE
-        temps_rotation60=self.tps_ROTATION60
-        arret=0;
-        past=int(time.time()) #prise du time de départ pour le mode MIKADO
-        if (self.MODE==1): #Mode staviro   
-            while True :
-                self.clear_events()
-                self.button_event.wait(temps_rotation60)
-                if myMain.record_event.isSet():
-                    print('break')
-                    self.motorThread.set_speed(0)
-                    self.motor_event.clear()
-                    break
-                else:
-                    if myMain.motor_event.isSet():
-                        print('moteuuur')
-                        self.motorThread.set_speed(0)
-                        #self.thread_camera.do_capture("/home/"+os.listdir("/home")[0]+"/Images/img_correction.jpg")
-                        i=0
-                        while i!=temps_pose:
-                            if myMain.record_event.isSet():
-                                arret=1  #on met l'arret à 1. Cela permet de savoir qu'on a break la première boucle while
-                                break
-                            else :
-                                time.sleep(1)
-                                i=i+1
-                        if (arret==1): # si on a break la première boucle while il faut sortir de la boucle while globale
-                            arret=0 #on remet l'arret à 0 au cas où on relancerai après le STANDBY
-                            print('break')
-                            self.motorThread.set_speed(0)
-                            self.motor_event.clear()
-                            break #on sort le boucle while globale
-                        self.motorThread.set_speed(vitesse_mot)
-                        time.sleep(3)
-                        self.motor_event.clear()
-                    else:
-                        print('pass')
-                        self.motorThread.set_speed(0)
-                        #self.thread_camera.do_capture("/home/"+os.listdir("/home")[0]+"/Images/img_correction.jpg")
-                        self.motor_event.clear()
-                        i=0
-                        while i!=temps_pose:
-                            if myMain.record_event.isSet():
-                                arret=1  #on met l'arret à 1. Cela permet de savoir qu'on a break la première boucle while
-                                break
-                            else :
-                                time.sleep(1)
-                                i=i+1
-                        if (arret==1): # si on a break la première boucle while il faut sortir de la boucle while globale
-                            arret=0 #on remet l'arret à 0 au cas où on relancerai après le STANDBY
-                            self.motorThread.set_speed(0)
-                            self.motor_event.clear()
-                            break #on sort le boucle while globale
-                        self.motorThread.set_speed(vitesse_mot)
-                #sortie de boucle while 
-            # self.record_event.wait(self.thread_camera.getRecordTime())
-            self.state =KState.STOPPING
-            
-        else:#Mode MIKADO
-            while True :
-                self.clear_events()
-                print('tout en haut')
-                self.button_event.wait(temps_rotation60)
-                print('nouvelle boucle')
-                now=int(time.time())
-                temps_consigne=self.tps_record
-                temps=now-past
-                if (temps>=temps_consigne): #quand on fait 15 minutes ( 900 secondes ) on arrête
-                    temps=0
-                    print('break')
-                    self.motorThread.set_speed(0)
-                    self.motor_event.clear()
-                    break
-                else:
-                    if myMain.motor_event.isSet():
-                        print('moteuuur')
-                        self.motorThread.set_speed(0)
-                        time.sleep(temps_pose)
-                        self.motorThread.set_speed(vitesse_mot)
-                        time.sleep(2)
-                        self.motor_event.clear()
-                    else:
-                        print('pass')
-                        self.motorThread.set_speed(0)
-                        self.motor_event.clear()
-                        time.sleep(temps_pose)
-                        self.motorThread.set_speed(vitesse_mot)
-                #sortie de boucle while 
-            self.state = KState.STOPPING
+        logging.info("WORKING : Kosmos en enregistrement")
+        while True :
+            self.clear_events()
+            self.button_event.wait()
+            if myMain.record_event.isSet():
+                break
+            else:
+                continue                   
+        self.state =KState.STOPPING       
     
     def stopping(self):
-        logging.info("ETAT : Kosmos termine son enregistrement")
-        self._ledR.startAgain()
+        logging.info("STOPPING : Kosmos termine son enregistrement")
+        self._ledR.startAgain()        
+        # Vitesse moteur 0
         self.motorThread.pause()
         # Demander la fin de l'enregistrement
         self.thread_camera.stopCam()
-        logging.info("thread caméra terminé")
+        logging.info("Caméra fermée")
         self._ledR.pause()
-        if (self.MODE == 1 ):
-            # prochain état : stopping
-            self.state = KState.STANDBY
-        else:
-            self.state = KState.SHUTDOWN
-
+        self.state = KState.STANDBY
+        
     def shutdown(self):
-        logging.info("ETAT : Kosmos passe à l'arrêt total")
-
-        self.motorThread.stop_thread()  # Stop moteur
-        self.thread_camera.closeCam()   # Stop caméra
-
-        self.thread_csv.stop_thread()  # Arrêt de l'écriture du CVS
+        logging.info("SHUTDOWN : Kosmos passe à l'arrêt total")
+        
+        # Arrêt de l'écriture du CSV
+        self.thread_csv.stop_thread()  
         self.thread_csv.join()
-        logging.info("Thread csv terminé.")
-
+        logging.info("Thread csv terminé.")       
+        
+        # Arrêt de la caméra
+        self.thread_camera.closeCam()   # Stop caméra
         if self.thread_camera.is_alive():
             self.thread_camera.join()   # Caméra stoppée
+        logging.info("Thread cam terminé.")       
 
-        if self.motorThread.is_alive():
-            self.motorThread.join()
+        # Arrêt du moteur
+        self.motorThread.stop_thread() 
+        if self.motorThread.is_alive(): 
+            self.motorThread.join() 
         self.motorThread.power_off()
-
+        logging.info("Thread moteur terminé.")
+        
+        # Arrêt des LEDs
         if self._ledB.is_alive():
             self._ledB.stop()
             self._ledB.join()
@@ -259,7 +162,6 @@ class kosmos_main():
     def modeRotatif(self):
         """programme principal du mode rotatif"""
         while True:
-            print("recherche sate",self.state)          
             if self.state == KState.STARTING:
                 self.starting()
                 time.sleep(1)
@@ -288,22 +190,15 @@ class kosmos_main():
 def stop_cb(channel):
     """Callback du bp shutdown"""
     if not myMain.stop_event.isSet():
-        logging.debug("bp shutdown pressé")
+        logging.debug("Bouton Shutdown pressé")
         myMain.stop_event.set()
         myMain.button_event.set()
 
 def record_cb(channel):
     """Callback du bp start/stop record"""
     if not myMain.record_event.isSet():
-        logging.debug("bp start/stop record pressé")
+        logging.debug("Bouton start/stop pressé")
         myMain.record_event.set()
-        myMain.button_event.set()
-
-def motor_cb(channel):
-    """Callback du bp stop moteur"""
-    if not myMain.motor_event.isSet():
-        logging.debug("bp stop moteur pressé")
-        myMain.motor_event.set()
         myMain.button_event.set()
 
 #Instance du classe principale
@@ -321,7 +216,6 @@ def main():
     # Liens entre les boutons et les fonction de callback
     GPIO.add_event_detect(myMain.STOP_BUTTON_GPIO, GPIO.FALLING, callback=stop_cb, bouncetime=500)
     GPIO.add_event_detect(myMain.RECORD_BUTTON_GPIO, GPIO.FALLING, callback=record_cb, bouncetime=500)
-    GPIO.add_event_detect(myMain.MOTOR_BUTTON_GPIO, GPIO.FALLING, callback=motor_cb, bouncetime=500)
 
     # Debut prog principal :
     myMain.modeRotatif()

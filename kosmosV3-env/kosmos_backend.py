@@ -28,7 +28,7 @@ class Server:
         self.app.add_url_rule("/frame", view_func=self.image)
     
     def run(self) :
-        print("server is running !")
+        logging.info("Server is running !")
         self.app.run(host="0.0.0.0",port=5000,debug=False)
             
     def state(self):

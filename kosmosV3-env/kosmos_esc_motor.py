@@ -14,11 +14,22 @@ import time
 import pigpio  # importing GPIO library
 from threading import Thread
 from threading import Event
-
 from kosmos_config import *
-import subprocess
+#import subprocess
 
+#Paramètres moteurs demandés par KosmosConfig
+"""
+SETT_ESC_MOTOR_GPIO=22
+SETT_POWER_MOTOR_GPIO=27
+SETT_ESC_MOTOR_MAX_VAL=2100 # Inutile
+SETT_ESC_MOTOR_MIN_VAL=1000
+SETT_ESC_MOTOR_FAVORITE_VAL=1350
+SETT_MOTOR_STOP_TIME=27 
+SETT_MOTOR_RUN_TIME=5 # Inutile
 
+SETT_MOTOR_BUTTON_GPIO = 21
+
+"""
 class kosmosEscMotor(Thread):
 
     def __init__(self, aConf: KosmosConfig):
@@ -32,28 +43,29 @@ class kosmosEscMotor(Thread):
         else:
             logging.error(f"Problème avec libairie pigpiod {result.stdout.decode()}")
 
+        # Initialisation port GPIO ESC & RElai
         self.gpio_port = aConf.get_val_int("SETT_ESC_MOTOR_GPIO")
         self.gpio_power_port = aConf.get_val_int("SETT_POWER_MOTOR_GPIO")
-        logging.info(f"Moteurs sur GPIO {self.gpio_port}.")
         self._gpio = pigpio.pi()
         GPIO.setup(self.gpio_power_port, GPIO.OUT)  # Active le controle du GPIO
         self._gpio.set_servo_pulsewidth(self.gpio_port, 0)
-        self.max_value = aConf.get_val_int("SETT_ESC_MOTOR_MAX_VAL")
-        self.min_value = aConf.get_val_int("SETT_ESC_MOTOR_MIN_VAL")
-        self.fav_value = aConf.get_val_int("SETT_ESC_MOTOR_FAVORITE_VAL")
-
-        # temps d'attente entre deux arrêts
-        self._wait_time = aConf.get_val_int("SETT_MOTOR_STOP_TIME")
-        # temps de fonctionnement (à ajuster pour avoir 60°)
-        self._run_time = aConf.get_val_int("SETT_MOTOR_RUN_TIME")
-
+                
+        # Initialisation du bouton asservissement moteur
+        #self.motor_event = Event()  # l'ILS du moteur activé
+        self.MOTOR_BUTTON_GPIO = aConf.get_val_int("SETT_MOTOR_BUTTON_GPIO")
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(self.MOTOR_BUTTON_GPIO, GPIO.IN)              
+        
         # Evénement pour commander l'arrêt du Thread
         self._pause_event = Event()
         self._continue_event = Event()
-        self._t_stop = False
-    
-
-    
+        self._t_stop = False 
+                  
+        # Paramètres Moteur
+        self.tps_POSE=aConf.get_val_int("SETT_MOTOR_STOP_TIME")
+        self.vitesse_moteur=aConf.get_val_int("SETT_ESC_MOTOR_FAVORITE_VAL")
+        self.vitesse_min = aConf.get_val_int("SETT_ESC_MOTOR_MIN_VAL")
+        
     def power_on(self):
         """Commande le relai d'alimentation de l'ESC"""
         GPIO.output(self.gpio_power_port, GPIO.HIGH) # Coupure du relai
@@ -61,133 +73,54 @@ class kosmosEscMotor(Thread):
     def power_off(self):
         """Commande le relai d'alimentation de l'ESC"""
         GPIO.output(self.gpio_power_port, GPIO.LOW) # Coupure du relai
-
+        
     def set_speed(self, aSpeed):
         """Lancement à la vitesse passée en paramètre
         1000 < vitesse < 2100 """
         self._gpio.set_servo_pulsewidth(self.gpio_port, aSpeed)
-        logging.debug(f"Moteur vitesse {aSpeed}.")
-    
+        logging.debug(f"Moteur vitesse {aSpeed}.")    
+        
     def moove(self, aSpeed, aTime):
         """Lancement à la vitesse et temps passés en paramètre
         0 < vitesse < 2100 """
-        self._gpio.set_servo_pulsewidth(self.gpio_port, aSpeed)
-        logging.debug(f"Moteur vitesse {aSpeed}. {aTime} secondes")
+        self.set_speed(aSpeed)
         time.sleep(aTime)
-    
-    def calibrate(self): #utile ??
-        """Procedure de calibration de l'esc"""
-        self.set_speed(0)
-        print("Déconnectez la batterie de l\'ESC et appuyez sur Enter")
-        inp = input()
-        if inp == '':
-            self.set_speed(self.max_value)
-            print(f'Moteur sur port {self.gpio_port} vitesse max : {self.max_value}')
-            print("Connectez la batterie maintenant")
-            print("Vous allez entendre 2 bips, puis quand ...")
-            print("vous entendrez une tonnalité descendante, appuyez sur Entrer")
-            inp = input()
-            if inp == '':
-                self.set_speed(self.min_value)
-                print("... Tonalité spéciale")
-                time.sleep(7)
-                print("On attend toujours.")
-                time.sleep(5)
-                print("et on continue d\'attendre.")
-                print(f'Moteur sur port {self.gpio_port} vitesse min : {self.min_value}')
-                self.set_speed(self.min_value)
-                time.sleep(2)
-                print("ESC prêt")
-                self.set_speed(self.min_value)
-                time.sleep(1)
-                print("Calibatrion terminée.")
-                print(f'Moteur sur port {self.gpio_port} vitesse : {0}')
-                self.set_speed(0)
-            else:
-                print("Calibratrion abandonnée.")
-                return -1
-        else:
-            print("Calibratrion abandonnée.")
-            return -1
-        logging.info('Calibatrion moteur et ESC OK.')
-        return 0
-
-    def autoCal(self): #utile ??
-        """Procedure de calibration de l'esc"""
         
-        self.set_speed(0)        
-        self.power_off() # Coupure du relai
-        logging.debug("Coupure relai moteur 5 secondes.")
-        time.sleep(5)
-        
-        self.set_speed(self.max_value)
-        self.power_on()
-        self.moove(self.max_value, 5) #5s vitesse max
-        
-        self.moove(self.min_value, 10) #10s vitesse min
-        
-        self.set_speed(0)
-        
-        logging.info('Calibatrion moteur et ESC OK.')
-        return 0
-    
-    
-    def arm(self):
-        #This is the arming procedure of an ESC
-        logging.debug('Armement moteur !')
-        self.moove(self.min_value, 10) #10s vitesse min
-        #self.moove(self.fav_value, self._run_time) #tourner temps d'un cycle
-        #self.moove(self.min_value, 1) #10s vitesse min
-        self.moove(self.fav_value, 1) #tourner temps d'un cycle
-
-        self.set_speed(0)
-        logging.info('Moteur et ESC prêts !')
-    
-    
     def autoArm(self): 
         self.power_on()
         time.sleep(1)
-        self.arm()
-    
-    
+        self.moove(self.vitesse_min, 2) 
+        self.set_speed(self.vitesse_moteur)
+        GPIO.wait_for_edge(self.MOTOR_BUTTON_GPIO,GPIO.RISING)
+        self.set_speed(0)
+        logging.info('Moteur et ESC prêts !')
+        
     def arret_complet(self):
         #This will stop every action your Pi is performing for ESC ofcourse.
         self.set_speed(0)
         self._gpio.stop()
-        logging.info('Moteur arrêt total')
-    
     
     def run(self):
-        """ Corps du thread; s'arrête lorque le stopevent est vrai
-        https://python.developpez.com/faq/index.php?page=Thread """
         logging.info('Debut du thread moteur ESC.')
-
         while not self._t_stop:
-            self.set_speed(0)
-            logging.debug(f'Thread moteur arrêt : attente {self._wait_time} secondes.')
-            self._pause_event.wait(self._wait_time)
             if not self._pause_event.isSet():
-                # Si on n'est pas en pause on continue
-                self.set_speed(self.fav_value)
-                logging.debug(f'Thread moteur tourne : attente {self._run_time} secondes.')
-                # Ne pas stopper le moteur en vol autrement on met la croix de malte HS ...
-                if not self._t_stop:
-                    time.sleep(self._run_time)
+                self.set_speed(self.vitesse_moteur)
+                GPIO.wait_for_edge(self.MOTOR_BUTTON_GPIO,GPIO.RISING)
+                logging.info('Bouton asservissement Moteur détecté')
+                self.set_speed(0)
+                time.sleep(self.tps_POSE)
             else:
-                # Si on est pas en pause on attend la reprise.
-                logging.debug(f'Moteur attente reprise')
-                self._continue_event.wait()
-        # End While
-        self.set_speed(0)
+                self.set_speed(0)
+                self._continue_event.wait()  
+        # End While        
         self.arret_complet()
-        logging.info('Fin du thread moteur ESC.')
-
+   
     def stop_thread(self):
         """positionne l'évènement qui va provoquer l'arrêt du thread"""
         self._t_stop = True
         self._continue_event.set()
         self._pause_event.set()
-
+  
     def pause(self):
         """suspend le thread pour pouvoir le redémarrer."""
         self._continue_event.clear()
@@ -200,3 +133,4 @@ class kosmosEscMotor(Thread):
             self._continue_event.set()
         else:
             self.start()
+           

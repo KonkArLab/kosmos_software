@@ -11,7 +11,6 @@ import os
 from kosmos_config import *
 
 
-logging.basicConfig(level=logging.DEBUG)
 #VIDEO_ROOT_PATH = os.path.join(USB_ROOT_PATH, os.listdir(USB_ROOT_PATH)[0], "Video")
 
 class KosmosCam(Thread):
@@ -51,10 +50,6 @@ class KosmosCam(Thread):
         self._start_again = Event()
         self.MODE= aConf.get_val_int("SETT_MODE")
     
-    """
-    def getRecordTime(self) -> int: #utilisation dans main en commentaire - a garder?
-        return self._record_time
-    """
     
     def convert_to_mp4(self, input_file, path):
         output_file = os.path.splitext(input_file)[0] + '.mp4'
@@ -150,33 +145,3 @@ class KosmosCam(Thread):
         else:
             self.start()
     
-    #Fonction(s) non utilisée(s) - commenter le 18/07/23 par Ion
-    """
-    def get_raw_file_name(self) -> str:
-        # retourne le nom du fichier h264 
-        return self._file_name
-
-    def get_mepg_file(self) -> str:
-        #retourne le nom du fichier mp4
-        return self._base_name + '.mp4'
-
-    def convert_to_mepg(self) -> bool:
-        #Conversion en mpeg 4.
-        #Utilise la commande x264 dans le repertoire courant.
-        #Génère un fichier de même nom mais à l'extension mp4.
-        #La conversion est assez gourmande en temps ...
-        #Ce n'est certainement pas à faire sur la caméra mais au labo !
-        #Test le 4/12/2020 ... ça chauffe ! essayer avec juste os ...?
-        #... non pas génial ... ça chauffe même sans le python (en ligne de commande)!
-        
-        mpegName = self.get_mepg_file()
-        com = f"x264 {self._file_name} -o {mpegName}"
-        logging.debug(com)
-        ret1 = os.system(com)
-        if ret1 == 0:
-            return True
-        return False
-        # result = subprocess.run(["x264", self._file_name, "-o", mpegName], capture_output=True)
-        # if result.returncode == 0:
-        
-    """
