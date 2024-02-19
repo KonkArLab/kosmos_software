@@ -34,6 +34,7 @@ class KosmosCam(Thread):
         """
         Thread.__init__(self)
         self._Conf = aConf
+     
         # Résolution horizontale
         self._X_RESOLUTION = aConf.get_val_int("SETT_VIDEO_RESOLUTION_X")
         # Résolution verticale
@@ -42,16 +43,19 @@ class KosmosCam(Thread):
         self._FRAMERATE = aConf.get_val_int("SETT_FRAMERATE")
         # si 1 : Lance la fenêtre de preview (utile en debug)
         self._PREVIEW = aConf.get_val_int("SETT_VIDEO_PREVIEW")
+        self._record_time = aConf.get_val_int("SETT_RECORD_TIME")
+        self.MODE= aConf.get_val_int("SETT_MODE")
+     
+        self._end = False
+        self._start_again = Event()
+     
+        # Instanciation Camera
         self._camera = picamera.PiCamera()
-        # (1024,768)
-        self._camera.resolution = (self._X_RESOLUTION, self._Y_RESOLUTION)
+        self._camera.resolution = (self._X_RESOLUTION, self._Y_RESOLUTION)  # (1024,768)
         self._camera.framerate = self._FRAMERATE
         #self._camera.awb_mode='off'
         #self._camera.awb_gains=(2,3)
-        self._record_time = aConf.get_val_int("SETT_RECORD_TIME")
-        self._end = False
-        self._start_again = Event()
-        self.MODE= aConf.get_val_int("SETT_MODE")
+       
     
     
     def convert_to_mp4(self, input_file, path):
@@ -118,9 +122,7 @@ class KosmosCam(Thread):
             logging.info(f"Fin de l'enregistrement video {self._file_name}")
             
             input_video = self._file_name
-            path = VIDEO_ROOT_PATH
-            print(input_video,path)
-            self.convert_to_mp4(input_video, path)
+            self.convert_to_mp4(input_video, VIDEO_ROOT_PATH)
             
             self._start_again.wait()
             self._start_again.clear()
