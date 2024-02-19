@@ -11,7 +11,6 @@ ne pas reboot tout de suite :
 I1 Legacy Camera -> enable
 Effectuer le reboot
 
- 
 Aller dans l'onglet Wifi, Advanced Options
 Créer un Wifi Hotspot et lui donner un nom.
 Modifier ensuite les connections.
@@ -19,16 +18,14 @@ Choisir le réseau Hotspot.
 Aller dans l'onglet Général et cocher "Connect Automatically with priority"
 Enregistrer
 
-
-
 Mettre le dossier kosmos_software dans le home (via le git ou par copie depuis une clé usb)
 git clone https://github.com/KonkArLab/kosmos_software.git
 cd kosmos_software
-git checkout dev_imt_groupe2
+git checkout Refonte_fromIMT2
 
 Ouvir un terminal et taper :
 cd kosmos_software
 sudo chmod 755 install.sh
 sh install.sh
 
-Brancher la clé usb pour le stockage des données.
+Brancher la clé usb pour le stockage des données. Elle peut être vide ou contenir déjà un kosmos_config.ini, CSV et Video.

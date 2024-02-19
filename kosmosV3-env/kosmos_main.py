@@ -81,7 +81,6 @@ class kosmos_main():
         time.sleep(1) # temporise pour éviter de trop tirer d'ampère et de faire sauter le relai (si utilisation d'une alim labo, s'assurer qu'elle délivre au moins 2A  à 12.5 V)
         self.motorThread.autoArm()       
         self.thread_csv = KCsv.kosmosCSV(self._conf)
-        self.thread_csv.start()
         self._ledB.pause()
         self.state = KState.STANDBY
     
@@ -99,6 +98,7 @@ class kosmos_main():
     def working(self):
         self._ledB.set_off()
         self.motorThread.restart()
+        self.thread_csv.restart()
         self.thread_camera.restart()
         logging.info("WORKING : Kosmos en enregistrement")
         while True :
@@ -118,6 +118,9 @@ class kosmos_main():
         # Demander la fin de l'enregistrement
         self.thread_camera.stopCam()
         logging.info("Caméra fermée")
+        # Pause Thread CSV
+        self.thread_csv.pause()
+        
         self._ledR.pause()
         self.state = KState.STANDBY
         
@@ -125,10 +128,11 @@ class kosmos_main():
         logging.info("SHUTDOWN : Kosmos passe à l'arrêt total")
         
         # Arrêt de l'écriture du CSV
-        self.thread_csv.stop_thread()  
-        self.thread_csv.join()
+        self.thread_csv.stop_thread()
+        if self.thread_csv.is_alive():
+            self.thread_csv.join()
         logging.info("Thread csv terminé.")       
-        
+
         # Arrêt de la caméra
         self.thread_camera.closeCam()   # Stop caméra
         if self.thread_camera.is_alive():

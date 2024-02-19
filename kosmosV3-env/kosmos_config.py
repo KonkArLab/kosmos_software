@@ -12,87 +12,34 @@ CONF_FILE = "kosmos_config.ini"
 USB_ROOT_PATH = "/media/"+(os.listdir("/home")[0])
 USB_NAME=os.listdir(USB_ROOT_PATH)[0]
 USB_INSIDE_PATH = USB_ROOT_PATH+"/"+USB_NAME+"/"
+
 VIDEO_ROOT_PATH=USB_INSIDE_PATH+"Video"
 CSV_ROOT_PATH=USB_INSIDE_PATH+"CSV"
-BASIC_SECTION = "KOSMOS"   # Utilité ?
+
+GIT_PATH="/home/"+os.listdir("/home")[0]+"/kosmos_software/"
+WORK_PATH=GIT_PATH+"kosmosV3-env"
+
+BASIC_SECTION = "KOSMOS"   
 
 class KosmosConfig:
     """
     Gestion des paramètres et leur lecture depuis le fichier .ini
     Ce fichier pouvant etre sur la clef ou dans le repertoire courant
     """
-
-    def find_usb_path(self):
-        """ cherche et retourne le repertoire de la clef usb"""
-        logging.debug(f"Recherche clef usb lancement script : ./kosmos_find_usb.sh {USB_ROOT_PATH}")
-        result = subprocess.run(["./kosmos_find_usb.sh",
-                                 USB_ROOT_PATH],
-                                capture_output=True)
-        logging.debug(f"code retour recherche clef {result.returncode}")
-        logging.debug(f"rech clef {result.stdout.decode()}")
-        if result.returncode == 0:
-            logging.debug("returncode = 0")
-            return result.stdout.decode()
-        return ""
-
-    def get_usb_path(self) -> str:
-        """Retourne le repertoire de la clef usb.
-        Il faut que la recherche ait déjà été lancée
-        sinon la chaine est vide."""
-        return self._usb_path
-
-    def getCurentDir(self) -> str:
-        return self._cur_dir
-
+    
     def __init__(self):
-        logging.debug("DEBUT INIT config")
+        logging.debug("Lecture kosmos_config.ini")        
+        subprocess.run(["sudo", "cp", "-n", GIT_PATH+CONF_FILE,USB_INSIDE_PATH+CONF_FILE])
+        self._file_path=USB_INSIDE_PATH+CONF_FILE
         self.config = configparser.ConfigParser()
-        self._usb_path = self.find_usb_path()
-        self._cur_dir = os.getenv('PWD')  # Repertoire courant
-        self._file_path=""
-        if self._usb_path != "":
-            logging.debug("ouiiii")
-            logging.debug(self._usb_path + '/' + CONF_FILE)
-        if os.path.isfile(self._usb_path + '/' + CONF_FILE):
-            logging.debug("noooooon")
-        if self._usb_path != "" and os.path.isfile(self._usb_path + '/' + CONF_FILE):
-            self._file_path=self._usb_path + '/' + CONF_FILE
-            self.config.read(self._file_path)
-            logging.info(f"Fichier de configuration lu sur USB {self._usb_path}/{CONF_FILE}")
-        else:
-            logging.debug(f"Recherche fichier de configuration local {self._cur_dir}/{CONF_FILE}")
-            if self._cur_dir is not None and os.path.isfile(self._cur_dir + '/' + CONF_FILE):
-                self._file_path=self._cur_dir + '/' + CONF_FILE
-                self.config.read(self._file_path)
-                logging.info(f"Fichier de configuration lu en local {self._cur_dir}/{CONF_FILE}")
-            else:
-                logging.error("Pas de fichier de configuration")
-                exit(-1)
-
-    def print_all(self):
-        """Affiche le fichier de configuration (pour debug). """
-        # Parcourt des sections
-        for sec in self.config.sections():
-            logging.info("section : {}".format(sec))
-            # parcourir parametres et valeurs
-            for name, value in self.config.items(sec):
-                logging.info("{} = {}".format(name, value))
+        self.config.read(self._file_path)
+        logging.info("kosmos_config.ini lu")
 
     def get_date(self) -> str:
         """Retourne la date formatée en string"""
         date = datetime.now()
         return date.strftime("%Y-%m-%d-%H-%M-%S")
     
-    def get_val(self, aKey, aSection=BASIC_SECTION):
-        """
-        Retourne la valeur d'un paramètre dont le nom est passé en argument.
-        Parameters:
-            aKey (str): nom du paramètre de config recherché
-            aSection (str) : section du fichier ini dans le quel on recherche
-                    le paramètre de config.
-        """
-        return self.config.get(aSection, aKey)
-
     def get_val_int(self, aKey, aSection=BASIC_SECTION):
         """
         Retourne la valeur d'un paramètre dont le nom est passé en argument.
@@ -103,13 +50,26 @@ class KosmosConfig:
         """
         return self.config.getint(aSection, aKey)
     
+    def get_val(self, aKey, aSection=BASIC_SECTION):
+        """
+        Retourne la valeur d'un paramètre dont le nom est passé en argument.
+        Parameters:
+            aKey (str): nom du paramètre de config recherché
+            aSection (str) : section du fichier ini dans le quel on recherche
+                    le paramètre de config.
+        """
+        return self.config.get(aSection, aKey)
+    
     def set_val(self,aKey,aValue ,aSection=BASIC_SECTION):
         self.config.set(aSection, aKey,str(aValue))
-    
+        
     def update_file(self):
         with open(self._file_path, 'w') as configfile:
             self.config.write(configfile)
-
+            
+            
+            
+    '''
     def copy_file(self, aFileName: str) -> bool:
         """ copy le fichier vers la clef USB """
         logging.debug(f"cp {aFileName} {self._usb_path}")
@@ -119,7 +79,17 @@ class KosmosConfig:
             if result.returncode == 0:
                 return True
         return False
+       
+    def print_all(self):
+        """Affiche le fichier de configuration (pour debug). """
+        # Parcourt des sections
+        for sec in self.config.sections():
+            logging.info("section : {}".format(sec))
+            # parcourir parametres et valeurs
+            for name, value in self.config.items(sec):
+                logging.info("{} = {}".format(name, value))
 
+    
     def rm_file(self, aFileName: str) -> bool:
         """ Supprime le fichier dans le répertoire courant
         NE PAS OUBLIER DE LE COPIER la clef USB """
@@ -138,5 +108,4 @@ class KosmosConfig:
                 return True
         logging.warning(f"Impossible de déplacer le {aFileName} vers la clef USB.")
         return False
-    
-    
+    '''

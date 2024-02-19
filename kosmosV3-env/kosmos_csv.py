@@ -27,38 +27,21 @@ class kosmosCSV(Thread):
         Thread.__init__(self)
         # Evénement pour commander l'arrêt du Thread
         self._stopevent = Event()
-
+        self._pause_event = Event()
+        self._continue_event = Event()
+        
+        self._t_stop = False
+        
+        
         self._time_step = aConf.get_val_int("SETT_CSV_STEP_TIME")
-        self._file_name = aConf.get_val("SETT_CSV_FILE_NAME") + "_" + aConf.get_date() + ".csv"
-        os.chdir("..")
-        os.chdir("..")
-        os.chdir("..")
-        os.chdir("..")
-        os.chdir("media")
-        os.chdir(os.listdir("/home")[0]) 
-        os.chdir(os.listdir(os.getcwd())[0])  
-        if os.getenv("CSV"): 
-            os.chdir("CSV")
-        else:
-            if not os.path.exists("CSV"): 
+        self._file_name = aConf.get_val("SETT_CSV_FILE_NAME") + "_"
+        
+        os.chdir(USB_INSIDE_PATH)
+        if not os.path.exists("CSV"): 
                 os.mkdir("CSV")
-            os.chdir("CSV")
         
-        self._csv_file = open(self._file_name, 'w')
-        ligne = "heure ; pression (mb); température °C ; profondeur (m)"
-        logging.debug(f"Ecriture CSV : {ligne}")
-        self._csv_file.write(ligne + '\n')
-        self._csv_file.flush()
         
-        os.chdir("..")
-        os.chdir("..")
-        os.chdir("..")
-        os.chdir("..")
-        os.chdir("home")
-        os.chdir(os.listdir("/home")[0])
-        os.chdir("kosmos_software")
-        os.chdir("kosmosV3-env")
-
+        os.chdir(WORK_PATH)
         self._press_sensor_ok = False
         try:
             # capteur T et P Default I2C bus is 1 (Raspberry Pi 3)
@@ -71,39 +54,46 @@ class kosmosCSV(Thread):
         self.stop = False
 
     def run(self):
-        """Ecriture des données sur le fichier CSV
-        Corps du thread; s'arrête lorque le self.stop est vrai (appeler stop_thread())
-        https://python.developpez.com/faq/index.php?page=Thread """
+        """Ecriture des données sur le fichier CSV"""
         while self.stop is False:
-            pressStr = ""
-            tempStr = ""
-            profStr = ""
-            if self._press_sensor_ok:
-                if self.pressure_sensor.read():
-                    press = self.pressure_sensor.pressure()  # Default is mbar (no arguments)
-                    pressStr = f'{press:.1f}'
-                    temp = self.pressure_sensor.temperature()  # Default is degrees C (no arguments)
-                    tempStr = f'{temp:.2f}'
-                    prof=(press-1000)/100
-                    profStr=f'{prof:2f}'
-            vDate = datetime.now()
-            # vHeure = str(vDate.hour) + ':' + str(vDate.minute) + ':' + str(vDate.second)
-            date = datetime.now()
-            vHeure = date.strftime("%H:%M:%S")
-            ligne = f'{vHeure} ; {pressStr} ; {tempStr} ; {profStr}'
-            #logging.debug(f"Ecriture CSV : {ligne}")
-            try:
-                self._csv_file.write(ligne + '\n')
-                self._csv_file.flush()
-                #logging.error("Ligne ecrite")
-                
-            except Exception as e:
-                logging.error(f"Error writing to CSV file: {e}")
+            logging.info("Fichier CSV ouvert")
+            os.chdir(CSV_ROOT_PATH)
+            dateN = datetime.now()
+            self._csv_file = open(self._file_name + dateN.strftime("%Y-%m-%d-%H-%M-%S") + ".csv", 'w')
+            ligne = "heure ; pression (mb); température °C ; profondeur (m)"
+            logging.debug(f"Ecriture CSV : {ligne}")
+            self._csv_file.write(ligne + '\n')
+            self._csv_file.flush()
+            
+            while not self._pause_event.isSet():
+                pressStr = ""
+                tempStr = ""
+                profStr = ""
+                if self._press_sensor_ok:
+                    if self.pressure_sensor.read():
+                        press = self.pressure_sensor.pressure()  # Default is mbar (no arguments)
+                        pressStr = f'{press:.1f}'
+                        temp = self.pressure_sensor.temperature()  # Default is degrees C (no arguments)
+                        tempStr = f'{temp:.2f}'
+                        prof=(press-1000)/100
+                        profStr=f'{prof:2f}'
+                vDate = datetime.now()
+                date = datetime.now()
+                vHeure = date.strftime("%H:%M:%S")
+                ligne = f'{vHeure} ; {pressStr} ; {tempStr} ; {profStr}'
+                try:
+                    self._csv_file.write(ligne + '\n')
+                    self._csv_file.flush()
+                    
+                except Exception as e:
+                    logging.error(f"Error writing to CSV file: {e}")
 
-            # Attendre le prochain enregistrement ou l'évènement d'arrêt.
-            self._stopevent.wait(self._time_step)
-
-        self._csv_file.close()
+                # Attendre le prochain enregistrement ou l'évènement d'arrêt.
+                self._stopevent.wait(self._time_step)
+            else:
+                self._csv_file.close()
+                logging.info("Fichier CVS fermé")
+                self._continue_event.wait()
         return 0
     
     #Fonction(s) non utilisée(s) - commenter le 18/07/23 par Ion
@@ -112,8 +102,22 @@ class kosmosCSV(Thread):
             # retourne le nom du fichier CSV généré
             return self._file_name
     """
-        
+    def pause(self):
+        """suspend le thread pour pouvoir le redémarrer."""
+        self._continue_event.clear()
+        self._pause_event.set()
+
+    def restart(self):
+        """Relance le thread"""
+        if self.is_alive():
+            self._pause_event.clear()
+            self._continue_event.set()
+        else:
+            self.start()
+          
     def stop_thread(self):
         """positionne l'évènement qui va provoquer l'arrêt du thread"""
         self.stop = True
         self._stopevent.set()
+        self._continue_event.set()
+        self._pause_event.set()

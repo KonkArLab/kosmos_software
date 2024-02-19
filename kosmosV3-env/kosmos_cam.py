@@ -92,13 +92,8 @@ class KosmosCam(Thread):
                 logging.info(f"enregistrement caméra lancé pour : {self._record_time} secondes")
             if self._PREVIEW == 1:
                 self._camera.start_preview(fullscreen=False, window=(50, 50, 640, 480))
-            os.chdir("..")
-            os.chdir("..")
-            os.chdir("..")
-            os.chdir("..")
-            os.chdir("media")
-            os.chdir(os.listdir("/home")[0]) 
-            os.chdir(os.listdir(os.getcwd())[0])  
+            
+            os.chdir(USB_INSIDE_PATH)            
             if os.getenv("Video"): 
                 os.chdir("Video")
             else:
@@ -107,17 +102,7 @@ class KosmosCam(Thread):
                     os.mkdir("Video")
                 os.chdir("Video")
                 
-            self._camera.start_recording(self._file_name)
-            
-            os.chdir("..")
-            os.chdir("..")
-            os.chdir("..")
-            os.chdir("..")
-            os.chdir("home")
-            os.chdir(os.listdir("/home")[0])
-            os.chdir("kosmos_software")
-            os.chdir("kosmosV3-env")
-
+            self._camera.start_recording(self._file_name)            
             self._camera.wait_recording(self._record_time)
             logging.info(f"Fin de l'enregistrement video {self._file_name}")
             
@@ -126,6 +111,9 @@ class KosmosCam(Thread):
             
             self._start_again.wait()
             self._start_again.clear()
+            
+            #os.chdir(WORK_PATH) # pas certain que ce soit utile, mais je laisse ici au cas ou. Il etait entre start_recording et stop_recording
+
     
     '''
     def do_capture(self, fichier) :

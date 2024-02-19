@@ -19,13 +19,6 @@ sudo pip install flask_cors
 nom_raspberry=$(whoami)
 echo "$nom_raspberry"
 
-
-#rendre exécutable  cle usb
-#su chmod 755 kosmos_find_usb.sh
-#Recuperation du nom de la clef USB
-#USB_NAME=$(lsblk -o LABEL,MOUNTPOINT | grep "/media\|/mnt" | awk '{print $1}')
-#echo "$USB_NAME"
-
 #Creation du fichier de lancement
 cd
 echo "#!/bin/bash" > lancement_kosmos.sh
