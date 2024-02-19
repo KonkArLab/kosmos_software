@@ -14,8 +14,8 @@ USB_NAME=os.listdir(USB_ROOT_PATH)[0]
 USB_INSIDE_PATH = USB_ROOT_PATH+"/"+USB_NAME+"/"
 VIDEO_ROOT_PATH=USB_INSIDE_PATH+"Video"
 CSV_ROOT_PATH=USB_INSIDE_PATH+"CSV"
-
 BASIC_SECTION = "KOSMOS"   # Utilité ?
+
 class KosmosConfig:
     """
     Gestion des paramètres et leur lecture depuis le fichier .ini
