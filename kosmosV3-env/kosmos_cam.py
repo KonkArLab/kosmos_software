@@ -11,7 +11,6 @@ import os
 from kosmos_config import *
 
 
-#VIDEO_ROOT_PATH = os.path.join(USB_ROOT_PATH, os.listdir(USB_ROOT_PATH)[0], "Video")
 
 class KosmosCam(Thread):
     """
@@ -25,9 +24,13 @@ class KosmosCam(Thread):
         Dans le fichier de configuration :
             SETT_VIDEO_RESOLUTION_X : la résolution horizontale
             SETT_VIDEO_RESOLUTION_Y : la résolution verticale
+            SETT_FRAMERATE : framerate
             SETT_VIDEO_PREVIEW : si 1 : Lance la fenêtre de preview (utile en debug)
             SETT_VIDEO_FILE_NAME : le nom du fichier (sans extension)
-            SETT_RECORD_TIME : le temps d'enregistrement en secondess.
+            SETT_RECORD_TIME : le temps d'enregistrement en secondes.
+            SETT_MODE : Mode d'enregistrement (pourra être utile pour STAV/MIC/CONT)
+            SETT_VIDEO_FILE_NAME : Nom de fichier qui sortira avec la date en plus
+            
         """
         Thread.__init__(self)
         self._Conf = aConf
@@ -52,6 +55,7 @@ class KosmosCam(Thread):
     
     
     def convert_to_mp4(self, input_file, path):
+        #Conversion h264 vers mp4 puis effacement du .h264
         output_file = os.path.splitext(input_file)[0] + '.mp4'
         full_input_path = os.path.join(path, input_file)
         full_output_path = os.path.join(path, output_file) 
@@ -94,11 +98,13 @@ class KosmosCam(Thread):
             if os.getenv("Video"): 
                 os.chdir("Video")
             else:
-                if not os.path.exists("Video"): 
+                if not os.path.exists("Video"):
+                    #Creation du fichier Video dans la clé usb si pas déjà présent.
                     os.mkdir("Video")
                 os.chdir("Video")
                 
             self._camera.start_recording(self._file_name)
+            
             os.chdir("..")
             os.chdir("..")
             os.chdir("..")
@@ -119,11 +125,13 @@ class KosmosCam(Thread):
             self._start_again.wait()
             self._start_again.clear()
     
+    '''
     def do_capture(self, fichier) :
         #a modifier pour correction RGB
-        self._camera.capture(fichier) #saved in "/home/kosmosenib/Images"
+        self._camera.capture(fichier)
         print("Capture reussie")
-    
+    '''
+ 
     def stopCam(self):
         """  Demande la fin de l'enregistrement et ferme l'objet caméra."""
         if self._camera.recording is True:
