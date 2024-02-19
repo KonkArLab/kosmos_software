@@ -13,7 +13,7 @@ USB_ROOT_PATH = "/media/"+(os.listdir("/home")[0])
 USB_NAME=os.listdir(USB_ROOT_PATH)[0]
 BASIC_SECTION = "KOSMOS"
 VIDEO_ROOT_PATH=USB_ROOT_PATH+"/"+USB_NAME+"/Video"
-
+CSV_ROOT_PATH=USB_ROOT_PATH+"/"+USB_NAME+"/CSV"
 
 class KosmosConfig:
     """
