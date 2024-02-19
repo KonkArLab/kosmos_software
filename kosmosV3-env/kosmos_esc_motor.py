@@ -39,7 +39,7 @@ class kosmosEscMotor(Thread):
         time.sleep(0)  # FIXME attendre que la lib soit chargée ?
         # vérif avec sudo killall pigpiod
         if result.returncode == 0:
-            logging.info(f"Moteur : libairie pigpiod chargée.")
+            logging.debug(f"Moteur : libairie pigpiod chargée.")
         else:
             logging.error(f"Problème avec libairie pigpiod {result.stdout.decode()}")
 

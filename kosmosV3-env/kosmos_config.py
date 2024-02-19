@@ -33,7 +33,7 @@ class KosmosConfig:
         self._file_path=USB_INSIDE_PATH+CONF_FILE
         self.config = configparser.ConfigParser()
         self.config.read(self._file_path)
-        logging.info("kosmos_config.ini lu")
+        logging.info("kosmos_config.ini lu sur clé usb")
 
     def get_date(self) -> str:
         """Retourne la date formatée en string"""

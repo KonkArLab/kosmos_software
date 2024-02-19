@@ -23,7 +23,7 @@ class kosmos_led(Thread):
         self._isRunnig = False
         self._pause = False
         self._continue_event = Event()
-        logging.info(f"Led sur GPIO {self._GpioPort} initialisée")
+        logging.debug(f"Led sur GPIO {self._GpioPort} initialisée")
 
     def run(self):
         """Corps du thread; s'arrête lorque le self._mstop est vrai; appeler stop()"""
