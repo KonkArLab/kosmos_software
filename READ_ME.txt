@@ -1,4 +1,4 @@
-Installer Debian bullseye 32 bit sur la carte sd à partir de l'imageur Raspberry Pi
+Installer Debian bullseye 32 bit pour Raspberry Pi 4 sur la carte sd à partir de l'imageur Raspberry Pi
 Sur un PC, remplacer le fichier config.txt du boot de la carte SD par celui présent dans le fichier kosmos_software 
 
 Démarrer la Raspberry Pi avec la carte SD et effectuer la première installation
