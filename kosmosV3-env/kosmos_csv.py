@@ -21,8 +21,8 @@ class kosmosCSV(Thread):
             aConf : la classe qui lit le fichier de configuration
 
         Sont lus dans le fichier de configuration :
-            - SETT_CSV_STEP_TIME la période échtillonage
-            - SETT_CSV_FILE_NAME la base du nom du fichier CSV
+            - 20_CSV_step_time la période échtillonage
+            - 21_CSV_file_name la base du nom du fichier CSV
         """
         Thread.__init__(self)
         # Evénement pour commander l'arrêt du Thread
@@ -33,8 +33,8 @@ class kosmosCSV(Thread):
         self._t_stop = False
         
         
-        self._time_step = aConf.get_val_int("SETT_CSV_STEP_TIME")
-        self._file_name = aConf.get_val("SETT_CSV_FILE_NAME") + "_"
+        self._time_step = aConf.get_val_int("20_CSV_step_time")
+        self._file_name = aConf.get_val("21_CSV_file_name") + "_"
         
         os.chdir(USB_INSIDE_PATH)
         if not os.path.exists("CSV"): 

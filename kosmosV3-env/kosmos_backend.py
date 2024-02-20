@@ -81,6 +81,8 @@ class Server:
             self.myMain.thread_camera.closeCam()
             del self.myMain.motorThread
             del self.myMain.thread_camera
+            del self.myMain.thread_csv
+
             self.myMain.init()
             self.myMain.button_event.set()
             return {

@@ -22,29 +22,26 @@ class KosmosCam(Thread):
                 Conf (KosmosConfig) : gestionaire de la config
                 aDate date : utilistée juste pour fixer le nom du fichier vidéo
         Dans le fichier de configuration :
-            SETT_VIDEO_RESOLUTION_X : la résolution horizontale
-            SETT_VIDEO_RESOLUTION_Y : la résolution verticale
-            SETT_FRAMERATE : framerate
-            SETT_VIDEO_PREVIEW : si 1 : Lance la fenêtre de preview (utile en debug)
-            SETT_VIDEO_FILE_NAME : le nom du fichier (sans extension)
-            SETT_RECORD_TIME : le temps d'enregistrement en secondes.
-            SETT_MODE : Mode d'enregistrement (pourra être utile pour STAV/MIC/CONT)
-            SETT_VIDEO_FILE_NAME : Nom de fichier qui sortira avec la date en plus
+             31_PICAM_resolution_x : la résolution horizontale
+             32_PICAM_resolution_y : la résolution verticale
+             34_PICAM_framerate  : framerate
+             33_PICAM_preview : si 1 : Lance la fenêtre de preview (utile en debug)
+             30_PICAM_file_name  : le nom du fichier (sans extension)
+             35_PICAM_record_time : le temps d'enregistrement en secondes.
             
         """
         Thread.__init__(self)
-        self._Conf = aConf
-     
+        self._Conf = aConf    
         # Résolution horizontale
-        self._X_RESOLUTION = aConf.get_val_int("SETT_VIDEO_RESOLUTION_X")
+        self._X_RESOLUTION = aConf.get_val_int("31_PICAM_resolution_x")
         # Résolution verticale
-        self._Y_RESOLUTION = aConf.get_val_int("SETT_VIDEO_RESOLUTION_Y")
+        self._Y_RESOLUTION = aConf.get_val_int("32_PICAM_resolution_y")
         #Framerate camera
-        self._FRAMERATE = aConf.get_val_int("SETT_FRAMERATE")
+        self._FRAMERATE = aConf.get_val_int("34_PICAM_framerate")
         # si 1 : Lance la fenêtre de preview (utile en debug)
-        self._PREVIEW = aConf.get_val_int("SETT_VIDEO_PREVIEW")
-        self._record_time = aConf.get_val_int("SETT_RECORD_TIME")
-        self.MODE= aConf.get_val_int("SETT_MODE")
+        self._PREVIEW = aConf.get_val_int("33_PICAM_preview")
+        self._record_time = aConf.get_val_int("35_PICAM_record_time")
+        self.MODE= aConf.get_val_int("00_SYSTEM_mode")
      
         self._end = False
         self._start_again = Event()
@@ -56,6 +53,10 @@ class KosmosCam(Thread):
         #self._camera.awb_mode='off'
         #self._camera.awb_gains=(2,3)
        
+        os.chdir(USB_INSIDE_PATH)            
+        if not os.path.exists("Video"):
+            #Creation du fichier Video dans la clé usb si pas déjà présent.
+            os.mkdir("Video")
     
     
     def convert_to_mp4(self, input_file, path):
@@ -81,27 +82,19 @@ class KosmosCam(Thread):
     
     def run(self):
         """  Lance l'enregistrement vidéo
-        vers un fichier donné dans le fichier de conf (SETT_VIDEO_FILE_NAME)
-        pour un temps donné dans le fichier de conf (SETT_RECORD_TIME)
+        vers un fichier donné dans le fichier de conf (30_PICAM_file_name)
+        pour un temps donné dans le fichier de conf (35_PICAM_record_time)
         """
         
         while not self._end:
-            self._base_name = self._Conf.get_val("SETT_VIDEO_FILE_NAME") + '_' + self._Conf.get_date()
+            self._base_name = self._Conf.get_val("30_PICAM_file_name") + '_' + self._Conf.get_date()
             self._file_name = self._base_name + '.h264'
             if (self.MODE==0) :
                 logging.info(f"enregistrement caméra lancé pour : {self._record_time} secondes")
             if self._PREVIEW == 1:
                 self._camera.start_preview(fullscreen=False, window=(50, 50, 640, 480))
-            
-            os.chdir(USB_INSIDE_PATH)            
-            if os.getenv("Video"): 
-                os.chdir("Video")
-            else:
-                if not os.path.exists("Video"):
-                    #Creation du fichier Video dans la clé usb si pas déjà présent.
-                    os.mkdir("Video")
-                os.chdir("Video")
-                
+                        
+            os.chdir(VIDEO_ROOT_PATH) 
             self._camera.start_recording(self._file_name)            
             self._camera.wait_recording(self._record_time)
             logging.info(f"Fin de l'enregistrement video {self._file_name}")

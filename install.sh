@@ -11,9 +11,8 @@ sudo apt autoremove
 sudo apt install python3-pip
 
 #Installation des packages necessaires 
-cd kosmosV3-env
 sudo pip install -r requirements.txt
-sudo pip install flask_cors
+#sudo pip install flask_cors
 
 #Recuperation du nom de la raspberry
 nom_raspberry=$(whoami)

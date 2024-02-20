@@ -14,22 +14,9 @@ import time
 import pigpio  # importing GPIO library
 from threading import Thread
 from threading import Event
+
 from kosmos_config import *
-#import subprocess
 
-#Paramètres moteurs demandés par KosmosConfig
-"""
-SETT_ESC_MOTOR_GPIO=22
-SETT_POWER_MOTOR_GPIO=27
-SETT_ESC_MOTOR_MAX_VAL=2100 # Inutile
-SETT_ESC_MOTOR_MIN_VAL=1000
-SETT_ESC_MOTOR_FAVORITE_VAL=1350
-SETT_MOTOR_STOP_TIME=27 
-SETT_MOTOR_RUN_TIME=5 # Inutile
-
-SETT_MOTOR_BUTTON_GPIO = 21
-
-"""
 class kosmosEscMotor(Thread):
 
     def __init__(self, aConf: KosmosConfig):
@@ -44,15 +31,15 @@ class kosmosEscMotor(Thread):
             logging.error(f"Problème avec libairie pigpiod {result.stdout.decode()}")
 
         # Initialisation port GPIO ESC & RElai
-        self.gpio_port = aConf.get_val_int("SETT_ESC_MOTOR_GPIO")
-        self.gpio_power_port = aConf.get_val_int("SETT_POWER_MOTOR_GPIO")
+        self.gpio_port = aConf.get_val_int("10_MOTOR_esc_gpio")
+        self.gpio_power_port = aConf.get_val_int("11_MOTOR_power_gpio")
         self._gpio = pigpio.pi()
         GPIO.setup(self.gpio_power_port, GPIO.OUT)  # Active le controle du GPIO
         self._gpio.set_servo_pulsewidth(self.gpio_port, 0)
                 
         # Initialisation du bouton asservissement moteur
         #self.motor_event = Event()  # l'ILS du moteur activé
-        self.MOTOR_BUTTON_GPIO = aConf.get_val_int("SETT_MOTOR_BUTTON_GPIO")
+        self.MOTOR_BUTTON_GPIO = aConf.get_val_int("12_MOTOR_button_gpio")
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(self.MOTOR_BUTTON_GPIO, GPIO.IN)              
         
@@ -62,9 +49,9 @@ class kosmosEscMotor(Thread):
         self._t_stop = False 
                   
         # Paramètres Moteur
-        self.tps_POSE=aConf.get_val_int("SETT_MOTOR_STOP_TIME")
-        self.vitesse_moteur=aConf.get_val_int("SETT_ESC_MOTOR_FAVORITE_VAL")
-        self.vitesse_min = aConf.get_val_int("SETT_ESC_MOTOR_MIN_VAL")
+        self.tps_POSE=aConf.get_val_int("15_MOTOR_pause_time")
+        self.vitesse_moteur=aConf.get_val_int("14_MOTOR_vitesse_favorite")
+        self.vitesse_min = aConf.get_val_int("13_MOTOR_vitesse_min")
         
     def power_on(self):
         """Commande le relai d'alimentation de l'ESC"""
@@ -81,8 +68,7 @@ class kosmosEscMotor(Thread):
         logging.debug(f"Moteur vitesse {aSpeed}.")    
         
     def moove(self, aSpeed, aTime):
-        """Lancement à la vitesse et temps passés en paramètre
-        0 < vitesse < 2100 """
+        """Lancement à la vitesse et temps passés en paramètre"""
         self.set_speed(aSpeed)
         time.sleep(aTime)
         

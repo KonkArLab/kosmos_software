@@ -47,29 +47,30 @@ class kosmos_main():
         self.state = KState.STARTING
 
         # LEDs
-        self._ledB = KLed.kosmos_led(self._conf.get_val_int("SETT_LED_B"))
-        self._ledR = KLed.kosmos_led(self._conf.get_val_int("SETT_LED_R"))
+        self._ledB = KLed.kosmos_led(self._conf.get_val_int("03_SYSTEM_led_b"))
+        self._ledR = KLed.kosmos_led(self._conf.get_val_int("04_SYSTEM_led_r"))
         self._ledB.start()
         self._ledR.set_off()
 
         # Boutons
-        self.STOP_BUTTON_GPIO = self._conf.get_val_int("SETT_STOP_BUTTON_GPIO")
-        self.RECORD_BUTTON_GPIO = self._conf.get_val_int("SETT_RECORD_BUTTON_GPIO")
+        self.STOP_BUTTON_GPIO = self._conf.get_val_int("02_SYSTEM_stop_button_gpio")
+        self.RECORD_BUTTON_GPIO = self._conf.get_val_int("01_SYSTEM_record_button_gpio")
         GPIO.setmode(GPIO.BCM)  # on utilise les n° de GPIO et pas les broches
         GPIO.setup(self.STOP_BUTTON_GPIO, GPIO.IN)
         GPIO.setup(self.RECORD_BUTTON_GPIO, GPIO.IN)
         
         #Mode 1 pour staviro
-        #self.MODE=self._conf.get_val_int("SETT_MODE") # à mettre dans le ini
+        #self.MODE=self._conf.get_val_int("00_SYSTEM_mode") # à mettre dans le ini
         
         #Paramètres camera & définition Thread Camera
-        self.tps_record=self._conf.get_val_int("SETT_RECORD_TIME")
         self.thread_camera = KCam.KosmosCam(self._conf)
         
         #Definition Thread Moteur
         self.motorThread = KMotor.kosmosEscMotor(self._conf)
-    
-    
+        
+        #Definition Thread CSV
+        self.thread_csv = KCsv.kosmosCSV(self._conf)
+  
     def clear_events(self):
         """Mise à 0 des evenements attachés aux boutons"""
         self.record_event.clear()
@@ -78,9 +79,8 @@ class kosmos_main():
 
     def starting(self):
         logging.info("STARTING : Kosmos en train de démarrer")
-        time.sleep(1) # temporise pour éviter de trop tirer d'ampère et de faire sauter le relai (si utilisation d'une alim labo, s'assurer qu'elle délivre au moins 2A  à 12.5 V)
+        time.sleep(1) # temporise pour éviter de trop tirer d'ampères et de faire sauter le relai (si utilisation d'une alim labo, s'assurer qu'elle délivre au moins 2A  à 12.5 V)
         self.motorThread.autoArm()       
-        self.thread_csv = KCsv.kosmosCSV(self._conf)
         self._ledB.pause()
         self.state = KState.STANDBY
     
@@ -158,7 +158,7 @@ class kosmos_main():
         logging.shutdown()
 
         # Commande de stop au choix arrêt du programme ou du PC
-        if self._conf.get_val_int("SETT_SHUTDOWN") != 0 :
+        if self._conf.get_val_int("05_SYSTEM_shutdown") != 0 :
             os.system("sudo shutdown -h now")
         else :
             sys.exit(0)
