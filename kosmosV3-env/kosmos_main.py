@@ -96,11 +96,11 @@ class kosmos_main():
         self._ledB.set_off()
       
     def working(self):
+        logging.info("WORKING : Kosmos entame son enregistrement")
         self._ledB.set_off()
         self.motorThread.restart()
         self.thread_csv.restart()
         self.thread_camera.restart()
-        logging.info("WORKING : Kosmos en enregistrement")
         while True :
             self.clear_events()
             self.button_event.wait()
@@ -113,14 +113,13 @@ class kosmos_main():
     def stopping(self):
         logging.info("STOPPING : Kosmos termine son enregistrement")
         self._ledR.startAgain()        
-        # Vitesse moteur 0
-        self.motorThread.pause()
         # Demander la fin de l'enregistrement
         self.thread_camera.stopCam()
         logging.info("Caméra fermée")
+        # Pause Moteur
+        self.motorThread.pause()
         # Pause Thread CSV
-        self.thread_csv.pause()
-        
+        self.thread_csv.pause()        
         self._ledR.pause()
         self.state = KState.STANDBY
         

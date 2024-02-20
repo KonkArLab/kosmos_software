@@ -39,9 +39,9 @@ class kosmosCSV(Thread):
         os.chdir(USB_INSIDE_PATH)
         if not os.path.exists("CSV"): 
                 os.mkdir("CSV")
-        
-        
+
         os.chdir(WORK_PATH)
+        
         self._press_sensor_ok = False
         try:
             # capteur T et P Default I2C bus is 1 (Raspberry Pi 3)
@@ -92,6 +92,7 @@ class kosmosCSV(Thread):
                 self._stopevent.wait(self._time_step)
             else:
                 self._csv_file.close()
+                os.chdir(WORK_PATH)
                 logging.info("Fichier CVS fermé")
                 self._continue_event.wait()
         return 0

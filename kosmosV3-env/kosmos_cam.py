@@ -86,26 +86,30 @@ class KosmosCam(Thread):
         pour un temps donné dans le fichier de conf (35_PICAM_record_time)
         """
         
-        while not self._end:
+        while not self._end:  
             self._base_name = self._Conf.get_val("30_PICAM_file_name") + '_' + self._Conf.get_date()
             self._file_name = self._base_name + '.h264'
+            '''
             if (self.MODE==0) :
                 logging.info(f"enregistrement caméra lancé pour : {self._record_time} secondes")
+            '''
+            
             if self._PREVIEW == 1:
                 self._camera.start_preview(fullscreen=False, window=(50, 50, 640, 480))
                         
             os.chdir(VIDEO_ROOT_PATH) 
             self._camera.start_recording(self._file_name)            
             self._camera.wait_recording(self._record_time)
+            print(self._camera.recording)
             logging.info(f"Fin de l'enregistrement video {self._file_name}")
             
             input_video = self._file_name
             self.convert_to_mp4(input_video, VIDEO_ROOT_PATH)
+            os.chdir(WORK_PATH)
             
             self._start_again.wait()
             self._start_again.clear()
             
-            #os.chdir(WORK_PATH) # pas certain que ce soit utile, mais je laisse ici au cas ou. Il etait entre start_recording et stop_recording
 
     
     '''
@@ -117,10 +121,12 @@ class KosmosCam(Thread):
  
     def stopCam(self):
         """  Demande la fin de l'enregistrement et ferme l'objet caméra."""
+        if self._PREVIEW == 1:
+            # Arrêt du preview
+            self._camera.stop_preview()
         if self._camera.recording is True:
+            print('tot')
             # terminer l'enregistrement video
-            if self._PREVIEW == 1:
-                self._camera.stop_preview()
             self._camera.stop_recording()
 
     def closeCam(self):
