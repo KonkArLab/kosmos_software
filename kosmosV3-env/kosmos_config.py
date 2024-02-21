@@ -16,6 +16,7 @@ USB_INSIDE_PATH = USB_ROOT_PATH+"/"+USB_NAME+"/"
 VIDEO_ROOT_PATH=USB_INSIDE_PATH+"Video"
 CSV_ROOT_PATH=USB_INSIDE_PATH+"CSV"
 
+LOG_PATH="/home/"+os.listdir("/home")[0]+"/logfile_kosmos/"
 GIT_PATH="/home/"+os.listdir("/home")[0]+"/kosmos_software/"
 WORK_PATH=GIT_PATH+"kosmosV3-env"
 

@@ -83,6 +83,7 @@ class KosmosCam(Thread):
                 logging.error("Error during conversion:", e, " !!!")
         else:
             logging.info("Pas de conversion mp4 demandée")
+            
     def run_preview(self):
         """ Lance le preview"""
         if self._PREVIEW == 1:
@@ -106,7 +107,8 @@ class KosmosCam(Thread):
                     self._camera.stop_recording()
                     
                 self._file_name = self._base_name +'_' + '{:04.0f}'.format(i) + '.h264'
-                os.chdir(VIDEO_ROOT_PATH) 
+                os.chdir(VIDEO_ROOT_PATH)
+                logging.info(f"Debut de l'enregistrement video {self._file_name}")
                 self._camera.start_recording(self._file_name)            
                 self._camera.wait_recording(self._record_time)
                 logging.info(f"Fin de l'enregistrement video {self._file_name}")
@@ -120,12 +122,12 @@ class KosmosCam(Thread):
         logging.info('Thread Camera terminé')       
 
     
-    '''
+    
     def do_capture(self, fichier) :
         #a modifier pour correction RGB
         self._camera.capture(fichier)
-        print("Capture reussie")
-    '''
+        logging.info("Capture reussie")
+    
  
     def stopCam(self):
         """  Demande la fin de l'enregistrement et ferme l'objet caméra."""

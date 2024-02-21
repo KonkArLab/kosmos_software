@@ -79,7 +79,8 @@ class Server:
                 self.myMain._conf.set_val(key,data[key])
             self.myMain._conf.update_file()
             self.myMain.thread_camera.closeCam()
-            del self.myMain.motorThread
+            if self.myMain.PRESENCE_MOTEUR==1:
+                del self.myMain.motorThread
             del self.myMain.thread_camera
             del self.myMain.thread_csv
 

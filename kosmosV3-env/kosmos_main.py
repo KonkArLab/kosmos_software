@@ -16,6 +16,7 @@ import kosmos_backend as KBackend
 #Isolation du class KState dans le fichier kosmos_state.py
 from kosmos_state import KState
 
+from kosmos_config import *
 import kosmos_config as KConf
 import kosmos_csv as KCsv
 import kosmos_led as KLed
@@ -59,17 +60,23 @@ class kosmos_main():
         GPIO.setup(self.STOP_BUTTON_GPIO, GPIO.IN)
         GPIO.setup(self.RECORD_BUTTON_GPIO, GPIO.IN)
         
+        
         #Mode 1 pour staviro
         #self.MODE=self._conf.get_val_int("00_SYSTEM_mode") # à mettre dans le ini
         
         #Paramètres camera & définition Thread Camera
         self.thread_camera = KCam.KosmosCam(self._conf)
         
-        #Definition Thread Moteur
-        self.motorThread = KMotor.kosmosEscMotor(self._conf)
-        
         #Definition Thread CSV
         self.thread_csv = KCsv.kosmosCSV(self._conf)
+        
+        #Definition Thread Moteur
+        self.PRESENCE_MOTEUR = self._conf.get_val_int("06_SYSTEM_moteur") # Fonctionnement moteur si 1
+        
+        if self.PRESENCE_MOTEUR==1:
+            self.motorThread = KMotor.kosmosEscMotor(self._conf)
+        
+        
   
     def clear_events(self):
         """Mise à 0 des evenements attachés aux boutons"""
@@ -80,7 +87,8 @@ class kosmos_main():
     def starting(self):
         logging.info("STARTING : Kosmos en train de démarrer")
         time.sleep(1) # temporise pour éviter de trop tirer d'ampères et de faire sauter le relai (si utilisation d'une alim labo, s'assurer qu'elle délivre au moins 2A  à 12.5 V)
-        self.motorThread.autoArm()       
+        if self.PRESENCE_MOTEUR==1:
+            self.motorThread.autoArm()       
         self._ledB.pause()
         self.state = KState.STANDBY
     
@@ -96,10 +104,12 @@ class kosmos_main():
         self._ledB.set_off()
       
     def working(self):
-        logging.info("WORKING : Kosmos entame son enregistrement/rotation")
+        logging.info("WORKING : Kosmos entame son enregistrement")
         self._ledB.set_off()
-        # Run thread moteur
-        self.motorThread.restart()
+        
+        if self.PRESENCE_MOTEUR==1:
+            # Run thread moteur
+            self.motorThread.restart()
         # Run thread CSV
         self.thread_csv.restart()
         # Run preview si demandé dans config.ini 
@@ -111,6 +121,7 @@ class kosmos_main():
             self.clear_events()
             self.button_event.wait()
             if myMain.record_event.isSet():
+                self.thread_camera.do_capture(LOG_PATH+'test.jpg')
                 break
             else:
                 continue
@@ -126,8 +137,9 @@ class kosmos_main():
         
         #Stop Preview.
         self.thread_camera.stop_preview()
-        # Pause Moteur
-        self.motorThread.pause()
+        if self.PRESENCE_MOTEUR==1:
+            # Pause Moteur
+            self.motorThread.pause()
         # Pause Thread CSV
         self.thread_csv.pause()
         
@@ -146,12 +158,13 @@ class kosmos_main():
         self.thread_camera.closeCam()   # Stop caméra
         if self.thread_camera.is_alive():
             self.thread_camera.join()   # Caméra stoppée
-
+        
         # Arrêt du moteur
-        self.motorThread.stop_thread() 
-        if self.motorThread.is_alive(): 
-            self.motorThread.join() 
-        self.motorThread.power_off()
+        if self.PRESENCE_MOTEUR==1:  
+            self.motorThread.stop_thread() 
+            if self.motorThread.is_alive(): 
+                self.motorThread.join() 
+            self.motorThread.power_off()
         
         # Arrêt des LEDs
         if self._ledB.is_alive():
