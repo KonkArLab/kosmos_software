@@ -100,6 +100,7 @@ class kosmosEscMotor(Thread):
                 self._continue_event.wait()  
         # End While        
         self.arret_complet()
+        logging.info("Thread moteur terminé")
    
     def stop_thread(self):
         """positionne l'évènement qui va provoquer l'arrêt du thread"""

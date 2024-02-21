@@ -24,14 +24,14 @@ class kosmosCSV(Thread):
             - 20_CSV_step_time la période échtillonage
             - 21_CSV_file_name la base du nom du fichier CSV
         """
+        
         Thread.__init__(self)
+        
         # Evénement pour commander l'arrêt du Thread
         self._stopevent = Event()
         self._pause_event = Event()
         self._continue_event = Event()
-        
         self._t_stop = False
-        
         
         self._time_step = aConf.get_val_int("20_CSV_step_time")
         self._file_name = aConf.get_val("21_CSV_file_name") + "_"
@@ -39,9 +39,9 @@ class kosmosCSV(Thread):
         os.chdir(USB_INSIDE_PATH)
         if not os.path.exists("CSV"): 
                 os.mkdir("CSV")
-
         os.chdir(WORK_PATH)
         
+        # Initialisation Capteur TP
         self._press_sensor_ok = False
         try:
             # capteur T et P Default I2C bus is 1 (Raspberry Pi 3)
@@ -93,16 +93,11 @@ class kosmosCSV(Thread):
             else:
                 self._csv_file.close()
                 os.chdir(WORK_PATH)
-                logging.info("Fichier CVS fermé")
+                logging.info("Fichier CSV fermé")
                 self._continue_event.wait()
-        return 0
+        logging.info("Thread CSV terminé") 
     
-    #Fonction(s) non utilisée(s) - commenter le 18/07/23 par Ion
-    """
-    def get_file_name(self) -> str:
-            # retourne le nom du fichier CSV généré
-            return self._file_name
-    """
+    
     def pause(self):
         """suspend le thread pour pouvoir le redémarrer."""
         self._continue_event.clear()

@@ -96,30 +96,41 @@ class kosmos_main():
         self._ledB.set_off()
       
     def working(self):
-        logging.info("WORKING : Kosmos entame son enregistrement")
+        logging.info("WORKING : Kosmos entame son enregistrement/rotation")
         self._ledB.set_off()
+        # Run thread moteur
         self.motorThread.restart()
+        # Run thread CSV
         self.thread_csv.restart()
+        # Run preview si demandé dans config.ini 
+        self.thread_camera.run_preview()
+        # Run thread camera
         self.thread_camera.restart()
+        
         while True :
             self.clear_events()
             self.button_event.wait()
             if myMain.record_event.isSet():
                 break
             else:
-                continue                   
+                continue
+            
         self.state =KState.STOPPING       
     
     def stopping(self):
         logging.info("STOPPING : Kosmos termine son enregistrement")
         self._ledR.startAgain()        
+        
         # Demander la fin de l'enregistrement
         self.thread_camera.stopCam()
-        logging.info("Caméra fermée")
+        
+        #Stop Preview.
+        self.thread_camera.stop_preview()
         # Pause Moteur
         self.motorThread.pause()
         # Pause Thread CSV
-        self.thread_csv.pause()        
+        self.thread_csv.pause()
+        
         self._ledR.pause()
         self.state = KState.STANDBY
         
@@ -130,20 +141,17 @@ class kosmos_main():
         self.thread_csv.stop_thread()
         if self.thread_csv.is_alive():
             self.thread_csv.join()
-        logging.info("Thread csv terminé.")       
 
         # Arrêt de la caméra
         self.thread_camera.closeCam()   # Stop caméra
         if self.thread_camera.is_alive():
             self.thread_camera.join()   # Caméra stoppée
-        logging.info("Thread cam terminé.")       
 
         # Arrêt du moteur
         self.motorThread.stop_thread() 
         if self.motorThread.is_alive(): 
             self.motorThread.join() 
         self.motorThread.power_off()
-        logging.info("Thread moteur terminé.")
         
         # Arrêt des LEDs
         if self._ledB.is_alive():
