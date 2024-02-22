@@ -57,9 +57,9 @@ class kosmosCSV(Thread):
         """Ecriture des données sur le fichier CSV"""
         while self.stop is False:
             logging.info("Fichier CSV ouvert")
-            os.chdir(CSV_ROOT_PATH)
             dateN = datetime.now()
-            self._csv_file = open(self._file_name + dateN.strftime("%Y-%m-%d-%H-%M-%S") + ".csv", 'w')
+            print(os.getcwd())
+            self._csv_file = open(CSV_ROOT_PATH+self._file_name + dateN.strftime("%Y-%m-%d-%H-%M-%S") + ".csv", 'w')
             ligne = "heure ; pression (mb); température °C ; profondeur (m)"
             logging.debug(f"Ecriture CSV : {ligne}")
             self._csv_file.write(ligne + '\n')
@@ -92,7 +92,6 @@ class kosmosCSV(Thread):
                 self._stopevent.wait(self._time_step)
             else:
                 self._csv_file.close()
-                os.chdir(WORK_PATH)
                 logging.info("Fichier CSV fermé")
                 self._continue_event.wait()
         logging.info("Thread CSV terminé") 

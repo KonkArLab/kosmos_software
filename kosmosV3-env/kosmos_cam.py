@@ -104,19 +104,15 @@ class KosmosCam(Thread):
             self._base_name = self._Conf.get_val("30_PICAM_file_name") + '_' + self._Conf.get_date()
             while self._boucle == True:                
                 if self._camera.recording is True:
-                    self._camera.stop_recording()
-                    
+                    self._camera.stop_recording()                  
                 self._file_name = self._base_name +'_' + '{:04.0f}'.format(i) + '.h264'
-                os.chdir(VIDEO_ROOT_PATH)
                 logging.info(f"Debut de l'enregistrement video {self._file_name}")
-                self._camera.start_recording(self._file_name)            
+                self._camera.start_recording(VIDEO_ROOT_PATH+self._file_name)            
                 self._camera.wait_recording(self._record_time)
                 logging.info(f"Fin de l'enregistrement video {self._file_name}")
                 # Conversion mp4 si demandée
                 self.convert_to_mp4(self._file_name, VIDEO_ROOT_PATH)
-                i=i+1               
-                os.chdir(WORK_PATH)
-                
+                i=i+1                               
             self._start_again.wait()
             self._start_again.clear()            
         logging.info('Thread Camera terminé')       
