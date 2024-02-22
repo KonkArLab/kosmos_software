@@ -58,7 +58,6 @@ class kosmosCSV(Thread):
         while self.stop is False:
             logging.info("Fichier CSV ouvert")
             dateN = datetime.now()
-            print(os.getcwd())
             self._csv_file = open(CSV_ROOT_PATH+self._file_name + dateN.strftime("%Y-%m-%d-%H-%M-%S") + ".csv", 'w')
             ligne = "heure ; pression (mb); température °C ; profondeur (m)"
             logging.debug(f"Ecriture CSV : {ligne}")

@@ -38,7 +38,6 @@ class kosmosEscMotor(Thread):
         self._gpio.set_servo_pulsewidth(self.gpio_port, 0)
                 
         # Initialisation du bouton asservissement moteur
-        #self.motor_event = Event()  # l'ILS du moteur activé
         self.MOTOR_BUTTON_GPIO = aConf.get_val_int("12_MOTOR_button_gpio")
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(self.MOTOR_BUTTON_GPIO, GPIO.IN)              
@@ -77,7 +76,7 @@ class kosmosEscMotor(Thread):
         time.sleep(1)
         self.moove(self.vitesse_min, 2) 
         self.set_speed(self.vitesse_moteur)
-        GPIO.wait_for_edge(self.MOTOR_BUTTON_GPIO,GPIO.RISING)
+        GPIO.wait_for_edge(self.MOTOR_BUTTON_GPIO,GPIO.RISING,timeout=8000)
         self.set_speed(0)
         logging.info('Moteur et ESC prêts !')
         
@@ -91,7 +90,7 @@ class kosmosEscMotor(Thread):
         while not self._t_stop:
             if not self._pause_event.isSet():
                 self.set_speed(self.vitesse_moteur)
-                GPIO.wait_for_edge(self.MOTOR_BUTTON_GPIO,GPIO.RISING)
+                GPIO.wait_for_edge(self.MOTOR_BUTTON_GPIO,GPIO.RISING,timeout=8000)
                 logging.info('Bouton asservissement Moteur détecté')
                 self.set_speed(0)
                 time.sleep(self.tps_POSE)

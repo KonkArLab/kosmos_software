@@ -121,7 +121,6 @@ class kosmos_main():
             self.clear_events()
             self.button_event.wait()
             if myMain.record_event.isSet():
-                self.thread_camera.do_capture(LOG_PATH+'test.jpg')
                 break
             else:
                 continue
