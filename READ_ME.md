@@ -1,10 +1,11 @@
-# kosmos software
+# Kosmos Software
+
+<div style='text-align: justify;'>
 
 Lors de l'installation une connection filaire est recommandée
 <br></br>
 
 ### Installer Debian bullseye 32 bit pour Raspberry Pi 4 sur la carte sd à partir de l'imageur Raspberry Pi  
-Pour cela:  
 Installer [l'imageur Raspberry Pi](https://www.raspberrypi.com/software/) sur votre PC  
 Choisisser le modèle de carte : Raspberry Pi 4  
 Choisisser le système d'exploitation : Debian bullseye 32 bit  
@@ -14,12 +15,10 @@ Lors de la recherche de Wifi n'appuyer pas sur Skip mais sur Next même si vous 
 
 ### Changer le fichier config
 Sur un PC, remplacer le fichier config.txt du boot de la carte SD par celui présent dans le fichier kosmos_software
-<br> 
+<br></br> 
 
 ### Première installation
 Démarrer la Raspberry Pi avec la carte SD et effectuer la première installation
-<br>
-
 Ouvrir un terminal et taper la commande suivante:
 ```
 sudo raspi-config		//Ouvre les paramètres de cofiguration de la raspberry
@@ -76,3 +75,5 @@ Brancher la clé usb pour le stockage des données. Elle peut être vide ou cont
 ### Interface téléphone
 Sur votre téléphone dans un navigateur web entrée l'adresse 10.42.0.1 , cela vous dirigera vers l'interface de commande du KOSMOS
 <br></br>
+
+</div>
