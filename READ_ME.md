@@ -55,8 +55,8 @@ Mettre le dossier kosmos_software dans le home (via le git ou par copie depuis u
 Dans un terminal taper les commandes suivantes:  
 ```
 git clone https://github.com/KonkArLab/kosmos_software.git		//copie le dossier kosmos_software
-cd kosmos_software												//ouvre le dossier kosmos_software
-git checkout Refonte_fromIMT2									//change de branche et vous place sur la branch "Refonte_fromIMT2"
+cd kosmos_software							//ouvre le dossier kosmos_software
+git checkout Refonte_fromIMT2						//change de branche et vous place sur la branch "Refonte_fromIMT2"
 ```
 <br>
 
@@ -64,7 +64,7 @@ Ouvir un terminal et taper :
 ```
 cd kosmos_software
 sudo chmod 755 install.sh		//""
-sh install.sh					//""
+sh install.sh				//""
 ```
 
 <br>
