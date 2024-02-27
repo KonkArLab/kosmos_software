@@ -112,6 +112,7 @@ sh install.sh				//Exécuter le fichier install.sh
 ```  
 <br>
 Une question apparaît dans le terminal:  
+
  - Souhaitez-vous continuer ?[O/n]  
 Entrée pour continuer  
   
