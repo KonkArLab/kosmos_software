@@ -1,9 +1,15 @@
 # Kosmos Software
 
-<div style='text-align: justify;'>
+<details open>
+ <summary> Sommaire </summary>
  
+  * [Installation](https://github.com/KonkArLab/kosmos_software/edit/Refonte_fromIMT2/READ_ME.md#installation)
+  * [Mode d'emploi](https://github.com/KonkArLab/kosmos_software/blob/Refonte_fromIMT2)
+    
+</details>
 <br>
 
+## Installation
 ### Installation du système d'exploitation (OS) de la Raspberry  
 Sur un PC :  
  - Installer [l'imageur Raspberry Pi](https://www.raspberrypi.com/software/)  
@@ -120,10 +126,28 @@ Appuyer sur Entrée pour continuer et finir l'éxécution de la commande précé
  - Brancher la clé usb pour le stockage des données. Elle peut être vide ou déjà contenir kosmos_config.ini, CSV et Video.
 
 Maintenant le système est opérationnel.  
-  
+
+## Mode d'emploi
 ### Prise en main de l'Interface web
 Sur votre téléphone:
  - Connecter vous au réseau de la raspberry qui à été créé dans les étapes précedentes  
- - Dans un navigateur web entrée l'adresse 10.42.0.1 , cela vous dirigera vers l'interface de commande du KOSMOS
-  
+ - Dans un navigateur web entrée l'adresse 10.42.0.1 , permet d'accéder à l'interface de commande du KOSMOS
+
+
+En haut de l'écran 3 onglets:
+ * Camera
+ * Records
+ * Configuration
+
+##### Camera
+###### State
+Affiche l'état dans lequel se trouve la camera  
+
+ - 
+ - 
+
+###### Buttons
+ - `Start`
+
+   
 </div>
