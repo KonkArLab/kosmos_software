@@ -86,7 +86,7 @@ class kosmos_main():
 
     def starting(self):
         logging.info("STARTING : Kosmos en train de démarrer")
-        time.sleep(1) # temporise pour éviter de trop tirer d'ampères et de faire sauter le relai (si utilisation d'une alim labo, s'assurer qu'elle délivre au moins 2A  à 12.5 V)
+        self.thread_camera.initialisation_awb()
         if self.PRESENCE_MOTEUR==1:
             self.motorThread.autoArm()       
         self._ledB.pause()

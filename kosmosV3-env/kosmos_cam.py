@@ -56,11 +56,9 @@ class KosmosCam(Thread):
         self._camera = picamera.PiCamera()
         self._camera.resolution = (self._X_RESOLUTION, self._Y_RESOLUTION)  # (1024,768)
         self._camera.framerate = self._FRAMERATE
-        if self._AWB == 0 or self._AWB ==2: # AWB ajustement Picam (0) ou Fait Maison (2) 
-            self._camera.awb_mode='auto'
-        if self._AWB == 1:#AWB fixé
-            self._camera.awb_mode='off'
-            self._camera.awb_gains=(0.5,0.5)
+        #if self._AWB == 0 or self._AWB ==2: # AWB ajustement Picam (0) ou Fait Maison (2) 
+            #self._camera.awb_mode='auto'
+        
         
        
         os.chdir(USB_INSIDE_PATH)            
@@ -102,17 +100,38 @@ class KosmosCam(Thread):
     def stop_preview(self):
         if self._PREVIEW == 1:
             self._camera.stop_preview()
-            
+    
+    def initialisation_awb(self):
+        if self._AWB == 0:
+            logging.info('Gains AWB ajustés par Rpi')
+            self._camera.awb_mode='auto'
+        else:
+            self._camera.start_preview(fullscreen=False, window=(50, 50, int(self._X_RESOLUTION/4),int(self._Y_RESOLUTION/4)))
+            time.sleep(1)
+            g=self._camera.awb_gains
+            logging.info(g)
+            self._camera.awb_mode='off'
+            self._camera.awb_gains=g#(0.5,0.5)
+            self.drc_strength='off'
+            time.sleep(1)
+            self._camera.stop_preview()
+            if self._AWB == 1:
+                logging.info('Gains AWB calculés en surface puis fixés')
+            if self._AWB == 2:
+                logging.info('Gains AWB calculés en surface puis ajustés pour histogramme centré')
+        
+        
     def run(self):       
         while not self._end:
             i=0
             self._base_name = self._Conf.get_val("30_PICAM_file_name") + '_' + self._Conf.get_date()
             while self._boucle == True:                
                 if self._camera.recording is True:
-                    self._camera.stop_recording()                  
+                    self._camera.stop_recording()
                 self._file_name = self._base_name +'_' + '{:04.0f}'.format(i) + '.h264'
                 logging.info(f"Debut de l'enregistrement video {self._file_name}")
                 self._camera.start_recording(VIDEO_ROOT_PATH+self._file_name)
+                self._camera.annotate_text=str(self._camera.awb_gains[0])+' ' +str(self._camera.awb_gains[1])
                 if self._AWB == 2:
                     time.sleep(0.1)
                     self.adjust_histo(1,1,0.05)
