@@ -1,11 +1,16 @@
 # Kosmos Software
 
-<div style='text-align: justify;'>
+<details open>
+ <summary> Sommaire </summary>
+ 
+  * [Installation](https://github.com/KonkArLab/kosmos_software/edit/Refonte_fromIMT2/READ_ME.md#installation)
+  * [Mode d'emploi](https://github.com/KonkArLab/kosmos_software/blob/Refonte_fromIMT2)
+    
+</details>
+<br>
 
-Lors de l'installation une connection filaire plutôt que wifi est recommandée.
-<br></br>
-
-### Installer le système d'exploitation (OS) de la Raspberry  
+## Installation
+### Installation du système d'exploitation (OS) de la Raspberry  
 Sur un PC :  
  - Installer [l'imageur Raspberry Pi](https://www.raspberrypi.com/software/)  
  - Choisisser le modèle de carte : Raspberry Pi 4  
@@ -15,48 +20,49 @@ Sur un PC :
 
 Plusieurs fenêtres vont apparaître:  
  - Voulez-vous appliquer les réglages de personalisation de l'OS ?  
-NON  
+Clicker sur NON  
  - Toutes les données vont être supprimées  
-OUI  
+Clicker sur OUI  
  - raspberry Pi Os a bien été écrit  
-CONTINUER  
+Clicker sur CONTINUER  
 
 <br>
 
-### Changer le fichier config
+### Changement du fichier config
 Toujours sur un PC,  
  - remplacer le fichier config.txt du boot de la carte SD par celui présent dans le fichier kosmos_software
 
 ### Paramétrage de l'OS  
-
+Lors de l'installation une connection filaire plutôt que wifi est recommandée.
+  
 Démarrer la Raspberry Pi avec la carte SD, la carte Raspberry est allumée lorsque les petites led clignotes. Le démarage peut prendre un peu de temps.  
 Plusieurs fenêtres vont s'afficher:   
  - Welcome to Raspberry Pi Desktop !  
-NEXT  
+Clicker sur NEXT  
 Choisir le pays : France  
 Choisir la langue : French  
 Choisir la time zone : Paris  
-NEXT  
+Clicker sur NEXT  
   
  - Create User  
-Compléter les informations demandées (username, mot de passe)  
-NEXT
+Compléter les informations demandées (username, password)  
+Clicker sur NEXT
   
  - Set up Screen  
-NEXT
+Clicker sur NEXT
   
  - Select Wifi Network  
-NEXT  
+Clicker sur NEXT  
   
  - Update Software  
-NEXT  
+Clicker sur NEXT  
 n'appuyer pas sur Skip mais sur Next sinon les mises à jour ne seront pas effectuées  
   
  - System is up to date  
-OK  
+Clicker sur OK  
   
  - Set up complete  
-Restart  
+Clicker sur Restart  
 
 ### Première installation du logiciel KOSMOS
  - Ouvrir un terminal et taper la commande suivante:
@@ -65,38 +71,39 @@ sudo raspi-config		//Ouvre les paramètres de configuration de la raspberry
 ```
 <br>
 
-Un menu s'affiche, dans un terminal vous ne pouvez généralement utiliser que le clavier pour sélectionner les paramètre souhaités (pas de souris)  
+Un menu s'affiche, dans un terminal vous ne pouvez généralement utiliser que le clavier pour sélectionner les paramètres souhaités (pas de souris)  
 déplacez vous avec les flèches et sélectionner les paramètres en appuyant sur Entrée  
 
  - Dans le menu, Choisir NetworkManager comme dispositif réseau:  
-6 Advanced Options  
-AA Network Config -> NetworkManager	 
+Aller dans "6 Advanced Options"  
+pour le "AA Network Config" choisir "NetworkManager"	 
   
- - Attention ne pas reboot tout de suite, avant aller dans:  
-3 Interface options  
-I1 Legacy Camera -> enable	
+ - Ne pas redémarrer tout de suite, avant:  
+Aller dans "3 Interface options"  
+pour "I1 Legacy Camera" choisir "enable"	
   
- - Effectuer le reboot:  
-Finish -> OUI  
+ - Redémarrage de kosmos:  
+Aller dans "Finish" puis sélectionner OUI  
 
 ### Choix de la connection
  - Aller dans l'onglet Wifi (icone avec deux flèches de sens inversées)  
- - Créer un Wifi Hotspot et lui donner un nom:  
-Advanced Options  
-Create Wifi Hospot  
-Ne metter pas de sécurité sur le réseau  
-Creer    
+ - Création d'un Wifi Hotspot:  
+Aller dans "Advanced Options"  
+Puis "Create Wifi Hospot"
+Donner lui un nom    
+Ne pas mettre de sécurité sur le réseau  
+Clicker sur "Créer"    
   
- - Retourner dans l'onglet Wifi et modifier les paramètre de connection par défault (Même si la connection se fait automatiquement)  
-Advanced options  
-Modifier les connections    
+ - Retourner dans l'onglet Wifi et modifier les paramètres de connection par défault   
+Aller dans "Advanced options"  
+Puis "Modifier les connections"    
 Choisir le réseau Hotspot  
 Sélectionner le réseau créé et aller dans les paramètres (icone en forme d'engrenage)
-Aller dans l'onglet Général et cocher "Connect Automatically with priority" cela vous permettra de vous reconnecter directement lorsque le système effectuera un reboot  
-Enregistrer
+Aller dans l'onglet Général
+Cocher "Connect Automatically with priority" cela vous permettra de vous reconnecter directement lorsque le système effectuera un reboot  
+Clicker sur "Enregistrer"
 
 ### Importation du dossier software
- - Mettre le dossier kosmos_software dans le home (via le git ou par copie depuis une clé usb)  
 Dans un terminal taper les commandes suivantes:  
 ```
 git clone https://github.com/KonkArLab/kosmos_software.git		//copie le dossier kosmos_software
@@ -106,7 +113,6 @@ git checkout Refonte_fromIMT2						//change de branche et vous place sur la bran
 <br>
 
 ```
-cd kosmos_software
 sudo chmod 755 install.sh		//Rendre éxécutable le fichier install.sh
 sh install.sh				//Exécuter le fichier install.sh
 ```  
@@ -114,12 +120,34 @@ sh install.sh				//Exécuter le fichier install.sh
 Une question apparaît dans le terminal:  
 
  - Souhaitez-vous continuer ?[O/n]  
-Entrée pour continuer  
+Appuyer sur Entrée pour continuer et finir l'éxécution de la commande précédente
   
 ### Stockage des données
- - Brancher la clé usb pour le stockage des données. Elle peut être vide ou contenir déjà un kosmos_config.ini, CSV et Video.  
-  
-### Interface web
-Sur votre téléphone dans un navigateur web entrée l'adresse 10.42.0.1 , cela vous dirigera vers l'interface de commande du KOSMOS.  
-  
+ - Brancher la clé usb pour le stockage des données. Elle peut être vide ou déjà contenir kosmos_config.ini, CSV et Video.
+
+Maintenant le système est opérationnel.  
+
+## Mode d'emploi
+### Prise en main de l'Interface web
+Sur votre téléphone:
+ - Connecter vous au réseau de la raspberry qui à été créé dans les étapes précedentes  
+ - Dans un navigateur web entrée l'adresse 10.42.0.1 , permet d'accéder à l'interface de commande du KOSMOS
+
+
+En haut de l'écran 3 onglets:
+ * Camera
+ * Records
+ * Configuration
+
+##### Camera
+###### State
+Affiche l'état dans lequel se trouve la camera  
+
+ - 
+ - 
+
+###### Buttons
+ - `Start`
+
+   
 </div>
