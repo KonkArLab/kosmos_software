@@ -4,7 +4,7 @@
  <summary> Sommaire </summary>
  
   * [Installation](https://github.com/KonkArLab/kosmos_software/edit/Refonte_fromIMT2/READ_ME.md#installation)
-  * [Mode d'emploi](https://github.com/KonkArLab/kosmos_software/blob/Refonte_fromIMT2)
+  * [Mode d'emploi](https://github.com/KonkArLab/kosmos_software/edit/Refonte_fromIMT2/READ_ME.md#mode-demploi)
     
 </details>
 <br>
@@ -148,11 +148,12 @@ En haut de l'écran 3 onglets:
 ###### State
 Affiche l'état dans lequel se trouve la camera  
 
- - STANDBY
- - UNKNOW
- - START
- - SHUTDOWN
- - WORKING
+ - UNKNOW : etat inconnu
+ - STARTING : démarage de kosmos
+ - STANDBY : kosmos pret en attente
+ - WORKING : kosmos entame l'enregistrement
+ - STOPPING : kosmos termine l'enregistrement
+ - SHUTDOWN : kosmos passe à l'arrêt total
 
 ###### Buttons
  - `Start` démarerr un enregistrement vidéo
@@ -169,5 +170,45 @@ Affiche l'état dans lequel se trouve la camera
 Affiche le nom, la taille et l'heure de fin d'enregistrement des derniers fichiers vidéo.
 
 ##### Configuration
-Permet de modifier des paramètre du système
+Permet de modifier des paramètres du système
+ - 00_system_mode :
+    * si 0 :  
+    * si 1 :  
+ - 01_système_record_button_gpio :
+ - 02_system_stop_button_gpio :
+ - 03_system_led_b :
+ - 04_system_led_r :
+ - 05_system_shutdown :
+    * si 0 : lors du shutdown le programme s'arrete
+    * si 1 : lors du shutdown le programme s'éteint
+ - 06_system_moteur :
+    * si 0 : rotation du moteur désactivée
+    * si 1 : rotation du moteur activée
+<br>
 
+ - 10_moteur_esc_gpio :
+ - 11_moter_power_gpio :
+ - 12_moteur_button_gpio :
+ - 13_moteur_vitesse_min : vitesse minimale du moteur
+ - 14_moteur_vitesse_favorite : vitesse de croissière du moteur
+ - 15_motor_pause_time : temps en seconde de pause entre entre les mouvement de rotation
+<br>
+
+ - 20_csv_step_time : temps en seconde avant la prochaine prise de données dans le fichier csv
+ - 21_csc_file_name : début du nom des fichiers csv
+<br>
+
+ - 30_picam_file_name : début du nom des fichiers vidéo (mettre un nom différent que pour les fichiers csv pour les enregistrer dans des dossiers séparés)
+ - 31_picam_resolution_x :
+ - 32_picam_resolution_y :
+ - 33_picam_preview :
+    * si 0 : pas d'apperçu de ce qu'observe la camera sur l'écran
+    * si 1 : affiche un aperçu de ce qu'observe la camera sur l'écran
+ - 34_picam_framerate : nombre d'image enregistrée par seconde
+ - 35_picam_record_time : temps d'enregistement en seconde
+ - 36_picam_conversion_mp4 :
+    * si 0 : ne converti pas les fichiers vidéo en mp4
+    * si 1 : converti les fichiers vidéo en mp4
+ - 37_picam_awb :
+    * si 0 : 
+    * si 1 :
