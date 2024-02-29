@@ -129,17 +129,17 @@ Maintenant le système est opérationnel.
 
 ## Mode d'emploi
 ### Processus de mise à l'eau
-Pour déployer KOSMOS en mer suivre le [guide de mis en service](https://kosmos.fish/index.php/deployer/).
+Pour déployer KOSMOS en mer suivre le [guide de mise en service](https://kosmos.fish/index.php/deployer/).
 
 ### Prise en main de l'Interface web
-Une IHM(Interface Homme Machine) à été développée et permet de commander Kosmos depuis votre téléphone. Elle remplace les étapes à réaliser avec les aimants. (A noté que le fonctionnement avec les aimants est toujours opérationnel.)
+Une IHM (Interface Homme Machine) a été développée et permet de commander Kosmos depuis un téléphone. Elle remplace les étapes à réaliser avec les aimants dans le guide de mise en service. (A noté que le fonctionnement avec les aimants est toujours opérationnel.)
 
 Sur votre téléphone:
  - Connecter vous au réseau de la raspberry qui à été créé dans les étapes précedentes  
  - Dans un navigateur web entrée l'adresse 10.42.0.1 , permet d'accéder à l'interface de commande du KOSMOS
 
 
-En haut de l'écran 3 onglets:
+En haut de l'écran il y a 3 onglets:
  * Camera
  * Records
  * Configuration
@@ -149,7 +149,7 @@ En haut de l'écran 3 onglets:
 Affiche l'état dans lequel se trouve la camera  
 
  - UNKNOW : etat inconnu
- - STARTING : démarage de kosmos
+ - STARTING :kosmos est en train de démarrer
  - STANDBY : kosmos pret en attente
  - WORKING : kosmos entame l'enregistrement
  - STOPPING : kosmos termine l'enregistrement
@@ -160,21 +160,21 @@ Affiche l'état dans lequel se trouve la camera
  - `Stop` arrête l'enregistrement vidéo en cours
 
 ###### Live video
- - `Start Live` affiche ce que voit la camera
- - `Stop Live` arrête l'affichage ce que voit la camera
+ - `Start Live` affiche ce qu'observe la camera
+ - `Stop Live` arrête l'affichage ce qu'observe la camera
 
 ###### ShutDown KOSMOS
  - `Shutdown` éteint kosmos
 
 ##### Records
-Affiche le nom, la taille et l'heure de fin d'enregistrement des derniers fichiers vidéo.
+Affiche le nom, la taille et l'heure de fin d'enregistrement des derniers fichiers vidéos.
 
 ##### Configuration
 Permet de modifier des paramètres du système
  - 00_system_mode :
     * si 0 :  
     * si 1 :  
- - 01_système_record_button_gpio :
+ - 01_system_record_button_gpio :
  - 02_system_stop_button_gpio :
  - 03_system_led_b :
  - 04_system_led_r :
@@ -186,11 +186,11 @@ Permet de modifier des paramètres du système
     * si 1 : rotation du moteur activée
 <br>
 
- - 10_moteur_esc_gpio :
- - 11_moter_power_gpio :
- - 12_moteur_button_gpio :
- - 13_moteur_vitesse_min : vitesse minimale du moteur
- - 14_moteur_vitesse_favorite : vitesse de croissière du moteur
+ - 10_motor_esc_gpio :
+ - 11_motor_power_gpio :
+ - 12_motor_button_gpio :
+ - 13_motor_vitesse_min : vitesse minimale du moteur
+ - 14_motor_vitesse_favorite : vitesse de croissière du moteur
  - 15_motor_pause_time : temps en seconde de pause entre entre les mouvement de rotation
 <br>
 
@@ -198,17 +198,17 @@ Permet de modifier des paramètres du système
  - 21_csc_file_name : début du nom des fichiers csv
 <br>
 
- - 30_picam_file_name : début du nom des fichiers vidéo (mettre un nom différent que pour les fichiers csv pour les enregistrer dans des dossiers séparés)
- - 31_picam_resolution_x :
- - 32_picam_resolution_y :
+ - 30_picam_file_name : début du nom des fichiers vidéos (mettre un nom différent que pour les fichiers csv pour les enregistrer dans des dossiers séparés)
+ - 31_picam_resolution_x : résolution de l'image selon l'axe des x
+ - 32_picam_resolution_y : résolution de l'image selon l'axe des y
  - 33_picam_preview :
     * si 0 : pas d'apperçu de ce qu'observe la camera sur l'écran
     * si 1 : affiche un aperçu de ce qu'observe la camera sur l'écran
  - 34_picam_framerate : nombre d'image enregistrée par seconde
  - 35_picam_record_time : temps d'enregistement en seconde
  - 36_picam_conversion_mp4 :
-    * si 0 : ne converti pas les fichiers vidéo en mp4
-    * si 1 : converti les fichiers vidéo en mp4
+    * si 0 : ne converti pas les fichiers vidéos en mp4
+    * si 1 : converti les fichiers vidéos en mp4
  - 37_picam_awb :
     * si 0 : 
     * si 1 :
