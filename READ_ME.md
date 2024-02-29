@@ -128,7 +128,12 @@ Appuyer sur Entrée pour continuer et finir l'éxécution de la commande précé
 Maintenant le système est opérationnel.  
 
 ## Mode d'emploi
+### Processus de mise à l'eau
+Pour déployer KOSMOS en mer suivre le [guide de mis en service](https://kosmos.fish/index.php/deployer/).
+
 ### Prise en main de l'Interface web
+Une IHM(Interface Homme Machine) à été développée et permet de commander Kosmos depuis votre téléphone. Elle remplace les étapes à réaliser avec les aimants. (A noté que le fonctionnement avec les aimants est toujours opérationnel.)
+
 Sur votre téléphone:
  - Connecter vous au réseau de la raspberry qui à été créé dans les étapes précedentes  
  - Dans un navigateur web entrée l'adresse 10.42.0.1 , permet d'accéder à l'interface de commande du KOSMOS
@@ -143,11 +148,26 @@ En haut de l'écran 3 onglets:
 ###### State
 Affiche l'état dans lequel se trouve la camera  
 
- - 
- - 
+ - STANDBY
+ - UNKNOW
+ - START
+ - SHUTDOWN
+ - WORKING
 
 ###### Buttons
- - `Start`
+ - `Start` démarerr un enregistrement vidéo
+ - `Stop` arrête l'enregistrement vidéo en cours
 
-   
-</div>
+###### Live video
+ - `Start Live` affiche ce que voit la camera
+ - `Stop Live` arrête l'affichage ce que voit la camera
+
+###### ShutDown KOSMOS
+ - `Shutdown` éteint kosmos
+
+##### Records
+Affiche le nom, la taille et l'heure de fin d'enregistrement des derniers fichiers vidéo.
+
+##### Configuration
+Permet de modifier des paramètre du système
+
