@@ -3,8 +3,8 @@
 <details open>
  <summary> Sommaire </summary>
  
-  * [Installation](https://github.com/KonkArLab/kosmos_software/Refonte_fromIMT2/READ_ME.md#installation)
-  * [Mode d'emploi](https://github.com/KonkArLab/kosmos_software/Refonte_fromIMT2/READ_ME.md#mode-demploi)
+  * [Installation](https://github.com/KonkArLab/kosmos_software/blob/Refonte_fromIMT2/READ_ME.md#installation)
+  * [Mode d'emploi](https://github.com/KonkArLab/kosmos_software/blob/Refonte_fromIMT2/READ_ME.md#mode-demploi)
     
 </details>
 <br>
