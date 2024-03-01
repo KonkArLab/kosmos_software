@@ -8,7 +8,9 @@ import subprocess
 import logging
 #import picamera
 from picamera2.encoders import H264Encoder
-from picamera2 import Picamera2,Preview
+from picamera2 import Picamera2,Preview,MappedArray
+import cv2
+
 
 import os
 from kosmos_config import *
@@ -38,43 +40,60 @@ class KosmosCam(Thread):
         """
         Thread.__init__(self)
         self._Conf = aConf    
-        # Résolution horizontale
+        # Résolutions horizontale
         self._X_RESOLUTION = aConf.get_val_int("31_PICAM_resolution_x")
-        # Résolution verticale
         self._Y_RESOLUTION = aConf.get_val_int("32_PICAM_resolution_y")
-        #Framerate camera
-        self._FRAMERATE = aConf.get_val_int("34_PICAM_framerate")
+        
+        #Framerate et frameduration camera
+        self._FRAMERATE=aConf.get_val_int("34_PICAM_framerate")
+        self._FRAMEDURATION = int(1/self._FRAMERATE*1000000)
+        
         # si 1 : Lance la fenêtre de preview (utile en debug)
         self._PREVIEW = aConf.get_val_int("33_PICAM_preview")
-        self._record_time = aConf.get_val_int("35_PICAM_record_time")
+        
         # si 1 : conversion mp4
         self._CONVERSION = aConf.get_val_int("36_PICAM_conversion_mp4")
+        
+        # A clrifier
         self._AWB = aConf.get_val_int("37_PICAM_AWB")
+        self._record_time = aConf.get_val_int("35_PICAM_record_time")
 
+        # Booléens pour les évènements
         self._end = False
         self._boucle = True
         self._start_again = Event()
      
         # Instanciation Camera
-        
-        #self._camera = picamera.PiCamera()
-        #self._camera.resolution = (self._X_RESOLUTION, self._Y_RESOLUTION)  # (1024,768)
-        #self._camera.framerate = self._FRAMERATE
-        
         self._camera=Picamera2()
-        self.video_config=self._camera.create_video_configuration()
-        self._camera.configure(self.video_config)
-        self.encoder=H264Encoder(bitrate=10000000)
-        if self._PREVIEW == 1:
-            self.preview_config=self._camera.create_preview_configuration()
-            self._camera.configure(self.preview_config)
+        self._video_config=self._camera.create_video_configuration()
+        self._video_config['main']['size']=(self._X_RESOLUTION,self._Y_RESOLUTION)
+        self._video_config['controls']['FrameDurationLimits']=(self._FRAMEDURATION,self._FRAMEDURATION)
+        self._camera.configure(self._video_config)
         
+        # Instanciation Encoder
+        self._encoder=H264Encoder(framerate=self._FRAMERATE, enable_sps_framerate=True,bitrate=10000000)
+                
+        #Creation du dossier Video dans la clé usb si pas déjà présent.
         os.chdir(USB_INSIDE_PATH)            
         if not os.path.exists("Video"):
-            #Creation du fichier Video dans la clé usb si pas déjà présent.
             os.mkdir("Video")
         os.chdir(WORK_PATH)
-          
+        
+        # Appel heure pour affichage sur la frame
+        self._camera.pre_callback = self.apply_timestamp
+
+    
+    def apply_timestamp(self,request):
+        #Time stamp en haut à gauche de la video
+        timestamp = time.strftime("%Y-%m-%d %X")
+        colour = (0, 255, 0)
+        origin = (0, 30)
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        scale = 1
+        thickness = 2
+        with MappedArray(request, "main") as m:
+            cv2.putText(m.array, timestamp, origin, font, scale, colour, thickness)
+      
     def convert_to_mp4(self, input_file, path):
         if self._CONVERSION == 1:
             #Conversion h264 vers mp4 puis effacement du .h264
@@ -101,45 +120,33 @@ class KosmosCam(Thread):
     def run_preview(self):
         """ Lance le preview"""
         if self._PREVIEW == 1:
-            self._camera.start_preview(Preview.QT,x=100,y=200,width=800,height=600)
+            self._camera.start_preview(Preview.QTGL)#,x=100, y=200, width=int(self._mode['size'][0]/4), height=int(self._mode['size'][1]/4))
             
     def stop_preview(self):
         if self._PREVIEW == 1:
             self._camera.stop_preview()
     
-    '''
+    
     def initialisation_awb(self):
         if self._AWB == 0:
             logging.info('Gains AWB ajustés par Rpi')
-            self._camera.awb_mode='auto'
+            self._camera.controls.AwbMode=0
         else:
-            self._camera.start_preview(fullscreen=False, window=(50, 50, int(self._X_RESOLUTION/4),int(self._Y_RESOLUTION/4)))
-            time.sleep(1)
-            g=self._camera.awb_gains
-            logging.info(g)
-            self._camera.awb_mode='off'
-            self._camera.awb_gains=g#(0.5,0.5)
-            self.drc_strength='off'
-            time.sleep(1)
-            self._camera.stop_preview()
-            if self._AWB == 1:
-                logging.info('Gains AWB calculés en surface puis fixés')
-            if self._AWB == 2:
-                logging.info('Gains AWB calculés en surface puis ajustés pour histogramme centré')
-    '''   
-        
+            logging.info('Gains AWB fixés par Rpi')
+            self._camera.set_controls({'AwbEnable': False})
+            self._camera.set_controls({'ColourGains': (5, 0.2)})
+            
     def run(self):       
         while not self._end:
             i=0
             self._base_name = self._Conf.get_val("30_PICAM_file_name") + '_' + self._Conf.get_date()
+           
             while self._boucle == True:                
-                #if self._camera.recording is True:
-                #   self._camera.stop_recording()
                 self._file_name = self._base_name +'_' + '{:04.0f}'.format(i) + '.h264'
                 logging.info(f"Debut de l'enregistrement video {self._file_name}")
-                self.output=VIDEO_ROOT_PATH+self._file_name
+                self._output=VIDEO_ROOT_PATH+self._file_name
                 
-                self._camera.start_encoder(self.encoder,self.output)
+                self._camera.start_encoder(self._encoder,self._output)
                 self._camera.start()
                 #self._camera.annotate_text=str(self._camera.awb_gains[0])+' ' +str(self._camera.awb_gains[1])
                 #if self._AWB == 2:
@@ -147,24 +154,24 @@ class KosmosCam(Thread):
                 #    self.adjust_histo(1,1,0.05)
                 #self._camera.wait_recording(self._record_time)
                 time.sleep(5)
-                self._camera.start()
+                self.do_capture()
+                time.sleep(5)
+                self._camera.stop()
                 self._camera.stop_encoder()
                 logging.info(f"Fin de l'enregistrement video {self._file_name}")
                 # Conversion mp4 si demandée
                 self.convert_to_mp4(self._file_name, VIDEO_ROOT_PATH)
                 i=i+1
-                self.encoder.stop
             self._start_again.wait()
             self._start_again.clear()            
         logging.info('Thread Camera terminé')       
 
     
-    '''
+    
     def do_capture(self) :
-        #a modifier pour correction RGB
-        self._camera.capture(LOG_PATH+'test.jpg',use_video_port=True,resize=(int(self._X_RESOLUTION/4),int(self._Y_RESOLUTION/4)))
+        self._camera.capture_file(LOG_PATH+'test.jpg')#,use_video_port=True,resize=(int(self._X_RESOLUTION/4),int(self._Y_RESOLUTION/4)))
         logging.debug("Capture reussie")
-        
+    '''  
     def histo(self):
         img= Image.open(LOG_PATH+'test.jpg')
         r,g,b = img.split()
@@ -222,7 +229,7 @@ class KosmosCam(Thread):
         # permet d'arrêter l'enregistrement si on passe par le bouton stop"
         self._boucle=False
         #if self._camera.recording is True:
-        self._camera.stop_recording()
+        #self._camera.stop()
         
         
     def closeCam(self):
