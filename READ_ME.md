@@ -13,29 +13,29 @@
 ### Installation du système d'exploitation (OS) de la Raspberry  
 Sur un PC :  
  - Installer [l'imageur Raspberry Pi](https://www.raspberrypi.com/software/)  
- - Choisisser le modèle de carte : Raspberry Pi 4  
- - Choisisser le système d'exploitation : Raspberry Pi OS (Legacy, 32 bit), Debian bullseye 32 bit  
- - Choisisser l'emplacement de stockage : votre carte SD  
+ - Choisir le modèle de carte : Raspberry Pi 4  
+ - Choisir le système d'exploitation : Raspberry Pi OS (Legacy, 32 bit), Debian bullseye 32 bit  
+ - Choisir pour emplacement de stockage votre carte SD  
 <br>
 
 Plusieurs fenêtres vont apparaître:  
  - Voulez-vous appliquer les réglages de personalisation de l'OS ?  
-Clicker sur NON  
- - Toutes les données vont être supprimées  
-Clicker sur OUI  
- - raspberry Pi Os a bien été écrit  
-Clicker sur CONTINUER  
+Cliquer sur NON  
+ - Toutes les données vont être supprimées. 
+Cliquer sur OUI et l'installation commence. Elle peut durer quelques minutes.
+ - Raspberry Pi Os a bien été écrit.  
+Cliquer sur CONTINUER  
 
 <br>
 
 ### Changement du fichier config
 Toujours sur un PC,  
- - remplacer le fichier config.txt du boot de la carte SD par celui présent dans le fichier kosmos_software
+ - Remplacer le fichier config.txt du boot de la carte SD par celui présent dans le fichier kosmos_software du Git.
 
-### Paramétrage de l'OS  
-Lors de l'installation une connection filaire plutôt que wifi est recommandée.
+### Premier démarrage de la RPi.  
+Lors de ce dernier, une connection filaire plutôt que wifi est recommandée.
   
-Démarrer la Raspberry Pi avec la carte SD, la carte Raspberry est allumée lorsque les petites led clignotes. Le démarage peut prendre un peu de temps.  
+Démarrer la Raspberry Pi avec la carte SD, la carte Raspberry est allumée lorsque les petites leds de la carte clignotent. Le démarrage peut prendre un peu de temps.  
 Plusieurs fenêtres vont s'afficher:   
  - Welcome to Raspberry Pi Desktop !  
 Clicker sur NEXT  
@@ -55,8 +55,7 @@ Clicker sur NEXT
 Clicker sur NEXT  
   
  - Update Software  
-Clicker sur NEXT  
-n'appuyer pas sur Skip mais sur Next sinon les mises à jour ne seront pas effectuées  
+Clicker sur NEXT (et non sur Skip sinon les mises à jour ne seront pas effectuées. Cette opération peut prendre quelques minutes.)  
   
  - System is up to date  
 Clicker sur OK  
@@ -71,8 +70,8 @@ sudo raspi-config		//Ouvre les paramètres de configuration de la raspberry
 ```
 <br>
 
-Un menu s'affiche, dans un terminal vous ne pouvez généralement utiliser que le clavier pour sélectionner les paramètres souhaités (pas de souris)  
-déplacez vous avec les flèches et sélectionner les paramètres en appuyant sur Entrée  
+Un menu s'affiche, vous ne pourrez y utiliser que le clavier pour sélectionner les paramètres souhaités (pas de souris).  
+Se déplacer avec les flèches et sélectionner les paramètres en appuyant sur Entrée. 
 
  - Dans le menu, Choisir NetworkManager comme dispositif réseau:  
 Aller dans "6 Advanced Options"  
