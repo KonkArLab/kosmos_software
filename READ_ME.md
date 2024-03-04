@@ -19,7 +19,7 @@ Sur un PC :
 <br>
 
 Plusieurs fenêtres vont apparaître:  
- - Voulez-vous appliquer les réglages de personalisation de l'OS ?  
+ - Voulez-vous appliquer les réglages de personnalisation de l'OS ?  
 Cliquer sur NON  
  - Toutes les données vont être supprimées. 
 Cliquer sur OUI et l'installation commence. Elle peut durer quelques minutes.
@@ -33,35 +33,35 @@ Toujours sur un PC,
  - Remplacer le fichier config.txt du boot de la carte SD par celui présent dans le fichier kosmos_software du Git.
 
 ### Premier démarrage de la RPi.  
-Lors de ce dernier, une connection filaire plutôt que wifi est recommandée.
+Une connection filaire plutôt que wifi est recommandée.
   
 Démarrer la Raspberry Pi avec la carte SD, la carte Raspberry est allumée lorsque les petites leds de la carte clignotent. Le démarrage peut prendre un peu de temps.  
 Plusieurs fenêtres vont s'afficher:   
  - Welcome to Raspberry Pi Desktop !  
-Clicker sur NEXT  
+Cliquer sur NEXT  
 Choisir le pays : France  
 Choisir la langue : French  
 Choisir la time zone : Paris  
-Clicker sur NEXT  
+Cliquer sur NEXT  
   
  - Create User  
 Compléter les informations demandées (username, password)  
-Clicker sur NEXT
+Cliquer sur NEXT
   
  - Set up Screen  
-Clicker sur NEXT
+Cliquer sur NEXT
   
  - Select Wifi Network  
-Clicker sur NEXT  
+Cliquer sur NEXT  
   
  - Update Software  
-Clicker sur NEXT (et non sur Skip sinon les mises à jour ne seront pas effectuées. Cette opération peut prendre quelques minutes.)  
+Cliquer sur NEXT (et non sur Skip sinon les mises à jour ne seront pas effectuées. Cette opération peut prendre quelques minutes.)  
   
  - System is up to date  
-Clicker sur OK  
+Cliquer sur OK  
   
  - Set up complete  
-Clicker sur Restart  
+Cliquer sur Restart  
 
 ### Première installation du logiciel KOSMOS
  - Ouvrir un terminal et taper la commande suivante:
@@ -78,7 +78,7 @@ Aller dans "6 Advanced Options"
 pour le "AA Network Config" choisir "NetworkManager"	 
   
  - Aller ensuite dans "3 Interface options"  
-pour "I1 Legacy Camera" choisir "enable"	
+pour "I1 Legacy Camera" choisir "enable"  
   
  - Redémarrage de kosmos:  
 Aller dans "Finish" puis sélectionner OUI. Le système va redémarrer.  
@@ -91,16 +91,16 @@ Aller dans "Advanced Options"
 Puis "Create Wifi Hospot"
 Lui donner un nom    
 Ne pas mettre de sécurité sur le réseau  
-Clicker sur "Créer"    
+Cliquer sur "Créer"    
   
- - Retourner dans l'onglet Wifi et modifier les paramètres de connection par défault   
+ - Retourner dans l'onglet Wifi et modifier les paramètres de connexion par défaut   
 Aller dans "Advanced options"  
 Puis "Modifier les connections"    
 Choisir le réseau Hotspot  
 Sélectionner le réseau créé et aller dans les paramètres (icone en forme d'engrenage)
 Aller dans l'onglet Général tout à gauche.
 Cocher "Connect Automatically with priority" cela vous permettra de vous reconnecter directement lorsque le système effectuera un reboot  
-Clicker sur "Enregistrer"
+Cliquer sur "Enregistrer"
 
 ### Importation du dossier software
 Dans un terminal taper les commandes suivantes:  
@@ -119,7 +119,7 @@ sh install.sh				//Lance le fichier install.sh
 Une question apparaît dans le terminal:  
 
  - Souhaitez-vous continuer ?[O/n]  
-Appuyer sur Entrée pour continuer et finir l'éxécution de la commande précédente
+Appuyer sur Entrée pour continuer et finir l'exécution de la commande précédente
   
 ### Stockage des données
  - Brancher la clé usb pour le stockage des données. Elle peut être vide ou déjà contenir kosmos_config.ini, CSV et Video si elle a déjà été utilisée avec un système Kosmos.
@@ -134,7 +134,7 @@ Pour déployer KOSMOS en mer suivre le [guide de mise en service](https://kosmos
 Une IHM (Interface Homme Machine) a été développée et permet de commander Kosmos depuis un téléphone. Elle remplace les étapes à réaliser avec les aimants dans le guide de mise en service. (A noter que le fonctionnement avec les aimants est toujours opérationnel.)
 
 Sur un téléphone:
- - Se connecter au réseau de la raspberry qui a été créé dans les étapes précedentes  
+ - Se connecter au réseau de la raspberry qui a été créé dans les étapes précédentes  
  - Dans un navigateur web entrer l'adresse 10.42.0.1 qui permet d'accéder à l'interface de commande du KOSMOS
 
 
@@ -142,7 +142,7 @@ En haut de l'écran il y a 3 onglets:
  * Camera
  * Records
  * Configuration
-
+ 
 ##### Camera
 ###### State
 Affiche l'état dans lequel se trouve la camera  
@@ -159,8 +159,8 @@ Affiche l'état dans lequel se trouve la camera
  - `Stop` arrête l'enregistrement vidéo en cours
 
 ###### Live video
- - `Start Live` affiche ce qu'observe la camera. (Ce live vidéo ne fonctionne que dans l'étatt STANDBY.)
- - `Stop Live` arrête l'affichage ce qu'observe la camera
+ - `Start Live` affiche ce qu'observe la camera. (Ce live vidéo ne fonctionne que dans l'état STANDBY.)
+ - `Stop Live` arrête l'affichage de ce qu'observe la camera
 
 ###### ShutDown KOSMOS
  - `Shutdown` éteint kosmos
@@ -199,7 +199,7 @@ Permet de modifier des paramètres du système
 
  - 30_picam_file_name : début du nom des fichiers vidéos.
  - 31_picam_resolution_x : résolution de l'image selon l'axe des x (typiquement 1920)
- - 32_picam_resolution_y : résolution de l'image selon l'axe des y (Typiquement 1080)
+ - 32_picam_resolution_y : résolution de l'image selon l'axe des y (typiquement 1080)
  - 33_picam_preview :
     * si 0 : pas d'aperçu de ce qu'observe la camera sur l'écran (préférer ce mode sur le terrain)
     * si 1 : affiche un aperçu de ce qu'observe la camera sur l'écran (utile pour le développement et le débuggage)
@@ -211,3 +211,10 @@ Permet de modifier des paramètres du système
  - 37_picam_awb :
     * si 0 : 
     * si 1 :
+
+### Enregistrement des données
+
+Les fichiers vidéos et csv pris par la camera sont enregistrés dans /media/kosmosifremer/kosmoscle3/Video ou /media/kosmosifremer/kosmoscle3/CSV   
+
+Les fichiers vidéos et csv ne sont pas effacés à chaque démarrage.  
+Si vous venez d'installer kosmos software les dossiers Vidéo et CSV seront vides. Si vous avez déjà enregistré des vidéos elles resteront stockées dans ces fichiers. 
