@@ -33,7 +33,7 @@ Toujours sur un PC,
  - Remplacer le fichier config.txt du boot de la carte SD par celui présent dans le fichier kosmos_software du Git.
 
 ### Premier démarrage de la RPi.  
-Une connection filaire plutôt que wifi est recommandée.
+Une connexion filaire plutôt que wifi est recommandée.
   
 Démarrer la Raspberry Pi avec la carte SD, la carte Raspberry est allumée lorsque les petites leds de la carte clignotent. Le démarrage peut prendre un peu de temps.  
 Plusieurs fenêtres vont s'afficher:   
@@ -78,7 +78,7 @@ Aller dans "6 Advanced Options"
 pour le "AA Network Config" choisir "NetworkManager"	 
   
  - Aller ensuite dans "3 Interface options"  
-pour "I1 Legacy Camera" choisir "enable"  
+pour "I1 Legacy Caméra" choisir "enable"  
   
  - Redémarrage de kosmos:  
 Aller dans "Finish" puis sélectionner OUI. Le système va redémarrer.  
@@ -95,7 +95,7 @@ Cliquer sur "Créer"
   
  - Retourner dans l'onglet Wifi et modifier les paramètres de connexion par défaut   
 Aller dans "Advanced options"  
-Puis "Modifier les connections"    
+Puis "Modifier les connexions"    
 Choisir le réseau Hotspot  
 Sélectionner le réseau créé et aller dans les paramètres (icone en forme d'engrenage)
 Aller dans l'onglet Général tout à gauche.
@@ -112,7 +112,7 @@ git checkout Refonte_fromIMT2						//Change de branche et vous place sur la bran
 <br>
 
 ```
-sudo chmod 755 install.sh		//Rend éxécutable le fichier install.sh
+sudo chmod 755 install.sh		//Rend exécutable le fichier install.sh
 sh install.sh				//Lance le fichier install.sh
 ```  
 <br>
@@ -122,7 +122,12 @@ Une question apparaît dans le terminal:
 Appuyer sur Entrée pour continuer et finir l'exécution de la commande précédente
   
 ### Stockage des données
- - Brancher la clé usb pour le stockage des données. Elle peut être vide ou déjà contenir kosmos_config.ini, CSV et Video si elle a déjà été utilisée avec un système Kosmos.
+
+ - Brancher la clé USB pour le stockage des données. Elle peut être vide ou déjà contenir kosmos_config.ini, CSV et Video si elle a déjà été utilisée avec un système Kosmos.  
+Les fichiers vidéos et csv pris par la caméra sont enregistrés sur la clé USB dans les dossiers Video ou CSV en fonction du type du fichier.  
+
+Si vous venez d'installer kosmos software les dossiers Vidéo et CSV seront vides. 
+Les fichiers vidéos et csv ne sont pas effacés à chaque démarrage. Si vous avez déjà enregistré des vidéos elles resteront stockées dans ces fichiers. 
 
 Redémarrer enfin la RPi. Si au démarrage, la led verte de la carte électronique clignote c'est que le système est opérationnel.  
 
@@ -131,7 +136,7 @@ Redémarrer enfin la RPi. Si au démarrage, la led verte de la carte électroniq
 Pour déployer KOSMOS en mer suivre le [guide de mise en service](https://kosmos.fish/index.php/deployer/).
 
 ### Prise en main de l'Interface web
-Une IHM (Interface Homme Machine) a été développée et permet de commander Kosmos depuis un téléphone. Elle remplace les étapes à réaliser avec les aimants dans le guide de mise en service. (A noter que le fonctionnement avec les aimants est toujours opérationnel.)
+Une IHM (Interface Homme Machine) a été développée et permet de commander Kosmos depuis un téléphone. Elle remplace les étapes à réaliser avec les aimants dans le guide de mise en service. (À noter que le fonctionnement avec les aimants est toujours opérationnel.)
 
 Sur un téléphone:
  - Se connecter au réseau de la raspberry qui a été créé dans les étapes précédentes  
@@ -142,13 +147,17 @@ En haut de l'écran il y a 3 onglets:
  * Camera
  * Records
  * Configuration
+
+<img src="https://github.com/KonkArLab/kosmos_software/blob/9b9281c0ae14215c8ec4bbfffb5d7e90c7b0e229/fichiers-annexe/interface_camera.jpg" width = 299> <img src="https://github.com/KonkArLab/kosmos_software/blob/9b9281c0ae14215c8ec4bbfffb5d7e90c7b0e229/fichiers-annexe/interface_records.jpg" width = 300> <img src="https://github.com/KonkArLab/kosmos_software/blob/9b9281c0ae14215c8ec4bbfffb5d7e90c7b0e229/fichiers-annexe/interface_config.jpg" width = 300>  
+<br>
+
  
-##### Camera
+##### Caméra
 ###### State
-Affiche l'état dans lequel se trouve la camera  
+Affiche l'état dans lequel se trouve la caméra  
 
  - UNKNOW : état inconnu
- - STARTING :kosmos est en train de démarrer
+ - STARTING : kosmos est en train de démarrer
  - STANDBY : kosmos est en attente
  - WORKING : kosmos entame l'enregistrement
  - STOPPING : kosmos termine l'enregistrement
@@ -159,14 +168,16 @@ Affiche l'état dans lequel se trouve la camera
  - `Stop` arrête l'enregistrement vidéo en cours
 
 ###### Live video
- - `Start Live` affiche ce qu'observe la camera. (Ce live vidéo ne fonctionne que dans l'état STANDBY.)
- - `Stop Live` arrête l'affichage de ce qu'observe la camera
+ - `Start Live` affiche ce qu'observe la caméra. (Ce live vidéo ne fonctionne que dans l'état STANDBY.)
+ - `Stop Live` arrête l'affichage de ce qu'observe la caméra
 
 ###### ShutDown KOSMOS
  - `Shutdown` éteint kosmos
+<br>
 
 ##### Records
 Affiche le nom, la taille et l'heure de fin d'enregistrement des derniers fichiers vidéos.
+<br>
 
 ##### Configuration
 Permet de modifier des paramètres du système
@@ -178,7 +189,7 @@ Permet de modifier des paramètres du système
  - 03_system_led_b :
  - 04_system_led_r :
  - 05_system_shutdown :
-    * si 0 : lors du shutdown le programme s'arrete mais la Rpi reste allumée (c'est utile pour débugger.)
+    * si 0 : lors du shutdown le programme s'arrête mais la Rpi reste allumée (c'est utile pour débugger.)
     * si 1 : lors du shutdown le programme s'éteint (privilégier ce mode sur le terrain)
  - 06_system_moteur :
     * si 0 : rotation du moteur désactivée
@@ -190,20 +201,20 @@ Permet de modifier des paramètres du système
  - 12_motor_button_gpio :
  - 13_motor_vitesse_min : vitesse minimale du moteur utilisée lors de son armement
  - 14_motor_vitesse_favorite : vitesse nominale du moteur
- - 15_motor_pause_time : temps en seconde de pause entre entre les mouvements de rotation (typiquement 30 secondes pour le protocole STAVIRO)
+ - 15_motor_pause_time : temps en seconde de pause entre les mouvements de rotation (typiquement 30 secondes pour le protocole STAVIRO)
 <br>
 
  - 20_csv_step_time : temps en seconde avant la prochaine prise de données dans le fichier csv
  - 21_csc_file_name : début du nom des fichiers csv
 <br>
 
- - 30_picam_file_name : début du nom des fichiers vidéos.
+ - 30_picam_file_name : début du nom des fichiers vidéos
  - 31_picam_resolution_x : résolution de l'image selon l'axe des x (typiquement 1920)
  - 32_picam_resolution_y : résolution de l'image selon l'axe des y (typiquement 1080)
  - 33_picam_preview :
-    * si 0 : pas d'aperçu de ce qu'observe la camera sur l'écran (préférer ce mode sur le terrain)
-    * si 1 : affiche un aperçu de ce qu'observe la camera sur l'écran (utile pour le développement et le débuggage)
- - 34_picam_framerate : nombre d'image enregistrée par seconde (typiquement 24)
+    * si 0 : pas d'aperçu de ce qu'observe la caméra sur l'écran (préférer ce mode sur le terrain)
+    * si 1 : affiche un aperçu de ce qu'observe la caméra sur l'écran (utile pour le développement et le débuggage)
+ - 34_picam_framérate : nombre d'image enregistrée par seconde (typiquement 24)
  - 35_picam_record_time : temps d'enregistement en seconde (typiquement 400 secondes)
  - 36_picam_conversion_mp4 :
     * si 0 : ne convertit pas les fichiers vidéos en mp4 et les laisse en h264.
@@ -211,10 +222,3 @@ Permet de modifier des paramètres du système
  - 37_picam_awb :
     * si 0 : 
     * si 1 :
-
-### Enregistrement des données
-
-Les fichiers vidéos et csv pris par la camera sont enregistrés dans /media/kosmosifremer/kosmoscle3/Video ou /media/kosmosifremer/kosmoscle3/CSV   
-
-Les fichiers vidéos et csv ne sont pas effacés à chaque démarrage.  
-Si vous venez d'installer kosmos software les dossiers Vidéo et CSV seront vides. Si vous avez déjà enregistré des vidéos elles resteront stockées dans ces fichiers. 
