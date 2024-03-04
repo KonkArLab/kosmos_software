@@ -77,19 +77,19 @@ Se déplacer avec les flèches et sélectionner les paramètres en appuyant sur 
 Aller dans "6 Advanced Options"  
 pour le "AA Network Config" choisir "NetworkManager"	 
   
- - Ne pas redémarrer tout de suite, avant:  
-Aller dans "3 Interface options"  
+ - Aller ensuite dans "3 Interface options"  
 pour "I1 Legacy Camera" choisir "enable"	
   
  - Redémarrage de kosmos:  
-Aller dans "Finish" puis sélectionner OUI  
+Aller dans "Finish" puis sélectionner OUI. Le système va redémarrer.  
 
-### Choix de la connection
+### Création d'un point Hotspot pour l'application KosmosWeb
+Une fois la RPi redémarrée,
  - Aller dans l'onglet Wifi (icone avec deux flèches de sens inversées)  
  - Création d'un Wifi Hotspot:  
 Aller dans "Advanced Options"  
 Puis "Create Wifi Hospot"
-Donner lui un nom    
+Lui donner un nom    
 Ne pas mettre de sécurité sur le réseau  
 Clicker sur "Créer"    
   
@@ -98,22 +98,22 @@ Aller dans "Advanced options"
 Puis "Modifier les connections"    
 Choisir le réseau Hotspot  
 Sélectionner le réseau créé et aller dans les paramètres (icone en forme d'engrenage)
-Aller dans l'onglet Général
+Aller dans l'onglet Général tout à gauche.
 Cocher "Connect Automatically with priority" cela vous permettra de vous reconnecter directement lorsque le système effectuera un reboot  
 Clicker sur "Enregistrer"
 
 ### Importation du dossier software
 Dans un terminal taper les commandes suivantes:  
 ```
-git clone https://github.com/KonkArLab/kosmos_software.git		//copie le dossier kosmos_software
-cd kosmos_software							//ouvre le dossier kosmos_software
-git checkout Refonte_fromIMT2						//change de branche et vous place sur la branch "Refonte_fromIMT2"
+git clone https://github.com/KonkArLab/kosmos_software.git		//Clone le dossier kosmos_software depuis le git
+cd kosmos_software							//Ouvre le dossier kosmos_software
+git checkout Refonte_fromIMT2						//Change de branche et vous place sur la branch "Refonte_fromIMT2"
 ```
 <br>
 
 ```
-sudo chmod 755 install.sh		//Rendre éxécutable le fichier install.sh
-sh install.sh				//Exécuter le fichier install.sh
+sudo chmod 755 install.sh		//Rend éxécutable le fichier install.sh
+sh install.sh				//Lance le fichier install.sh
 ```  
 <br>
 Une question apparaît dans le terminal:  
@@ -122,9 +122,9 @@ Une question apparaît dans le terminal:
 Appuyer sur Entrée pour continuer et finir l'éxécution de la commande précédente
   
 ### Stockage des données
- - Brancher la clé usb pour le stockage des données. Elle peut être vide ou déjà contenir kosmos_config.ini, CSV et Video.
+ - Brancher la clé usb pour le stockage des données. Elle peut être vide ou déjà contenir kosmos_config.ini, CSV et Video si elle a déjà été utilisée avec un système Kosmos.
 
-Maintenant le système est opérationnel.  
+Redémarrer enfin la RPi. Si au démarrage, la led verte de la carte électronique clignote c'est que le système est opérationnel.  
 
 ## Mode d'emploi
 ### Processus de mise à l'eau
