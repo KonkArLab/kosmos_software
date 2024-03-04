@@ -131,11 +131,11 @@ Redémarrer enfin la RPi. Si au démarrage, la led verte de la carte électroniq
 Pour déployer KOSMOS en mer suivre le [guide de mise en service](https://kosmos.fish/index.php/deployer/).
 
 ### Prise en main de l'Interface web
-Une IHM (Interface Homme Machine) a été développée et permet de commander Kosmos depuis un téléphone. Elle remplace les étapes à réaliser avec les aimants dans le guide de mise en service. (A noté que le fonctionnement avec les aimants est toujours opérationnel.)
+Une IHM (Interface Homme Machine) a été développée et permet de commander Kosmos depuis un téléphone. Elle remplace les étapes à réaliser avec les aimants dans le guide de mise en service. (A noter que le fonctionnement avec les aimants est toujours opérationnel.)
 
-Sur votre téléphone:
- - Connecter vous au réseau de la raspberry qui à été créé dans les étapes précedentes  
- - Dans un navigateur web entrée l'adresse 10.42.0.1 , permet d'accéder à l'interface de commande du KOSMOS
+Sur un téléphone:
+ - Se connecter au réseau de la raspberry qui a été créé dans les étapes précedentes  
+ - Dans un navigateur web entrer l'adresse 10.42.0.1 qui permet d'accéder à l'interface de commande du KOSMOS
 
 
 En haut de l'écran il y a 3 onglets:
@@ -147,19 +147,19 @@ En haut de l'écran il y a 3 onglets:
 ###### State
 Affiche l'état dans lequel se trouve la camera  
 
- - UNKNOW : etat inconnu
+ - UNKNOW : état inconnu
  - STARTING :kosmos est en train de démarrer
- - STANDBY : kosmos pret en attente
+ - STANDBY : kosmos est en attente
  - WORKING : kosmos entame l'enregistrement
  - STOPPING : kosmos termine l'enregistrement
  - SHUTDOWN : kosmos passe à l'arrêt total
 
 ###### Buttons
- - `Start` démarerr un enregistrement vidéo
+ - `Start` démarre un enregistrement vidéo
  - `Stop` arrête l'enregistrement vidéo en cours
 
 ###### Live video
- - `Start Live` affiche ce qu'observe la camera
+ - `Start Live` affiche ce qu'observe la camera. (Ce live vidéo ne fonctionne que dans l'étatt STANDBY.)
  - `Stop Live` arrête l'affichage ce qu'observe la camera
 
 ###### ShutDown KOSMOS
@@ -178,8 +178,8 @@ Permet de modifier des paramètres du système
  - 03_system_led_b :
  - 04_system_led_r :
  - 05_system_shutdown :
-    * si 0 : lors du shutdown le programme s'arrete
-    * si 1 : lors du shutdown le programme s'éteint
+    * si 0 : lors du shutdown le programme s'arrete mais la Rpi reste allumée (c'est utile pour débugger.)
+    * si 1 : lors du shutdown le programme s'éteint (privilégier ce mode sur le terrain)
  - 06_system_moteur :
     * si 0 : rotation du moteur désactivée
     * si 1 : rotation du moteur activée
@@ -188,26 +188,26 @@ Permet de modifier des paramètres du système
  - 10_motor_esc_gpio :
  - 11_motor_power_gpio :
  - 12_motor_button_gpio :
- - 13_motor_vitesse_min : vitesse minimale du moteur
- - 14_motor_vitesse_favorite : vitesse de croissière du moteur
- - 15_motor_pause_time : temps en seconde de pause entre entre les mouvement de rotation
+ - 13_motor_vitesse_min : vitesse minimale du moteur utilisée lors de son armement
+ - 14_motor_vitesse_favorite : vitesse nominale du moteur
+ - 15_motor_pause_time : temps en seconde de pause entre entre les mouvements de rotation (typiquement 30 secondes pour le protocole STAVIRO)
 <br>
 
  - 20_csv_step_time : temps en seconde avant la prochaine prise de données dans le fichier csv
  - 21_csc_file_name : début du nom des fichiers csv
 <br>
 
- - 30_picam_file_name : début du nom des fichiers vidéos (mettre un nom différent que pour les fichiers csv pour les enregistrer dans des dossiers séparés)
- - 31_picam_resolution_x : résolution de l'image selon l'axe des x
- - 32_picam_resolution_y : résolution de l'image selon l'axe des y
+ - 30_picam_file_name : début du nom des fichiers vidéos.
+ - 31_picam_resolution_x : résolution de l'image selon l'axe des x (typiquement 1920)
+ - 32_picam_resolution_y : résolution de l'image selon l'axe des y (Typiquement 1080)
  - 33_picam_preview :
-    * si 0 : pas d'apperçu de ce qu'observe la camera sur l'écran
-    * si 1 : affiche un aperçu de ce qu'observe la camera sur l'écran
- - 34_picam_framerate : nombre d'image enregistrée par seconde
- - 35_picam_record_time : temps d'enregistement en seconde
+    * si 0 : pas d'aperçu de ce qu'observe la camera sur l'écran (préférer ce mode sur le terrain)
+    * si 1 : affiche un aperçu de ce qu'observe la camera sur l'écran (utile pour le développement et le débuggage)
+ - 34_picam_framerate : nombre d'image enregistrée par seconde (typiquement 24)
+ - 35_picam_record_time : temps d'enregistement en seconde (typiquement 400 secondes)
  - 36_picam_conversion_mp4 :
-    * si 0 : ne converti pas les fichiers vidéos en mp4
-    * si 1 : converti les fichiers vidéos en mp4
+    * si 0 : ne convertit pas les fichiers vidéos en mp4 et les laisse en h264.
+    * si 1 : convertit les fichiers vidéos en mp4
  - 37_picam_awb :
     * si 0 : 
     * si 1 :
