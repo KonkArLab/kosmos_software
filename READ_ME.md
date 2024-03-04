@@ -152,7 +152,7 @@ En haut de l'écran il y a 3 onglets:
 <br>
 
  
-##### Caméra
+##### Camera
 ###### State
 Affiche l'état dans lequel se trouve la caméra  
 
