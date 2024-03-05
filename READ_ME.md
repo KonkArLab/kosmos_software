@@ -93,11 +93,11 @@ Cliquer sur "Créer"
 Retourner dans l'onglet Wifi et modifier les paramètres de connexion par défaut   
 
 - Aller dans "Advanced options"  
-"Modifier les connexions"    
+Aller dans "Modifier les connexions"    
 Choisir le réseau Hotspot  
 Sélectionner le réseau créé et aller dans les paramètres (icone en forme d'engrenage)
-Aller dans l'onglet Général tout à gauche.
-Cocher "Connect Automatically with priority" cela vous permettra de vous reconnecter directement lorsque le système effectuera un reboot  
+Aller dans l'onglet "Général" tout à gauche.
+Cocher "Connect Automatically with priority", cela vous permettra de vous reconnecter directement lorsque le système effectuera un reboot  
 Cliquer sur "Enregistrer"
 
 ### Importation du dossier software
