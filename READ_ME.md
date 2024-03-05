@@ -30,12 +30,12 @@ Cliquer sur CONTINUER
 
 ### Changement du fichier config
 Toujours sur un PC,  
- - Remplacer le fichier config.txt du boot de la carte SD par celui présent dans le fichier kosmos_software du Git.
+ - Remplacer le fichier config.txt du boot de la carte SD par celui présent dans le fichier kosmos_software du Github.
 
 ### Premier démarrage de la RPi.  
-Une connexion filaire plutôt que wifi est recommandée.
+Une connexion ethernet filaire plutôt que Wifi est recommandée.
   
-Démarrer la Raspberry Pi avec la carte SD, la carte Raspberry est allumée lorsque les petites leds de la carte clignotent. Le démarrage peut prendre un peu de temps.  
+Démarrer la Raspberry Pi avec la carte SD, la carte RPi est allumée lorsque les petites leds de la carte clignotent. Le démarrage peut prendre un peu de temps.  
 Plusieurs fenêtres vont s'afficher:   
  - Welcome to Raspberry Pi Desktop !  
 Cliquer sur NEXT  
@@ -70,37 +70,39 @@ sudo raspi-config		//Ouvre les paramètres de configuration de la raspberry
 ```
 <br>
 
-Un menu s'affiche, vous ne pourrez y utiliser que le clavier pour sélectionner les paramètres souhaités (pas de souris).  
+Un menu s'affiche, utiliser le clavier pour sélectionner les paramètres souhaités (pas de souris).  
 Se déplacer avec les flèches et sélectionner les paramètres en appuyant sur Entrée. 
 
- - Dans le menu, Choisir NetworkManager comme dispositif réseau:  
-Aller dans "6 Advanced Options"  
-pour le "AA Network Config" choisir "NetworkManager"	 
+ - Dans le menu, aller dans "6 Advanced Options" puis dans "AA Network Config" choisir "NetworkManager"	 
   
  - Aller ensuite dans "3 Interface options"  
 pour "I1 Legacy Caméra" choisir "enable"  
-  
- - Redémarrage de kosmos:  
-Aller dans "Finish" puis sélectionner OUI. Le système va redémarrer.  
+   
+- Aller enfin dans "Finish" puis sélectionner OUI. Le système va redémarrer.  
 
 ### Création d'un point Hotspot pour l'application KosmosWeb
-Une fois la RPi redémarrée,
- - Aller dans l'onglet Wifi (icone avec deux flèches de sens inversées)  
- - Création d'un Wifi Hotspot:  
-Aller dans "Advanced Options"  
-Puis "Create Wifi Hospot"
-Lui donner un nom    
-Ne pas mettre de sécurité sur le réseau  
-Cliquer sur "Créer"    
+Une fois la RPi redémarrée, aller dans l'onglet Wifi (icone avec deux flèches de sens inversées)  
+pour créer un Hotspot Wifi :
+
+- Aller dans "Advanced Options"
   
- - Retourner dans l'onglet Wifi et modifier les paramètres de connexion par défaut   
-Aller dans "Advanced options"  
-Puis "Modifier les connexions"    
-Choisir le réseau Hotspot  
-Sélectionner le réseau créé et aller dans les paramètres (icone en forme d'engrenage)
-Aller dans l'onglet Général tout à gauche.
-Cocher "Connect Automatically with priority" cela vous permettra de vous reconnecter directement lorsque le système effectuera un reboot  
-Cliquer sur "Enregistrer"
+- Puis "Create Wifi Hospot"
+  
+- Lui donner un nom
+   
+- Ne pas mettre de sécurité sur le réseau
+  
+- Cliquer sur "Créer"    
+  
+Retourner dans l'onglet Wifi et modifier les paramètres de connexion par défaut   
+
+-Aller dans "Advanced options"  
+- "Modifier les connexions"    
+- Choisir le réseau Hotspot  
+- Sélectionner le réseau créé et aller dans les paramètres (icone en forme d'engrenage)
+- Aller dans l'onglet Général tout à gauche.
+- Cocher "Connect Automatically with priority" cela vous permettra de vous reconnecter directement lorsque le système effectuera un reboot  
+- Cliquer sur "Enregistrer"
 
 ### Importation du dossier software
 Dans un terminal taper les commandes suivantes:  
