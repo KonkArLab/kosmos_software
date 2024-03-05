@@ -85,16 +85,12 @@ Une fois la RPi redémarrée, aller dans l'onglet Wifi (icone avec deux flèches
 pour créer un Hotspot Wifi :
 
 - Aller dans "Advanced Options"
-
-Puis "Create Wifi Hospot"
-
+Cliquer sur "Create Wifi Hospot"
 Lui donner un nom
-
 Ne pas mettre de sécurité sur le réseau
-
-Cliquer sur "Créer"    
-  
-Retourner dans l'onglet Wifi et modifier les paramètres de connexion par défaut   
+Cliquer sur "Créer"
+ 
+Retourner dans l'onglet Wifi pour modifier les paramètres de connexion par défaut  afin que le hotspot se lance automatiquement au démarrage de la Rpi. 
 
 - Aller dans "Advanced options"  
 Aller dans "Modifier les connexions"    
