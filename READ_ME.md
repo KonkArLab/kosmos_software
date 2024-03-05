@@ -84,11 +84,11 @@ pour "I1 Legacy Caméra" choisir "enable"
 Une fois la RPi redémarrée, aller dans l'onglet Wifi (icone avec deux flèches de sens inversées)  
 pour créer un Hotspot Wifi :
 
-- Aller dans "Advanced Options"
-Cliquer sur "Create Wifi Hospot"
-Lui donner un nom
-Ne pas mettre de sécurité sur le réseau
-Cliquer sur "Créer"
+- Aller dans "Advanced Options"  
+Cliquer sur "Create Wifi Hospot"  
+Lui donner un nom  
+Ne pas mettre de sécurité sur le réseau  
+Cliquer sur "Créer"  
  
 Retourner dans l'onglet Wifi pour modifier les paramètres de connexion par défaut  afin que le hotspot se lance automatiquement au démarrage de la Rpi. 
 
