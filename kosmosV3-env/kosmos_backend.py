@@ -121,14 +121,9 @@ class Server:
 
     def image(self):
         camera=self.myMain.thread_camera._camera
-        camera.resolution=(320,240)
-        shape=(camera.resolution[1],camera.resolution[0],3)
-        frame=np.empty(shape,dtype=np.uint8)
-        camera.capture(frame,'rgb')
-        camera.resolution = (self.myMain.thread_camera._X_RESOLUTION, self.myMain.thread_camera._Y_RESOLUTION)
-        image=Image.fromarray(frame)
+        camera.start()
         buf=io.BytesIO()
-        image.save(buf,format='jpeg')
+        camera.capture_file(buf,format='jpeg')
         response=make_response(buf.getvalue())
         response.headers['Content-Type']='image/jpg'
         return response    
