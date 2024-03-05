@@ -85,24 +85,20 @@ Une fois la RPi redémarrée, aller dans l'onglet Wifi (icone avec deux flèches
 pour créer un Hotspot Wifi :
 
 - Aller dans "Advanced Options"
-  
-- Puis "Create Wifi Hospot"
-  
-- Lui donner un nom
-   
-- Ne pas mettre de sécurité sur le réseau
-  
-- Cliquer sur "Créer"    
+Puis "Create Wifi Hospot"
+Lui donner un nom
+Ne pas mettre de sécurité sur le réseau
+Cliquer sur "Créer"    
   
 Retourner dans l'onglet Wifi et modifier les paramètres de connexion par défaut   
 
--Aller dans "Advanced options"  
-- "Modifier les connexions"    
-- Choisir le réseau Hotspot  
-- Sélectionner le réseau créé et aller dans les paramètres (icone en forme d'engrenage)
-- Aller dans l'onglet Général tout à gauche.
-- Cocher "Connect Automatically with priority" cela vous permettra de vous reconnecter directement lorsque le système effectuera un reboot  
-- Cliquer sur "Enregistrer"
+- Aller dans "Advanced options"  
+"Modifier les connexions"    
+Choisir le réseau Hotspot  
+Sélectionner le réseau créé et aller dans les paramètres (icone en forme d'engrenage)
+Aller dans l'onglet Général tout à gauche.
+Cocher "Connect Automatically with priority" cela vous permettra de vous reconnecter directement lorsque le système effectuera un reboot  
+Cliquer sur "Enregistrer"
 
 ### Importation du dossier software
 Dans un terminal taper les commandes suivantes:  
