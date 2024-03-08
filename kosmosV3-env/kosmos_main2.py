@@ -11,7 +11,7 @@ import os
 from threading import Thread
 
 #Tous les methodes de l'API sont dans le fichier kosmos_backend.py
-import kosmos_backend as KBackend
+import kosmos_backend2 as KBackend
 
 #Isolation du class KState dans le fichier kosmos_state.py
 from kosmos_state import KState

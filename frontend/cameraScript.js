@@ -53,11 +53,13 @@ async function setLive(state) {
       }
     } else {
       live = false;
+      const response = await fetch(serverUrl + "/frame_stop");
     }
   } catch (error) {
     console.error("Error fetching camera state:", error);
   }
 }
+
 
 // Function to continuously fetch and display frames in a loop
 async function frameLoop() {

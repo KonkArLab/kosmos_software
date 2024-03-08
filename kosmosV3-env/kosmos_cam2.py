@@ -145,7 +145,7 @@ class KosmosCam(Thread):
                 self._file_name = self._base_name +'_' + '{:04.0f}'.format(i) + '.h264'
                 logging.info(f"Debut de l'enregistrement video {self._file_name}")
                 self._output=VIDEO_ROOT_PATH+self._file_name
-                
+                print('titi')
                 self._camera.start_encoder(self._encoder,self._output)
                 self._camera.start()
                 #self._camera.annotate_text=str(self._camera.awb_gains[0])+' ' +str(self._camera.awb_gains[1])
@@ -153,9 +153,7 @@ class KosmosCam(Thread):
                 #    time.sleep(0.1)
                 #    self.adjust_histo(1,1,0.05)
                 #self._camera.wait_recording(self._record_time)
-                time.sleep(5)
-                self.do_capture()
-                time.sleep(5)
+                time.sleep(10)
                 self._camera.stop()
                 self._camera.stop_encoder()
                 logging.info(f"Fin de l'enregistrement video {self._file_name}")
@@ -228,8 +226,7 @@ class KosmosCam(Thread):
         """  Demande la fin de l'enregistrement et ferme l'objet caméra."""
         # permet d'arrêter l'enregistrement si on passe par le bouton stop"
         self._boucle=False
-        #if self._camera.recording is True:
-        #self._camera.stop()
+    
         
         
     def closeCam(self):
