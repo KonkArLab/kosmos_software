@@ -69,7 +69,7 @@ class KosmosCam(Thread):
         self._video_config['main']['size']=(self._X_RESOLUTION,self._Y_RESOLUTION)
         self._video_config['controls']['FrameDurationLimits']=(self._FRAMEDURATION,self._FRAMEDURATION)
         self._camera.configure(self._video_config)
-        
+        self._camera.start()
         # Instanciation Encoder
         self._encoder=H264Encoder(framerate=self._FRAMERATE, enable_sps_framerate=True,bitrate=10000000)
                 
@@ -147,14 +147,12 @@ class KosmosCam(Thread):
                 self._output=VIDEO_ROOT_PATH+self._file_name
                 print('titi')
                 self._camera.start_encoder(self._encoder,self._output)
-                self._camera.start()
                 #self._camera.annotate_text=str(self._camera.awb_gains[0])+' ' +str(self._camera.awb_gains[1])
                 #if self._AWB == 2:
                 #    time.sleep(0.1)
                 #    self.adjust_histo(1,1,0.05)
                 #self._camera.wait_recording(self._record_time)
                 time.sleep(10)
-                self._camera.stop()
                 self._camera.stop_encoder()
                 logging.info(f"Fin de l'enregistrement video {self._file_name}")
                 # Conversion mp4 si demandée
@@ -233,6 +231,7 @@ class KosmosCam(Thread):
         """Arrêt définitif de la caméra"""
         self._end = True
         self._start_again.set()
+        self._camera.stop()
         self._camera.close()
 
     def restart(self):

@@ -104,10 +104,12 @@ class Server:
 
     def getRecords(self):
         response=dict()
-        strr="ls -l "+VIDEO_ROOT_PATH
+        strr="ls -l "+"'"+VIDEO_ROOT_PATH+"'"
         stream =os.popen(strr)
         streamOutput = stream.read()
-        listTemp = streamOutput.split('-rwxrwxrwx ')[1:]
+        print(streamOutput)
+        listTemp = streamOutput.split('-rw-r--r-- ')[1:]# attention ici... les fichiers video sont en permission -rw-r--r-- mais pourquoi ? ça fait buguer l'algo si ça change...
+        print(listTemp)
         outputList=[]
         for e in listTemp:
             d=dict()
@@ -120,11 +122,11 @@ class Server:
             outputList.append(d)
         response["data"]=outputList
         response["status"]="ok"
+        print(response)
         return response
 
     def image(self):
         camera=self.myMain.thread_camera._camera
-        camera.start()
         buf=io.BytesIO()
         camera.capture_file(buf,format='jpeg')
         response=make_response(buf.getvalue())
@@ -132,7 +134,9 @@ class Server:
         return response    
 
     def image_stop(self):
-        print('tot')
-        self.myMain.thread_camera._camera.stop()
-        
+        #self.myMain.thread_camera._camera.stop()
+        print('toto')
+        return {
+                "status" : "toto"
+        }
         

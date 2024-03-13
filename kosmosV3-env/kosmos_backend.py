@@ -10,6 +10,7 @@ log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 
 from kosmos_state import KState
+from kosmos_config import *
 
 class Server:
     
@@ -102,9 +103,10 @@ class Server:
 
     def getRecords(self):
         response=dict()
-        stream =os.popen('ls -l '+'/media/'+os.listdir("/home")[0]+'/'+os.listdir("/media/"+os.listdir("/home")[0])[0]+'/Video')
+        strr="ls -l "+"'"+VIDEO_ROOT_PATH+"'"
+        stream =os.popen(strr)
         streamOutput = stream.read()
-        listTemp = streamOutput.split('-rwxrwxrwx ')[1:]
+        listTemp = streamOutput.split('-rw-r--r-- ')[1:]
         outputList=[]
         for e in listTemp:
             d=dict()
