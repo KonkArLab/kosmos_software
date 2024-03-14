@@ -124,10 +124,13 @@ Une question apparaît dans le terminal:
   
 ### Stockage des données
 
- - Brancher la clé USB pour le stockage des données. Une fois l'installation réalisée la clé contient un fichier kosmos_config.ini, et deux dossiers : CSV et Video.
-Le fichier kosmos_config.ini contient les paramètres de configuration visible dans l'interface web expliquée ci-dessous.
-Vos fichiers enregistrés avec kosmos seront sauvegarder dans les dossiers CSV et Video.
+ - Brancher la clé USB pour le stockage des données. Une fois l'installation réalisée la clé contient les fichiers suivants.
 
+![dossier cle usb](fichiers-annexe/dossier_cle_usb.png)
+
+Le fichier kosmos_config.ini contient les paramètres de configuration du système. Ces paramètres seront visibles depuis l'interface web grâce à un ficher Javascript. [Explication](https://github.com/KonkArLab/kosmos_software/edit/Refonte_fromIMT2/READ_ME.md#configuration)  
+
+Vos fichiers enregistrés avec kosmos seront sauvegarder dans les dossiers CSV et Video.
 Les fichiers vidéos et csv ne sont pas effacés à chaque démarrage. Si vous avez déjà enregistré des vidéos elles resteront stockées dans ces fichiers. 
 
 - Redémarrer enfin la RPi. Si au démarrage, la led verte de la carte électronique clignote c'est que le système est opérationnel.  
@@ -181,9 +184,10 @@ Affiche le nom, la taille et l'heure de fin d'enregistrement des derniers fichie
 <br>
 
 ##### Configuration
-Permet de modifier des paramètres du système
-
-//ajouter fonctionnement fichier config.ini
+Permet de modifier des paramètres du système  
+Un fichier javascript vient lire le fichier kosmos_config.ini.  
+Puis il va créer une liste avec les différents noms des paramètres écrits dans le fichier kosmos_config.ini. Les noms des paramètres seront associés à un label et les valeurs des paramètres seront associées à un input. Par défaut l'input est en "readonly" c'est à dire qu'il n'est pas modifiable. Pour pouvoir le modifier il faut appuyer sur le bouton `Modify` entrer la nouvelle valeur puis la sauvegarder avec `Save`. Une fois la valeur sauvegardée le fichier kosmos_config.ini se mettra à jour.  
+Il est également possible de modifier les paramètres directement dans le fichier kosmos_config.ini.
 
  - 00_system_mode :
     * si 0 :  
