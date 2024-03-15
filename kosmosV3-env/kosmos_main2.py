@@ -111,8 +111,7 @@ class kosmos_main():
             self.motorThread.restart()
         # Run thread CSV
         self.thread_csv.restart()
-        # Run preview si demandé dans config.ini 
-        self.thread_camera.run_preview()
+        
         # Run thread camera
         self.thread_camera.restart()
         
@@ -133,8 +132,6 @@ class kosmos_main():
         # Demander la fin de l'enregistrement
         self.thread_camera.stopCam()
         
-        #Stop Preview.
-        self.thread_camera.stop_preview()
         if self.PRESENCE_MOTEUR==1:
             # Pause Moteur
             self.motorThread.pause()

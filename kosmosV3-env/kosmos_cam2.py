@@ -38,6 +38,10 @@ class KosmosCam(Thread):
              36_PICAM_conversion_mp4 : 1 si on souhaite effectuer la conversion juste après l'acquisition
              37_PICAM_AWB : Règle l'ajustemetn de paramètres awb pour controle couleur : 0 picam classique, 1 awb fixé, 2 awb ajusté
         """
+        
+        # On restreint les messages 
+        Picamera2.set_logging(Picamera2.ERROR)
+       
         Thread.__init__(self)
         self._Conf = aConf    
         # Résolutions horizontale
@@ -69,7 +73,9 @@ class KosmosCam(Thread):
         self._video_config['main']['size']=(self._X_RESOLUTION,self._Y_RESOLUTION)
         self._video_config['controls']['FrameDurationLimits']=(self._FRAMEDURATION,self._FRAMEDURATION)
         self._camera.configure(self._video_config)
-        self._camera.start()
+        self._camera.start() #A noter que le Preview.NULL démarre également 
+        logging.info("Camera démarrée")
+        
         # Instanciation Encoder
         self._encoder=H264Encoder(framerate=self._FRAMERATE, enable_sps_framerate=True,bitrate=10000000)
                 
@@ -115,18 +121,7 @@ class KosmosCam(Thread):
                 logging.error("Error during conversion:", e, " !!!")
         else:
             logging.info("Pas de conversion mp4 demandée")
-    
-    
-    def run_preview(self):
-        """ Lance le preview"""
-        if self._PREVIEW == 1:
-            self._camera.start_preview(Preview.QTGL)#,x=100, y=200, width=int(self._mode['size'][0]/4), height=int(self._mode['size'][1]/4))
-            
-    def stop_preview(self):
-        if self._PREVIEW == 1:
-            self._camera.stop_preview()
-    
-    
+      
     def initialisation_awb(self):
         if self._AWB == 0:
             logging.info('Gains AWB ajustés par Rpi')
@@ -145,15 +140,21 @@ class KosmosCam(Thread):
                 self._file_name = self._base_name +'_' + '{:04.0f}'.format(i) + '.h264'
                 logging.info(f"Debut de l'enregistrement video {self._file_name}")
                 self._output=VIDEO_ROOT_PATH+self._file_name
-                print('titi')
+                
+                if self._PREVIEW == 1:
+                    self._camera.stop_preview() #éteint le Preview.NULL
+                    self._camera.start_preview(Preview.QTGL,width=800,height=600)
+                
+                # Bloc d'enregistrement/encodage à proprement parler
                 self._camera.start_encoder(self._encoder,self._output)
-                #self._camera.annotate_text=str(self._camera.awb_gains[0])+' ' +str(self._camera.awb_gains[1])
-                #if self._AWB == 2:
-                #    time.sleep(0.1)
-                #    self.adjust_histo(1,1,0.05)
-                #self._camera.wait_recording(self._record_time)
                 time.sleep(10)
                 self._camera.stop_encoder()
+                # Fin de l'encodage
+                
+                if self._PREVIEW == 1:
+                    self._camera.stop_preview() #stop .QTGL
+                    self._camera.start_preview(Preview.NULL) #redemarrage .NULL
+                    
                 logging.info(f"Fin de l'enregistrement video {self._file_name}")
                 # Conversion mp4 si demandée
                 self.convert_to_mp4(self._file_name, VIDEO_ROOT_PATH)
@@ -232,7 +233,9 @@ class KosmosCam(Thread):
         self._end = True
         self._start_again.set()
         self._camera.stop()
+        logging.info("Caméra arrêtée")
         self._camera.close()
+        logging.info("Caméra éteinte")
 
     def restart(self):
         """démarre ou redémarre le thread"""

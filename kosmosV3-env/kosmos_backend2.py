@@ -5,12 +5,15 @@ from PIL import Image
 import io
 import os
 
+
 import logging
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 
+
 from kosmos_state import KState
 from kosmos_config import *
+
 
 class Server:
     
@@ -27,7 +30,6 @@ class Server:
         self.app.add_url_rule("/changeConfig", view_func=self.changeConfig,methods=['POST'])
         self.app.add_url_rule("/getConfig", view_func=self.getConfig)
         self.app.add_url_rule("/frame", view_func=self.image)
-        self.app.add_url_rule("/frame_stop", view_func=self.image_stop)
 
     def run(self) :
         logging.info("Server is running !")
@@ -107,9 +109,7 @@ class Server:
         strr="ls -l "+"'"+VIDEO_ROOT_PATH+"'"
         stream =os.popen(strr)
         streamOutput = stream.read()
-        print(streamOutput)
         listTemp = streamOutput.split('-rw-r--r-- ')[1:]# attention ici... les fichiers video sont en permission -rw-r--r-- mais pourquoi ? ça fait buguer l'algo si ça change...
-        print(listTemp)
         outputList=[]
         for e in listTemp:
             d=dict()
@@ -122,21 +122,16 @@ class Server:
             outputList.append(d)
         response["data"]=outputList
         response["status"]="ok"
-        print(response)
         return response
+
 
     def image(self):
         camera=self.myMain.thread_camera._camera
         buf=io.BytesIO()
+        camera.options["quality"]=10 # compression pour fluidifier
         camera.capture_file(buf,format='jpeg')
         response=make_response(buf.getvalue())
         response.headers['Content-Type']='image/jpg'
         return response    
 
-    def image_stop(self):
-        #self.myMain.thread_camera._camera.stop()
-        print('toto')
-        return {
-                "status" : "toto"
-        }
         
