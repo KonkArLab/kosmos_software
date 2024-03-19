@@ -85,7 +85,7 @@ pour `I1 Legacy Caméra` choisir `enable`
 
 ### Création d'un point Hotspot pour l'application KosmosWeb
 Une fois la RPi redémarrée,   
-- aller dans l'onglet Wifi (icone avec deux flèches de sens inversées) pour créer un Hotspot Wifi :
+- Aller dans l'onglet Wifi (icone avec deux flèches de sens inversées) pour créer un Hotspot Wifi :
 - Aller dans `Advanced Options`  
 - Cliquer sur `Create Wifi Hospot`  
 - Lui donner un nom  
@@ -128,7 +128,7 @@ Une question apparaît dans le terminal:
 
 ![dossier cle usb](fichiers-annexe/dossier_cle_usb.png)
 
-Le fichier kosmos_config.ini contient les paramètres de configuration du système. Ces paramètres seront visibles depuis l'interface web grâce à un ficher Javascript. [Explication](https://github.com/KonkArLab/kosmos_software/edit/Refonte_fromIMT2/READ_ME.md#configuration)  
+Le fichier kosmos_config.ini contient les paramètres de configuration du système. Ces paramètres seront visibles depuis l'interface web grâce à un ficher Javascript. [Explication](https://github.com/KonkArLab/kosmos_software/blob/Refonte_fromIMT2/READ_ME.md#configuration)  
 
 Vos fichiers enregistrés avec kosmos seront sauvegarder dans les dossiers CSV et Video.
 Les fichiers vidéos et csv ne sont pas effacés à chaque démarrage. Si vous avez déjà enregistré des vidéos elles resteront stockées dans ces fichiers. 
