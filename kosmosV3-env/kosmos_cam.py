@@ -45,8 +45,8 @@ class KosmosCam(Thread):
         self._camera.resolution = (self._X_RESOLUTION, self._Y_RESOLUTION)
         self._camera.framerate = self._FRAMERATE
         
-        self._camera.awb_mode='off' # à décommenter pour activer la convertion mp4
-        self._camera.awb_gains=(2,3) # à décommenter pour activer la convertion mp4
+        #self._camera.awb_mode='off' # à décommenter pour activer la convertion mp4
+        #self._camera.awb_gains=(2,3) # à décommenter pour activer la convertion mp4
         
         self._record_time = aConf.get_val_int("SETT_RECORD_TIME")
         self._end = False
