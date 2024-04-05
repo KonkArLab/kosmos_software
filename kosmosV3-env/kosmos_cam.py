@@ -131,7 +131,7 @@ class KosmosCam(Thread):
                 self._file_name = self._base_name +'_' + '{:04.0f}'.format(i) + '.h264'
                 logging.info(f"Debut de l'enregistrement video {self._file_name}")
                 self._camera.start_recording(VIDEO_ROOT_PATH+self._file_name)
-                self._camera.annotate_text=str(self._camera.awb_gains[0])+' ' +str(self._camera.awb_gains[1])
+                #self._camera.annotate_text=str(self._camera.awb_gains[0])+' ' +str(self._camera.awb_gains[1])
                 if self._AWB == 2:
                     time.sleep(0.1)
                     self.adjust_histo(1,1,0.05)
