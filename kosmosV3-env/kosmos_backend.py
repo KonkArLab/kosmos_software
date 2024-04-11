@@ -106,7 +106,8 @@ class Server:
         strr="ls -l "+"'"+VIDEO_ROOT_PATH+"'"
         stream =os.popen(strr)
         streamOutput = stream.read()
-        listTemp = streamOutput.split('-rw-r--r-- ')[1:]
+        strRef=streamOutput.split('\n')[1][0:11]
+        listTemp = streamOutput.split(strRef)[1:]
         outputList=[]
         for e in listTemp:
             d=dict()
