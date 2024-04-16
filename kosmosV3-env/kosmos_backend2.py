@@ -110,17 +110,20 @@ class Server:
         stream =os.popen(strr)
         streamOutput = stream.read()
         strRef=streamOutput.split('\n')[1][0:11]
-        listTemp = streamOutput.split(strRef)[1:]
-        outputList=[]
-        for e in listTemp:
-            d=dict()
-            data=e.split()
-            d["size"]="{:.4f}".format(int(data[3])/(1024**2))
-            d["month"]=data[4]
-            d["day"]=data[5]
-            d["time"]=data[6]
-            d["fileName"]=data[7]
-            outputList.append(d)
+        if len(strRef) !=0:
+            outputList=[]
+            listTemp = streamOutput.split(strRef)[1:]
+            for e in listTemp:
+                d=dict()
+                data=e.split()
+                d["size"]="{:.4f}".format(int(data[3])/(1024**2))
+                d["month"]=data[4]
+                d["day"]=data[5]
+                d["time"]=data[6]
+                d["fileName"]=data[7]
+                outputList.append(d)
+        else:
+            outputList=[]
         response["data"]=outputList
         response["status"]="ok"
         return response
