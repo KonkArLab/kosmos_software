@@ -77,7 +77,9 @@ class kosmosEscMotor(Thread):
         self.moove(self.vitesse_min, 2) 
         self.set_speed(self.vitesse_moteur)
         GPIO.wait_for_edge(self.MOTOR_BUTTON_GPIO,GPIO.RISING,timeout=8000)
+        time.sleep(2)
         self.set_speed(0)
+        
         logging.info('Moteur et ESC prêts !')
         
     def arret_complet(self):
@@ -92,6 +94,7 @@ class kosmosEscMotor(Thread):
                 self.set_speed(self.vitesse_moteur)
                 GPIO.wait_for_edge(self.MOTOR_BUTTON_GPIO,GPIO.RISING,timeout=8000)
                 logging.info('Bouton asservissement Moteur détecté')
+                time.sleep(2)
                 self.set_speed(0)
                 time.sleep(self.tps_POSE)
             else:
