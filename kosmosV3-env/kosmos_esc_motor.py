@@ -71,6 +71,28 @@ class kosmosEscMotor(Thread):
         self.set_speed(aSpeed)
         time.sleep(aTime)
         
+<<<<<<< HEAD
+=======
+        self.set_speed(0)
+        
+        logging.info('Calibatrion moteur et ESC OK.')
+        return 0
+    
+    
+    def arm(self):
+        #This is the arming procedure of an ESC
+        logging.debug('Armement moteur !')
+        self.moove(self.min_value, 10) #10s vitesse min
+        #self.moove(self.fav_value, self._run_time) #tourner temps d'un cycle
+        #self.moove(self.min_value, 1) #10s vitesse min
+        
+        #self.moove(self.fav_value, 1) #tourner temps d'un cycle (commente le 17/10/23 par Antoine)
+
+        self.set_speed(0)
+        logging.info('Moteur et ESC prêts !')
+    
+    
+>>>>>>> bac8122e1c7d2b80a9ea285c3bbf97f558893030
     def autoArm(self): 
         self.power_on()
         time.sleep(1)

@@ -9,10 +9,17 @@ import logging
 import picamera
 import os
 from kosmos_config import *
+<<<<<<< HEAD
 from PIL import Image
 import numpy as np
 import time
 import RPi.GPIO as GPIO  # Importe la bibliotheque pour contrôler les GPIOs
+=======
+
+
+logging.basicConfig(level=logging.DEBUG)
+VIDEO_ROOT_PATH = os.path.join(USB_ROOT_PATH, os.listdir(USB_ROOT_PATH)[0], "Video")
+>>>>>>> bac8122e1c7d2b80a9ea285c3bbf97f558893030
 
 class KosmosCam(Thread):
     """
@@ -42,12 +49,25 @@ class KosmosCam(Thread):
         #Framerate camera
         self._FRAMERATE = aConf.get_val_int("34_PICAM_framerate")
         # si 1 : Lance la fenêtre de preview (utile en debug)
+<<<<<<< HEAD
         self._PREVIEW = aConf.get_val_int("33_PICAM_preview")
         self._record_time = aConf.get_val_int("35_PICAM_record_time")
         # si 1 : conversion mp4
         self._CONVERSION = aConf.get_val_int("36_PICAM_conversion_mp4")
         self._AWB = aConf.get_val_int("37_PICAM_AWB")
 
+=======
+        self._PREVIEW = aConf.get_val_int("SETT_VIDEO_PREVIEW")
+        self._camera = picamera.PiCamera()
+        # (1024,768)
+        self._camera.resolution = (self._X_RESOLUTION, self._Y_RESOLUTION)
+        self._camera.framerate = self._FRAMERATE
+        
+        #self._camera.awb_mode='off' # à décommenter pour activer la convertion mp4
+        #self._camera.awb_gains=(2,3) # à décommenter pour activer la convertion mp4
+        
+        self._record_time = aConf.get_val_int("SETT_RECORD_TIME")
+>>>>>>> bac8122e1c7d2b80a9ea285c3bbf97f558893030
         self._end = False
         self._boucle = True
         self._start_again = Event()
@@ -92,10 +112,16 @@ class KosmosCam(Thread):
         else:
             logging.info("Pas de conversion mp4 demandée")
             
+<<<<<<< HEAD
     def run_preview(self):
         """ Lance le preview"""
         if self._PREVIEW == 1:
             self._camera.start_preview(fullscreen=False, window=(50, 50, int(self._X_RESOLUTION/4),int(self._Y_RESOLUTION/4)))
+=======
+            input_video = self._file_name
+            path = VIDEO_ROOT_PATH # à décommenter pour activer la convertion mp4
+            self.convert_to_mp4(input_video, path) # à décommenter pour activer la convertion mp4
+>>>>>>> bac8122e1c7d2b80a9ea285c3bbf97f558893030
             
     def stop_preview(self):
         if self._PREVIEW == 1:

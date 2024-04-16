@@ -9,6 +9,7 @@ from datetime import datetime
 
 
 CONF_FILE = "kosmos_config.ini"
+<<<<<<< HEAD
 
 USB_ROOT_PATH = "/media/"+(os.listdir("/home")[0])
 USB_NAME=os.listdir(USB_ROOT_PATH)[0]
@@ -21,12 +22,18 @@ GIT_PATH="/home/"+os.listdir("/home")[0]+"/kosmos_software/"
 WORK_PATH=GIT_PATH+"kosmosV3-env/"
 
 BASIC_SECTION = "KOSMOS"   
+=======
+USB_ROOT_PATH = "/media/"+(os.listdir("/home")[0])
+BASIC_SECTION = "KOSMOS"
+
+>>>>>>> bac8122e1c7d2b80a9ea285c3bbf97f558893030
 
 class KosmosConfig:
     """
     Gestion des paramètres et leur lecture depuis le fichier .ini
     Ce fichier pouvant etre sur la clef ou dans le repertoire courant
     """
+<<<<<<< HEAD
     
     def __init__(self):
         logging.debug("Lecture kosmos_config.ini")        
@@ -36,12 +43,70 @@ class KosmosConfig:
         self.config.read(self._file_path)
         logging.info("kosmos_config.ini lu sur clé usb")
 
+=======
+    #Fonction(s) non utilisée(s) - commenter le 18/07/23 par Ion
+    """
+    def find_usb_path(self):
+        #cherche et retourne le repertoire de la clef usb
+        logging.debug(f"Recherche clef usb lancement script : ./kosmos_find_usb.sh {USB_ROOT_PATH}")
+        result = subprocess.run(["./kosmos_find_usb.sh",
+                                 USB_ROOT_PATH],
+                                capture_output=True)
+        logging.debug(f"code retour recherche clef {result.returncode}")
+        logging.debug(f"rech clef {result.stdout.decode()}")
+        if result.returncode == 0:
+            return result.stdout.decode()
+        return 
+    
+    def get_usb_path(self) -> str:
+        #Retourne le repertoire de la clef usb. Il faut que la recherche ait déjà été lancée
+        #sinon la chaine est vide.
+        return self._usb_path
+    
+    def getCurentDir(self) -> str:
+        return self._cur_dir
+    """
+    
+    def __init__(self):
+        logging.debug("DEBUT INIT config")
+        self.config = configparser.ConfigParser()
+        self._usb_path = os.path.join(USB_ROOT_PATH, os.listdir(USB_ROOT_PATH)[0])
+        self._cur_dir = "/home/"+(os.listdir("/home")[0])#os.getenv('PWD')  # Repertoire courant
+        if self._usb_path != "" and os.path.isfile(self._usb_path + '/' + CONF_FILE):
+            self.config.read(self._usb_path + '/' + CONF_FILE)
+            logging.info(f"Fichier de configuration lu sur USB {self._usb_path}/{CONF_FILE}")
+        else:
+            logging.debug(f"Recherche fichier de configuration local {self._cur_dir}/kosmos_software/{CONF_FILE}")
+            if self._cur_dir is not None and os.path.isfile(self._cur_dir + "/kosmos_software/"+ CONF_FILE):
+                self.config.read(self._cur_dir + "/kosmos_software/"+ CONF_FILE)
+                logging.info(f"Fichier de configuration lu en local {self._cur_dir}/kosmos_software/{CONF_FILE}")
+            else:
+                logging.error("Pas de fichier de configuration")
+                exit(-1)
+    
+    #Fonction(s) non utilisée(s) - commenter le 18/07/23 par Ion
+    """
+    def print_all(self):
+        #Affiche le fichier de configuration (pour debug). 
+        # Parcourt des sections
+        for sec in self.config.sections():
+            logging.info("section : {}".format(sec))
+            # parcourir parametres et valeurs
+            for name, value in self.config.items(sec):
+                logging.info("{} = {}".format(name, value))
+    """
+    
+>>>>>>> bac8122e1c7d2b80a9ea285c3bbf97f558893030
     def get_date(self) -> str:
         """Retourne la date formatée en string"""
         date = datetime.now()
         return date.strftime("%Y-%m-%d-%H-%M-%S")
     
+<<<<<<< HEAD
     def get_val_int(self, aKey, aSection=BASIC_SECTION):
+=======
+    def get_val(self, aKey, aSection=BASIC_SECTION):
+>>>>>>> bac8122e1c7d2b80a9ea285c3bbf97f558893030
         """
         Retourne la valeur d'un paramètre dont le nom est passé en argument.
         Parameters:
@@ -49,9 +114,15 @@ class KosmosConfig:
             aSection (str) : section du fichier ini dans le quel on recherche
                     le paramètre de config.
         """
+<<<<<<< HEAD
         return self.config.getint(aSection, aKey)
     
     def get_val(self, aKey, aSection=BASIC_SECTION):
+=======
+        return self.config.get(aSection, aKey)
+
+    def get_val_int(self, aKey, aSection=BASIC_SECTION):
+>>>>>>> bac8122e1c7d2b80a9ea285c3bbf97f558893030
         """
         Retourne la valeur d'un paramètre dont le nom est passé en argument.
         Parameters:
@@ -59,6 +130,7 @@ class KosmosConfig:
             aSection (str) : section du fichier ini dans le quel on recherche
                     le paramètre de config.
         """
+<<<<<<< HEAD
         return self.config.get(aSection, aKey)
     
     def set_val(self,aKey,aValue ,aSection=BASIC_SECTION):
@@ -73,6 +145,14 @@ class KosmosConfig:
     '''
     def copy_file(self, aFileName: str) -> bool:
         """ copy le fichier vers la clef USB """
+=======
+        return self.config.getint(aSection, aKey)
+    
+    #Fonction(s) non utilisée(s) - commenter le 18/07/23 par Ion
+    """
+    def copy_file(self, aFileName: str) -> bool:
+        #copy le fichier vers la clef USB
+>>>>>>> bac8122e1c7d2b80a9ea285c3bbf97f558893030
         logging.debug(f"cp {aFileName} {self._usb_path}")
         if self._usb_path != "":
             result = subprocess.run(["sudo", "cp", aFileName, self._usb_path],
@@ -80,6 +160,7 @@ class KosmosConfig:
             if result.returncode == 0:
                 return True
         return False
+<<<<<<< HEAD
        
     def print_all(self):
         """Affiche le fichier de configuration (pour debug). """
@@ -94,6 +175,12 @@ class KosmosConfig:
     def rm_file(self, aFileName: str) -> bool:
         """ Supprime le fichier dans le répertoire courant
         NE PAS OUBLIER DE LE COPIER la clef USB """
+=======
+
+    def rm_file(self, aFileName: str) -> bool:
+        #Supprime le fichier dans le répertoire courant
+        #NE PAS OUBLIER DE LE COPIER la clef USB 
+>>>>>>> bac8122e1c7d2b80a9ea285c3bbf97f558893030
         logging.debug(f"rm {aFileName}")
         result = subprocess.run(["rm", aFileName],
                                 capture_output=True)
@@ -102,11 +189,20 @@ class KosmosConfig:
         return False
 
     def moove_file(self, aFileName: str) -> bool:
+<<<<<<< HEAD
         """ Déplacer le fichier après la copie la clef USB """
+=======
+        #Déplacer le fichier après la copie la clef USB 
+>>>>>>> bac8122e1c7d2b80a9ea285c3bbf97f558893030
         if self.copy_file(aFileName) is True:
             if self.rm_file(aFileName):
                 logging.info(f"Le fichier {aFileName} a bien été déplacé vers la clef USB.")
                 return True
         logging.warning(f"Impossible de déplacer le {aFileName} vers la clef USB.")
         return False
+<<<<<<< HEAD
     '''
+=======
+    """
+    
+>>>>>>> bac8122e1c7d2b80a9ea285c3bbf97f558893030
