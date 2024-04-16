@@ -71,8 +71,6 @@ class kosmosEscMotor(Thread):
         self.set_speed(aSpeed)
         time.sleep(aTime)
         
-<<<<<<< HEAD
-=======
         self.set_speed(0)
         
         logging.info('Calibatrion moteur et ESC OK.')
@@ -91,8 +89,6 @@ class kosmosEscMotor(Thread):
         self.set_speed(0)
         logging.info('Moteur et ESC prêts !')
     
-    
->>>>>>> bac8122e1c7d2b80a9ea285c3bbf97f558893030
     def autoArm(self): 
         self.power_on()
         time.sleep(1)
