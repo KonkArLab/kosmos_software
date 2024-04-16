@@ -108,7 +108,6 @@ Dans un terminal taper les commandes suivantes:
 ```
 git clone https://github.com/KonkArLab/kosmos_software.git		//Clone le dossier kosmos_software depuis le git
 cd kosmos_software							//Ouvre le dossier kosmos_software
-git checkout Refonte_fromIMT2						//Change de branche et vous place sur la branch "Refonte_fromIMT2"
 ```
 <br>
 
