@@ -1,0 +1,292 @@
+/* Your existing styles up to 450px width */
+body,
+h1,
+h2,
+h3,
+p,
+ul {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Arial", sans-serif;
+  line-height: 1.6;
+}
+
+header {
+  background-color: #333;
+  color: #fff;
+  padding: 10px;
+}
+
+form {
+  border-style: solid;
+  border-width: 2px;
+  border-radius: 5px;
+}
+
+nav ul {
+  list-style-type: none;
+}
+
+nav ul li {
+  display: inline;
+  margin-right: 20px;
+}
+
+div.parameter {
+  margin-bottom: -5px;
+}
+
+a {
+  text-decoration: none;
+  color: #fff;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+table,
+th,
+td {
+  border: 1px solid #ddd;
+}
+
+th,
+td {
+  padding: 12px;
+  text-align: left;
+}
+
+th {
+  background-color: #007bff;
+  color: #fff;
+}
+
+tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+tr:hover {
+  background-color: #ddd;
+}
+
+h1 {
+  margin-left: 10px;
+}
+
+.reboot {
+  margin: auto;
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.parameter {
+  margin-bottom: 15px;
+  display: flex;
+}
+
+.parameter-element {
+  margin: 10px;
+  align-items: center;
+  vertical-align: middle;
+}
+#frame {
+  max-width: 100%;
+  height: auto;
+  margin-top: 10px; /* Adjust margin for consistency with other page */
+}
+
+label {
+  min-width: 200px;
+  align-items: center;
+  font-weight: bold;
+}
+
+input {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+  margin-bottom: 10px;
+}
+
+button {
+  padding: 10px;
+  background-color: #333;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+button:hover {
+  background-color: #555;
+}
+
+#rebootButton {
+  margin-top: 10px;
+  background-color: #4ca3af;
+}
+
+#rebootButton:hover {
+  background-color: #45a049;
+}
+
+/* Media Query for screens under 450px */
+@media (max-width: 450px) {
+  /* Reset some default styles to ensure consistency across browsers */
+  body,
+  h1,
+  h2,
+  h3,
+  p,
+  ul {
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: "Arial", sans-serif;
+    line-height: 1.6;
+  }
+
+  header {
+    background-color: #333;
+    color: #fff;
+    padding: 10px;
+  }
+
+  form {
+    border-style: solid;
+    border-width: 2px;
+    border-radius: 5px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+  }
+
+  th,
+  td {
+    padding: 8px;
+    text-align: left;
+  }
+
+  th {
+    background-color: #007bff;
+    color: #fff;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+
+  tr:hover {
+    background-color: #ddd;
+  }
+
+  nav ul {
+    list-style-type: none;
+  }
+
+  nav ul li {
+    display: inline;
+    margin-right: 10px; /* Adjust the margin for smaller screens */
+  }
+
+  div.parameter {
+    margin-bottom: -5px;
+  }
+
+  label {
+    font-size: 0.7em;
+  }
+
+  a {
+    text-decoration: none;
+    color: #fff;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  .container {
+    max-width: 450px; /* Set a maximum width for smaller screens */
+    margin: 0 auto;
+    padding: 10px; /* Adjust padding for smaller screens */
+  }
+
+  h1 {
+    margin-left: 5px; /* Adjust margin for smaller screens */
+    font-size: 1.2em; /* Adjust font size for smaller screens */
+  }
+
+  .reboot {
+    margin: auto;
+    display: flex;
+    margin-bottom: 5px; /* Adjust margin for smaller screens */
+  }
+
+  .parameter {
+    margin-bottom: 10px; /* Adjust margin for smaller screens */
+    display: flex;
+  }
+
+  .parameter-element {
+    margin: 5px; /* Adjust margin for smaller screens */
+  }
+
+  label {
+    min-width: 150px; /* Adjust min-width for smaller screens */
+    align-items: center;
+    font-weight: bold;
+  }
+
+  input {
+    width: calc(100% - 16px); /* Adjust width for smaller screens */
+    padding: 6px; /* Adjust padding for smaller screens */
+    margin-bottom: 5px; /* Adjust margin for smaller screens */
+  }
+
+  button {
+    padding: 8px; /* Adjust padding for smaller screens */
+    background-color: #333;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+
+  button:hover {
+    background-color: #555;
+  }
+
+  #rebootButton {
+    margin-top: 5px; /* Adjust margin for smaller screens */
+    background-color: #4ca3af;
+  }
+
+  #rebootButton:hover {
+    background-color: #45a049;
+  }
+  #frame {
+    margin-top: 5px;
+  }
+}

@@ -6,20 +6,18 @@
 from threading import Thread, Event
 import subprocess
 import logging
-import picamera
+#import picamera
+from picamera2.encoders import H264Encoder
+from picamera2 import Picamera2,Preview,MappedArray
+import cv2
+
+
 import os
 from kosmos_config import *
-<<<<<<< HEAD
 from PIL import Image
 import numpy as np
 import time
 import RPi.GPIO as GPIO  # Importe la bibliotheque pour contrôler les GPIOs
-=======
-
-
-logging.basicConfig(level=logging.DEBUG)
-VIDEO_ROOT_PATH = os.path.join(USB_ROOT_PATH, os.listdir(USB_ROOT_PATH)[0], "Video")
->>>>>>> bac8122e1c7d2b80a9ea285c3bbf97f558893030
 
 class KosmosCam(Thread):
     """
@@ -40,56 +38,68 @@ class KosmosCam(Thread):
              36_PICAM_conversion_mp4 : 1 si on souhaite effectuer la conversion juste après l'acquisition
              37_PICAM_AWB : Règle l'ajustemetn de paramètres awb pour controle couleur : 0 picam classique, 1 awb fixé, 2 awb ajusté
         """
+        
+        # On restreint les messages 
+        Picamera2.set_logging(Picamera2.ERROR)
+       
         Thread.__init__(self)
         self._Conf = aConf    
-        # Résolution horizontale
+        # Résolutions horizontale
         self._X_RESOLUTION = aConf.get_val_int("31_PICAM_resolution_x")
-        # Résolution verticale
         self._Y_RESOLUTION = aConf.get_val_int("32_PICAM_resolution_y")
-        #Framerate camera
-        self._FRAMERATE = aConf.get_val_int("34_PICAM_framerate")
+        
+        #Framerate et frameduration camera
+        self._FRAMERATE=aConf.get_val_int("34_PICAM_framerate")
+        self._FRAMEDURATION = int(1/self._FRAMERATE*1000000)
+        
         # si 1 : Lance la fenêtre de preview (utile en debug)
-<<<<<<< HEAD
         self._PREVIEW = aConf.get_val_int("33_PICAM_preview")
-        self._record_time = aConf.get_val_int("35_PICAM_record_time")
+        
         # si 1 : conversion mp4
         self._CONVERSION = aConf.get_val_int("36_PICAM_conversion_mp4")
+        
+        # A clrifier
         self._AWB = aConf.get_val_int("37_PICAM_AWB")
+        self._record_time = aConf.get_val_int("35_PICAM_record_time")
 
-=======
-        self._PREVIEW = aConf.get_val_int("SETT_VIDEO_PREVIEW")
-        self._camera = picamera.PiCamera()
-        # (1024,768)
-        self._camera.resolution = (self._X_RESOLUTION, self._Y_RESOLUTION)
-        self._camera.framerate = self._FRAMERATE
-        
-        #self._camera.awb_mode='off' # à décommenter pour activer la convertion mp4
-        #self._camera.awb_gains=(2,3) # à décommenter pour activer la convertion mp4
-        
-        self._record_time = aConf.get_val_int("SETT_RECORD_TIME")
->>>>>>> bac8122e1c7d2b80a9ea285c3bbf97f558893030
+        # Booléens pour les évènements
         self._end = False
         self._boucle = True
         self._start_again = Event()
      
         # Instanciation Camera
-        self._camera = picamera.PiCamera()
-        self._camera.resolution = (self._X_RESOLUTION, self._Y_RESOLUTION)  # (1024,768)
-        self._camera.framerate = self._FRAMERATE
-        #if self._AWB == 0 or self._AWB ==2: # AWB ajustement Picam (0) ou Fait Maison (2) 
-            #self._camera.awb_mode='auto'
+        self._camera=Picamera2()
+        self._video_config=self._camera.create_video_configuration()
+        self._video_config['main']['size']=(self._X_RESOLUTION,self._Y_RESOLUTION)
+        self._video_config['controls']['FrameDurationLimits']=(self._FRAMEDURATION,self._FRAMEDURATION)
+        self._camera.configure(self._video_config)
+        self._camera.start() #A noter que le Preview.NULL démarre également 
+        logging.info("Camera démarrée")
         
-        
-       
+        # Instanciation Encoder
+        self._encoder=H264Encoder(framerate=self._FRAMERATE, enable_sps_framerate=True,bitrate=10000000)
+                
+        #Creation du dossier Video dans la clé usb si pas déjà présent.
         os.chdir(USB_INSIDE_PATH)            
         if not os.path.exists("Video"):
-            #Creation du fichier Video dans la clé usb si pas déjà présent.
             os.mkdir("Video")
         os.chdir(WORK_PATH)
         
-        
-        
+        # Appel heure pour affichage sur la frame
+        self._camera.pre_callback = self.apply_timestamp
+
     
+    def apply_timestamp(self,request):
+        #Time stamp en haut à gauche de la video
+        timestamp = time.strftime("%Y-%m-%d %X")
+        colour = (0, 255, 0)
+        origin = (0, 30)
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        scale = 1
+        thickness = 2
+        with MappedArray(request, "main") as m:
+            cv2.putText(m.array, timestamp, origin, font, scale, colour, thickness)
+      
     def convert_to_mp4(self, input_file, path):
         if self._CONVERSION == 1:
             #Conversion h264 vers mp4 puis effacement du .h264
@@ -111,61 +121,44 @@ class KosmosCam(Thread):
                 logging.error("Error during conversion:", e, " !!!")
         else:
             logging.info("Pas de conversion mp4 demandée")
-            
-<<<<<<< HEAD
-    def run_preview(self):
-        """ Lance le preview"""
-        if self._PREVIEW == 1:
-            self._camera.start_preview(fullscreen=False, window=(50, 50, int(self._X_RESOLUTION/4),int(self._Y_RESOLUTION/4)))
-=======
-            input_video = self._file_name
-            path = VIDEO_ROOT_PATH # à décommenter pour activer la convertion mp4
-            self.convert_to_mp4(input_video, path) # à décommenter pour activer la convertion mp4
->>>>>>> bac8122e1c7d2b80a9ea285c3bbf97f558893030
-            
-    def stop_preview(self):
-        if self._PREVIEW == 1:
-            self._camera.stop_preview()
-    
+      
     def initialisation_awb(self):
         if self._AWB == 0:
             logging.info('Gains AWB ajustés par Rpi')
-            self._camera.awb_mode='auto'
+            self._camera.controls.AwbMode=0
         else:
-            self._camera.start_preview(fullscreen=False, window=(50, 50, int(self._X_RESOLUTION/4),int(self._Y_RESOLUTION/4)))
-            time.sleep(1)
-            g=self._camera.awb_gains
-            logging.info(g)
-            self._camera.awb_mode='off'
-            self._camera.awb_gains=g#(0.5,0.5)
-            self.drc_strength='off'
-            time.sleep(1)
-            self._camera.stop_preview()
-            if self._AWB == 1:
-                logging.info('Gains AWB calculés en surface puis fixés')
-            if self._AWB == 2:
-                logging.info('Gains AWB calculés en surface puis ajustés pour histogramme centré')
-        
-        
+            logging.info('Gains AWB fixés par Rpi')
+            self._camera.set_controls({'AwbEnable': False})
+            self._camera.set_controls({'ColourGains': (5, 0.2)})
+            
     def run(self):       
         while not self._end:
             i=0
             self._base_name = self._Conf.get_val("30_PICAM_file_name") + '_' + self._Conf.get_date()
+           
             while self._boucle == True:                
-                if self._camera.recording is True:
-                    self._camera.stop_recording()
                 self._file_name = self._base_name +'_' + '{:04.0f}'.format(i) + '.h264'
                 logging.info(f"Debut de l'enregistrement video {self._file_name}")
-                self._camera.start_recording(VIDEO_ROOT_PATH+self._file_name)
-                #self._camera.annotate_text=str(self._camera.awb_gains[0])+' ' +str(self._camera.awb_gains[1])
-                if self._AWB == 2:
-                    time.sleep(0.1)
-                    self.adjust_histo(1,1,0.05)
-                self._camera.wait_recording(self._record_time)
+                self._output=VIDEO_ROOT_PATH+self._file_name
+                
+                if self._PREVIEW == 1:
+                    self._camera.stop_preview() #éteint le Preview.NULL
+                    self._camera.start_preview(Preview.QTGL,width=800,height=600)
+                
+                # Bloc d'enregistrement/encodage à proprement parler
+                self._camera.start_encoder(self._encoder,self._output)
+                time.sleep(10)
+                self._camera.stop_encoder()
+                # Fin de l'encodage
+                
+                if self._PREVIEW == 1:
+                    self._camera.stop_preview() #stop .QTGL
+                    self._camera.start_preview(Preview.NULL) #redemarrage .NULL
+                    
                 logging.info(f"Fin de l'enregistrement video {self._file_name}")
                 # Conversion mp4 si demandée
                 self.convert_to_mp4(self._file_name, VIDEO_ROOT_PATH)
-                i=i+1                               
+                i=i+1
             self._start_again.wait()
             self._start_again.clear()            
         logging.info('Thread Camera terminé')       
@@ -173,10 +166,9 @@ class KosmosCam(Thread):
     
     
     def do_capture(self) :
-        #a modifier pour correction RGB
-        self._camera.capture(LOG_PATH+'test.jpg',use_video_port=True,resize=(int(self._X_RESOLUTION/4),int(self._Y_RESOLUTION/4)))
+        self._camera.capture_file(LOG_PATH+'test.jpg')#,use_video_port=True,resize=(int(self._X_RESOLUTION/4),int(self._Y_RESOLUTION/4)))
         logging.debug("Capture reussie")
-        
+    '''  
     def histo(self):
         img= Image.open(LOG_PATH+'test.jpg')
         r,g,b = img.split()
@@ -225,7 +217,7 @@ class KosmosCam(Thread):
                 self._camera.awb_mode='auto'
                 logging.info('Coefficients AWB non trouvés, retour en mode awb_auto')
             os.remove(LOG_PATH+'test.jpg')
-         
+    '''    
     
     
     
@@ -233,15 +225,17 @@ class KosmosCam(Thread):
         """  Demande la fin de l'enregistrement et ferme l'objet caméra."""
         # permet d'arrêter l'enregistrement si on passe par le bouton stop"
         self._boucle=False
-        if self._camera.recording is True:
-            self._camera.stop_recording()
+    
         
         
     def closeCam(self):
         """Arrêt définitif de la caméra"""
         self._end = True
         self._start_again.set()
+        self._camera.stop()
+        logging.info("Caméra arrêtée")
         self._camera.close()
+        logging.info("Caméra éteinte")
 
     def restart(self):
         """démarre ou redémarre le thread"""

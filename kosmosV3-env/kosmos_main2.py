@@ -11,7 +11,7 @@ import os
 from threading import Thread
 
 #Tous les methodes de l'API sont dans le fichier kosmos_backend.py
-import kosmos_backend as KBackend
+import kosmos_backend2 as KBackend
 
 #Isolation du class KState dans le fichier kosmos_state.py
 from kosmos_state import KState
@@ -20,7 +20,7 @@ from kosmos_config import *
 import kosmos_config as KConf
 import kosmos_csv as KCsv
 import kosmos_led as KLed
-import kosmos_cam as KCam
+import kosmos_cam2 as KCam
 import kosmos_esc_motor as KMotor
 import sys
 
@@ -72,7 +72,6 @@ class kosmos_main():
         
         #Definition Thread Moteur
         self.PRESENCE_MOTEUR = self._conf.get_val_int("06_SYSTEM_moteur") # Fonctionnement moteur si 1
-        
         if self.PRESENCE_MOTEUR==1:
             self.motorThread = KMotor.kosmosEscMotor(self._conf)
         
@@ -112,8 +111,7 @@ class kosmos_main():
             self.motorThread.restart()
         # Run thread CSV
         self.thread_csv.restart()
-        # Run preview si demandé dans config.ini 
-        self.thread_camera.run_preview()
+        
         # Run thread camera
         self.thread_camera.restart()
         
@@ -134,8 +132,6 @@ class kosmos_main():
         # Demander la fin de l'enregistrement
         self.thread_camera.stopCam()
         
-        #Stop Preview.
-        self.thread_camera.stop_preview()
         if self.PRESENCE_MOTEUR==1:
             # Pause Moteur
             self.motorThread.pause()
