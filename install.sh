@@ -9,6 +9,7 @@ sudo apt autoremove
 
 #Telechargement de python 3
 sudo apt install python3-pip
+sudo apt install python3-opencv
 
 #Installation des packages necessaires 
 sudo pip install -r requirements.txt

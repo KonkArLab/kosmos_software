@@ -37,6 +37,7 @@ class KosmosCam(Thread):
              35_PICAM_record_time : le temps d'enregistrement en secondes.
              36_PICAM_conversion_mp4 : 1 si on souhaite effectuer la conversion juste après l'acquisition
              37_PICAM_AWB : Règle l'ajustemetn de paramètres awb pour controle couleur : 0 picam classique, 1 awb fixé, 2 awb ajusté
+             38_PICAM_timestamp : présence d'une incrustation avec le temps en haut à gauche
         """
         
         # On restreint les messages 
@@ -48,17 +49,17 @@ class KosmosCam(Thread):
         self._X_RESOLUTION = aConf.get_val_int("31_PICAM_resolution_x")
         self._Y_RESOLUTION = aConf.get_val_int("32_PICAM_resolution_y")
         
-        #Framerate et frameduration camera
+        # Framerate et frameduration camera
         self._FRAMERATE=aConf.get_val_int("34_PICAM_framerate")
         self._FRAMEDURATION = int(1/self._FRAMERATE*1000000)
         
-        # si 1 : Lance la fenêtre de preview (utile en debug)
+        # Preview ou non
         self._PREVIEW = aConf.get_val_int("33_PICAM_preview")
         
         # si 1 : conversion mp4
         self._CONVERSION = aConf.get_val_int("36_PICAM_conversion_mp4")
         
-        # A clrifier
+        # A clarifier
         self._AWB = aConf.get_val_int("37_PICAM_AWB")
         self._record_time = aConf.get_val_int("35_PICAM_record_time")
 
@@ -86,7 +87,8 @@ class KosmosCam(Thread):
         os.chdir(WORK_PATH)
         
         # Appel heure pour affichage sur la frame
-        self._camera.pre_callback = self.apply_timestamp
+        if aConf.get_val_int("38_PICAM_timestamp") == 1:
+            self._camera.pre_callback = self.apply_timestamp
 
     
     def apply_timestamp(self,request):
@@ -130,7 +132,7 @@ class KosmosCam(Thread):
             logging.info('Gains AWB fixés par Rpi')
             self._camera.set_controls({'AwbEnable': False})
             self._camera.set_controls({'ColourGains': (5, 0.2)})
-            
+        
     def run(self):       
         while not self._end:
             i=0
@@ -147,15 +149,20 @@ class KosmosCam(Thread):
                 
                 # Bloc d'enregistrement/encodage à proprement parler
                 self._camera.start_encoder(self._encoder,self._output)
-                time.sleep(10)
+                time_debut=time.time()
+                delta_time=0
+                while self._boucle == True and delta_time < self._record_time:
+                    delta_time = time.time()-time_debut
+                    time.sleep(0.25)    
                 self._camera.stop_encoder()
                 # Fin de l'encodage
-                
+                               
                 if self._PREVIEW == 1:
                     self._camera.stop_preview() #stop .QTGL
                     self._camera.start_preview(Preview.NULL) #redemarrage .NULL
                     
                 logging.info(f"Fin de l'enregistrement video {self._file_name}")
+                
                 # Conversion mp4 si demandée
                 self.convert_to_mp4(self._file_name, VIDEO_ROOT_PATH)
                 i=i+1
@@ -168,6 +175,8 @@ class KosmosCam(Thread):
     def do_capture(self) :
         self._camera.capture_file(LOG_PATH+'test.jpg')#,use_video_port=True,resize=(int(self._X_RESOLUTION/4),int(self._Y_RESOLUTION/4)))
         logging.debug("Capture reussie")
+    
+    
     '''  
     def histo(self):
         img= Image.open(LOG_PATH+'test.jpg')
@@ -218,16 +227,12 @@ class KosmosCam(Thread):
                 logging.info('Coefficients AWB non trouvés, retour en mode awb_auto')
             os.remove(LOG_PATH+'test.jpg')
     '''    
-    
-    
-    
+        
     def stopCam(self):
         """  Demande la fin de l'enregistrement et ferme l'objet caméra."""
         # permet d'arrêter l'enregistrement si on passe par le bouton stop"
         self._boucle=False
-    
-        
-        
+            
     def closeCam(self):
         """Arrêt définitif de la caméra"""
         self._end = True

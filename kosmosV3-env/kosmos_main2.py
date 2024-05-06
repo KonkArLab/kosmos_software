@@ -1,4 +1,4 @@
-#!/usr/bin/env python3 -- coding: utf-8 --
+#!/usr/bitn/env python3 -- coding: utf-8 --
 """ Programme principal du KOSMOS en mode rotation Utilse une machine d'états D Hanon 12 décembre 2020 """
 import logging
 import time
@@ -60,9 +60,11 @@ class kosmos_main():
         GPIO.setup(self.STOP_BUTTON_GPIO, GPIO.IN)
         GPIO.setup(self.RECORD_BUTTON_GPIO, GPIO.IN)
         
+        # Mode du système
+        self.MODE=self._conf.get_val_int("00_SYSTEM_mode") 
         
-        #Mode 1 pour staviro
-        #self.MODE=self._conf.get_val_int("00_SYSTEM_mode") # à mettre dans le ini
+        # Temps total de fonctionnement de l'appareil (pour éviter des crashs batteries)
+        self.tps_total_acquisition = self._conf.get_val_int("07_SYSTEM_tps_fonctionnement") 
         
         #Paramètres camera & définition Thread Camera
         self.thread_camera = KCam.KosmosCam(self._conf)
@@ -74,9 +76,7 @@ class kosmos_main():
         self.PRESENCE_MOTEUR = self._conf.get_val_int("06_SYSTEM_moteur") # Fonctionnement moteur si 1
         if self.PRESENCE_MOTEUR==1:
             self.motorThread = KMotor.kosmosEscMotor(self._conf)
-        
-        
-  
+          
     def clear_events(self):
         """Mise à 0 des evenements attachés aux boutons"""
         self.record_event.clear()
@@ -86,44 +86,53 @@ class kosmos_main():
     def starting(self):
         logging.info("STARTING : Kosmos en train de démarrer")
         self.thread_camera.initialisation_awb()
-        if self.PRESENCE_MOTEUR==1:
+        if self.PRESENCE_MOTEUR == 1:
             self.motorThread.autoArm()       
         self._ledB.pause()
         self.state = KState.STANDBY
     
     def standby(self):
         logging.info("STAND BY : Kosmos prêt")
+        self._extinction = False 
         self._ledB.set_on()
         self.button_event.wait()
         if myMain.stop_event.isSet():
             self.state = KState.SHUTDOWN
+        elif myMain.record_event.isSet():
+            self.state = KState.WORKING
         else:
-            if myMain.record_event.isSet():
-                self.state = KState.WORKING
+            print('WTF !?')
+        
         self._ledB.set_off()
       
     def working(self):
-        logging.info("WORKING : Kosmos entame son enregistrement")
+        logging.info("WORKING : Debut de l'enregistrement")       
+        
         self._ledB.set_off()
         
-        if self.PRESENCE_MOTEUR==1:
+        if self.PRESENCE_MOTEUR == 1:
             # Run thread moteur
             self.motorThread.restart()
+        
         # Run thread CSV
         self.thread_csv.restart()
         
         # Run thread camera
         self.thread_camera.restart()
         
-        while True :
+        # Attente d'un Event ou que le temps total soit dépassé
+        while True:
             self.clear_events()
-            self.button_event.wait()
+            self.record_event.wait(timeout = self.tps_total_acquisition)
             if myMain.record_event.isSet():
+                print('Sortie par bouton')
                 break
             else:
-                continue
-            
-        self.state =KState.STOPPING       
+                self._extinction = True
+                print('Sortie par extinction')
+                break
+                
+        self.state = KState.STOPPING       
     
     def stopping(self):
         logging.info("STOPPING : Kosmos termine son enregistrement")
@@ -135,11 +144,20 @@ class kosmos_main():
         if self.PRESENCE_MOTEUR==1:
             # Pause Moteur
             self.motorThread.pause()
+                
         # Pause Thread CSV
         self.thread_csv.pause()
         
+        # Pause LED
         self._ledR.pause()
-        self.state = KState.STANDBY
+        
+        if self._extinction == False:
+            # On s'est arrêté via un bouton, on retourne donc en stand by
+            self.state = KState.STANDBY
+        elif self._extinction == True:
+            # On s'est arrêté car arrivé au bout du temps_total de fonctionnement du système
+            time.sleep(5) #tempo pour gérer la boucle while d'enregistrement
+            self.state = KState.SHUTDOWN
         
     def shutdown(self):
         logging.info("SHUTDOWN : Kosmos passe à l'arrêt total")
@@ -205,20 +223,19 @@ class kosmos_main():
                 self.shutdown()
 
 # Fin de la classe kosmos_main
-
 def stop_cb(channel):
     """Callback du bp shutdown"""
     if not myMain.stop_event.isSet():
         logging.debug("Bouton Shutdown pressé")
-        myMain.stop_event.set()
-        myMain.button_event.set()
+        myMain.stop_event.set() 
+        myMain.button_event.set() # cette ligne permet d'activer le button global
 
 def record_cb(channel):
     """Callback du bp start/stop record"""
     if not myMain.record_event.isSet():
         logging.debug("Bouton start/stop pressé")
         myMain.record_event.set()
-        myMain.button_event.set()
+        myMain.button_event.set() # cette ligne permet d'activer le button global
 
 #Instance du classe principale
 myMain = kosmos_main()
