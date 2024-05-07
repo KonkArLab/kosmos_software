@@ -10,10 +10,11 @@ sudo apt autoremove
 #Telechargement de python 3
 sudo apt install python3-pip
 sudo apt install python3-opencv
+sudo apt install python3-flask-cors
+
 
 #Installation des packages necessaires 
 sudo pip install -r requirements.txt
-#sudo pip install flask_cors
 
 #Recuperation du nom de la raspberry
 nom_raspberry=$(whoami)

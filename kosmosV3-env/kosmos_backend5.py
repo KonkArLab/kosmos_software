@@ -88,6 +88,11 @@ class Server:
             del self.myMain.thread_camera
             del self.myMain.thread_csv
             
+            self.myMain._ledR.close()
+            self.myMain._ledB.close()
+            self.myMain.Button_Stop.close() 
+            self.myMain.Button_Record.close()
+            
             self.myMain.init()
             self.myMain.button_event.set()
             return {
