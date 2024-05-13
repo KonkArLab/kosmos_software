@@ -6,11 +6,9 @@
 from threading import Thread, Event
 import subprocess
 import logging
-#import picamera
 from picamera2.encoders import H264Encoder
 from picamera2 import Picamera2,Preview,MappedArray
 import cv2
-
 
 import os
 from kosmos_config import *

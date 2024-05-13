@@ -4,7 +4,6 @@ import logging
 import time
 from threading import Event
 import threading
-#import RPi.GPIO as GPIO
 from gpiozero import LED, Button
 import os
 
@@ -20,7 +19,6 @@ from kosmos_state import KState
 from kosmos_config import *
 import kosmos_config as KConf
 import kosmos_csv as KCsv
-import kosmos_led5 as KLed
 import kosmos_cam5 as KCam
 import kosmos_esc_motor5 as KMotor
 import sys
@@ -56,8 +54,8 @@ class kosmos_main():
         self._ledR.off()        
 
         # Boutons
-        self.Button_Stop = Button(self._conf.get_val_int("02_SYSTEM_stop_button_gpio"))
-        self.Button_Record = Button(self._conf.get_val_int("01_SYSTEM_record_button_gpio"))
+        self.Button_Stop = Button(self._conf.get_val_int("02_SYSTEM_stop_button_gpio"))#,bounce_time=500)
+        self.Button_Record = Button(self._conf.get_val_int("01_SYSTEM_record_button_gpio"))#,bounce_time=500)
         
         # Mode du système
         self.MODE=self._conf.get_val_int("00_SYSTEM_mode") 
@@ -97,8 +95,6 @@ class kosmos_main():
     def standby(self):
         logging.info("STAND BY : Kosmos prêt")
         self._extinction = False 
-        
-        #self._ledB.set_on()
         self._ledR.off()
         self._ledB.on()
         
@@ -109,16 +105,12 @@ class kosmos_main():
             self.state = KState.WORKING
         else:
             print('WTF !?')
-        
-        #self._ledB.set_off()
-      
+              
     def working(self):
         logging.info("WORKING : Debut de l'enregistrement")       
         
         self._ledB.off()
-        
-        #self._ledB.set_off()
-        
+                
         if self.PRESENCE_MOTEUR == 1:
             # Run thread moteur
             self.motorThread.restart()
@@ -145,7 +137,6 @@ class kosmos_main():
     
     def stopping(self):
         logging.info("STOPPING : Kosmos termine son enregistrement")
-        #self._ledR.startAgain()        
         
         self._ledB.off()
         self._ledR.blink()
@@ -159,9 +150,6 @@ class kosmos_main():
                 
         # Pause Thread CSV
         self.thread_csv.pause()
-        
-        # Pause LED
-        #self._ledR.pause()
         
         if self._extinction == False:
             # On s'est arrêté via un bouton, on retourne donc en stand by

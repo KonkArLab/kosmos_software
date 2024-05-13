@@ -9,7 +9,8 @@ Utilise la lib pigpio
 - Modif du 26 février 2021 : ajout du relai d'alimentation et utilisation pour calibrer et armer
 """
 import logging
-import RPi.GPIO as GPIO  # Importe la bibliotheque pour contrôler les GPIOs
+#import RPi.GPIO as GPIO  # Importe la bibliotheque pour contrôler les GPIOs
+from gpiozero import LED, Button, DigitalOutputDevice, PWMOutputDevice
 import time
 import pigpio  # importing GPIO library
 from threading import Thread
@@ -31,16 +32,23 @@ class kosmosEscMotor(Thread):
             logging.error(f"Problème avec libairie pigpiod {result.stdout.decode()}")
 
         # Initialisation port GPIO ESC & RElai
+        '''
         self.gpio_port = aConf.get_val_int("10_MOTOR_esc_gpio")
         self.gpio_power_port = aConf.get_val_int("11_MOTOR_power_gpio")
         self._gpio = pigpio.pi()
         GPIO.setup(self.gpio_power_port, GPIO.OUT)  # Active le controle du GPIO
         self._gpio.set_servo_pulsewidth(self.gpio_port, 0)
-                
+        '''        
+        self.Relai_GPIO = DigitalOutputDevice(aConf.get_val_int("11_MOTOR_power_gpio"))
+        self.PWM_GPIO = PWMOutputDevice(aConf.get_val_int("10_MOTOR_esc_gpio"))
+        
         # Initialisation du bouton asservissement moteur
+        '''
         self.MOTOR_BUTTON_GPIO = aConf.get_val_int("12_MOTOR_button_gpio")
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(self.MOTOR_BUTTON_GPIO, GPIO.IN)              
+        '''
+        self.Button_motor = Button(aConf.get_val_int("12_MOTOR_button_gpio"))#,bounce_time=500000)
         
         # Evénement pour commander l'arrêt du Thread
         self._pause_event = Event()
@@ -54,16 +62,21 @@ class kosmosEscMotor(Thread):
         
     def power_on(self):
         """Commande le relai d'alimentation de l'ESC"""
-        GPIO.output(self.gpio_power_port, GPIO.HIGH) # Coupure du relai
+        #GPIO.output(self.gpio_power_port, GPIO.HIGH) # Coupure du relai
+        self.Relai_GPIO.on()
 
     def power_off(self):
         """Commande le relai d'alimentation de l'ESC"""
-        GPIO.output(self.gpio_power_port, GPIO.LOW) # Coupure du relai
+        #GPIO.output(self.gpio_power_port, GPIO.LOW) # Coupure du relai
+        self.Relai_GPIO.off()
         
     def set_speed(self, aSpeed):
         """Lancement à la vitesse passée en paramètre
         1000 < vitesse < 2100 """
-        self._gpio.set_servo_pulsewidth(self.gpio_port, aSpeed)
+        #self._gpio.set_servo_pulsewidth(self.gpio_port, aSpeed)
+        
+        #self.PWM_GPIO.pulse(?)
+        
         logging.debug(f"Moteur vitesse {aSpeed}.")    
         
     def moove(self, aSpeed, aTime):
@@ -76,7 +89,9 @@ class kosmosEscMotor(Thread):
         time.sleep(1)
         self.moove(self.vitesse_min, 2) 
         self.set_speed(self.vitesse_moteur)
-        GPIO.wait_for_edge(self.MOTOR_BUTTON_GPIO,GPIO.RISING,timeout=8000)
+        
+        #GPIO.wait_for_edge(self.MOTOR_BUTTON_GPIO,GPIO.RISING,timeout=8000)
+        
         time.sleep(2)
         self.set_speed(0)
         
@@ -85,14 +100,17 @@ class kosmosEscMotor(Thread):
     def arret_complet(self):
         #This will stop every action your Pi is performing for ESC ofcourse.
         self.set_speed(0)
-        self._gpio.stop()
+        #self._gpio.stop()
+        self.PWM_GPIO.off()
     
     def run(self):
         logging.info('Debut du thread moteur ESC.')
         while not self._t_stop:
             if not self._pause_event.isSet():
                 self.set_speed(self.vitesse_moteur)
-                GPIO.wait_for_edge(self.MOTOR_BUTTON_GPIO,GPIO.RISING,timeout=8000)
+                
+                #GPIO.wait_for_edge(self.MOTOR_BUTTON_GPIO,GPIO.RISING,timeout=8000)
+                
                 logging.info('Bouton asservissement Moteur détecté')
                 time.sleep(2)
                 self.set_speed(0)
