@@ -83,16 +83,24 @@ class Server:
                 self.myMain._conf.set_val(key,data[key])
             self.myMain._conf.update_file()
             self.myMain.thread_camera.closeCam()
+            
+            # Désallocation des GPIOs avant reboot
+            self.myMain._ledR.close()
+            self.myMain._ledB.close()
+            self.myMain.Button_Stop.close() 
+            self.myMain.Button_Record.close()
+            if self.myMain.PRESENCE_MOTEUR==1:
+                self.myMain.motorThread.Relai_GPIO.close()
+                self.myMain.motorThread.PWM_GPIO.close()
+                self.myMain.motorThread.Button_motor.close()
+            
+            # Arrêt des Thread en cours
             if self.myMain.PRESENCE_MOTEUR==1:
                 del self.myMain.motorThread
             del self.myMain.thread_camera
             del self.myMain.thread_csv
             
-            self.myMain._ledR.close()
-            self.myMain._ledB.close()
-            self.myMain.Button_Stop.close() 
-            self.myMain.Button_Record.close()
-            
+            # Réinitialisation
             self.myMain.init()
             self.myMain.button_event.set()
             return {

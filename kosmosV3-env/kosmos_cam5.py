@@ -109,16 +109,15 @@ class KosmosCam(Thread):
 
             if not os.path.exists(full_input_path):
                 logging.error(f"Input file '{full_input_path}' not found.")
-                return
-                
+                return                
             try:
                 subprocess.run(['sudo', 'ffmpeg', '-probesize', '2G', '-i', full_input_path, '-c', 'copy', full_output_path, '-loglevel', 'warning'])
                 logging.info("Conversion successful !")
                 os.remove(full_input_path)
-                logging.debug(f"Deleted input H.264 file: {input_file}")
-                
+                logging.debug(f"Deleted input H.264 file: {input_file}")                
             except subprocess.CalledProcessError as e:
                 logging.error("Error during conversion:", e, " !!!")
+        
         else:
             logging.info("Pas de conversion mp4 demandée")
       

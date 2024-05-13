@@ -54,8 +54,8 @@ class kosmos_main():
         self._ledR.off()        
 
         # Boutons
-        self.Button_Stop = Button(self._conf.get_val_int("02_SYSTEM_stop_button_gpio"))#,bounce_time=500)
-        self.Button_Record = Button(self._conf.get_val_int("01_SYSTEM_record_button_gpio"))#,bounce_time=500)
+        self.Button_Stop = Button(self._conf.get_val_int("02_SYSTEM_stop_button_gpio"))#,bounce_time=0.5)
+        self.Button_Record = Button(self._conf.get_val_int("01_SYSTEM_record_button_gpio"))#,bounce_time=0.5)
         
         # Mode du système
         self.MODE=self._conf.get_val_int("00_SYSTEM_mode") 
@@ -86,9 +86,9 @@ class kosmos_main():
         self._ledB.blink()
         
         self.thread_camera.initialisation_awb()
+        
         if self.PRESENCE_MOTEUR == 1:
             self.motorThread.autoArm()       
-        time.sleep(5)
         
         self.state = KState.STANDBY
     
@@ -126,11 +126,11 @@ class kosmos_main():
             self.clear_events()
             self.record_event.wait(timeout = self.tps_total_acquisition)
             if myMain.record_event.is_set():
-                print('Sortie par bouton')
+                logging.info('Sortie par bouton')
                 break
             else:
                 self._extinction = True
-                print('Sortie par extinction')
+                logging.info('Sortie par extinction')
                 break
                 
         self.state = KState.STOPPING       
@@ -181,9 +181,11 @@ class kosmos_main():
                 self.motorThread.join() 
             self.motorThread.power_off()
         
+        # Extinction des LEDs
         self._ledR.off()
-        self._ledB.off() 
-    
+        self._ledB.off()
+        
+        #Arrêt du logging
         logging.shutdown()
 
         # Commande de stop au choix arrêt du programme ou du PC
@@ -197,7 +199,7 @@ class kosmos_main():
         while True:
             if self.state == KState.STARTING:
                 self.starting()
-                time.sleep(1)
+                time.sleep(0.5)
                 self.clear_events()
 
             if self.state == KState.STANDBY:
@@ -222,7 +224,7 @@ class kosmos_main():
 def stop_cb(channel):
     """Callback du bp shutdown"""
     if not myMain.stop_event.is_set():
-        logging.debug("Bouton Shutdown pressé")
+        logging.debug("Bouton shutdown pressé")
         myMain.stop_event.set() 
         myMain.button_event.set() # cette ligne permet d'activer le button global
 
