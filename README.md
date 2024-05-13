@@ -78,8 +78,8 @@ Se déplacer avec les flèches et sélectionner les paramètres en appuyant sur 
 
  - Dans le menu, aller dans `6 Advanced Options` puis dans `AA Network Config` choisir `NetworkManager`	 
   
- - Aller ensuite dans `3 Interface options`  
-pour `I1 Legacy Caméra` choisir `enable`  
+ [comment]: <- Aller ensuite dans `3 Interface options`  >
+ [comment]: <pour `I1 Legacy Caméra` choisir `enable`  >
    
 - Aller enfin dans `Finish` puis sélectionner `Oui`. Le système va redémarrer.  
 
