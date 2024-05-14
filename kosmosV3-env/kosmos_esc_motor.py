@@ -66,17 +66,16 @@ class kosmosEscMotor(Thread):
         self._gpio.set_servo_pulsewidth(self.gpio_port, aSpeed)
         logging.debug(f"Moteur vitesse {aSpeed}.")    
         
-    def moove(self, aSpeed, aTime):
-        """Lancement à la vitesse et temps passés en paramètre"""
-        self.set_speed(aSpeed)
-        time.sleep(aTime)
-        
     def autoArm(self): 
         self.power_on()
         time.sleep(1)
-        self.moove(self.vitesse_min, 2) 
+        
+        self.set_speed(self.vitesse_min)
+        time.sleep(2)
+        
         self.set_speed(self.vitesse_moteur)
-        GPIO.wait_for_edge(self.MOTOR_BUTTON_GPIO,GPIO.RISING,timeout=8000)
+        GPIO.wait_for_edge(self.MOTOR_BUTTON_GPIO,GPIO.RISING,timeout=5000)
+        logging.info('Bouton asservissement Moteur détecté')
         time.sleep(2)
         self.set_speed(0)
         
@@ -96,12 +95,19 @@ class kosmosEscMotor(Thread):
                 logging.info('Bouton asservissement Moteur détecté')
                 time.sleep(2)
                 self.set_speed(0)
-                time.sleep(self.tps_POSE)
-            else:
-                self.set_speed(0)
+                
+                # Temps de pose pour un secteur de 60°
+                time_debut=time.time()
+                delta_time=0
+                while not self._pause_event.isSet() and delta_time < self.tps_POSE:
+                    delta_time = time.time()-time_debut
+                    time.sleep(0.5)
+                    print(delta_time)
+                    
+            else: 
                 self._continue_event.wait()  
         # End While        
-        self.arret_complet()
+        self.arret_complet() # arrêt relai
         logging.info("Thread moteur terminé")
    
     def stop_thread(self):

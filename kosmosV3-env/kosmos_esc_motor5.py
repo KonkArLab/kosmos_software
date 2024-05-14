@@ -23,7 +23,7 @@ class kosmosEscMotor(Thread):
         self.PWM_GPIO = PWMOutputDevice(pin=aConf.get_val_int("10_MOTOR_esc_gpio"),frequency=50)
         
         # Initialisation du bouton asservissement moteur
-        self.Button_motor = Button(aConf.get_val_int("12_MOTOR_button_gpio"),bounce_time=1.0)
+        self.Button_motor = Button(aConf.get_val_int("12_MOTOR_button_gpio"))
         
         # Evénement pour commander l'arrêt du Thread
         self._pause_event = Event()
@@ -52,16 +52,16 @@ class kosmosEscMotor(Thread):
     def autoArm(self): 
         self.power_on()
         time.sleep(1)
-        self.set_speed(self.vitesse_min) #cette commande ne fait pas tourner le KOSMOS
+        
+        self.set_speed(self.vitesse_min) # ne fait pas tourner le KOSMOS
         time.sleep(2)
         
-        self.set_speed(self.vitesse_moteur) #celle-ci oui
-        self.Button_motor.wait_for_press()#timeout=8)
+        self.set_speed(self.vitesse_moteur) 
+        self.Button_motor.wait_for_release(timeout=8)#timeout=8)
         logging.info('Bouton asservissement Moteur détecté')
-        time.sleep(2)
-        
-        self.set_speed(0)
         time.sleep(1)
+        self.set_speed(0)
+        
         logging.info('Moteur et ESC prêts !')
         
     def arret_complet(self):
@@ -72,26 +72,23 @@ class kosmosEscMotor(Thread):
         logging.info('Debut du thread moteur ESC.')
         while not self._t_stop:
             if not self._pause_event.isSet():
+                
                 self.set_speed(self.vitesse_moteur)
-                print(self.Button_motor.value)
-                self.Button_motor.wait_for_press()#timeout=8)
+                self.Button_motor.wait_for_release(timeout=5)
                 logging.info('Bouton asservissement Moteur détecté')
                 time.sleep(1)
-                print(self.Button_motor.value)
                 self.set_speed(0)
                 
                 time_debut=time.time()
                 delta_time=0
                 while not self._pause_event.isSet() and delta_time < self.tps_POSE:
                     delta_time = time.time()-time_debut
-                    time.sleep(1.0)
-                    print(self.Button_motor.value)
+                    time.sleep(0.5)
                 
             else:
-                self.set_speed(0)
                 self._continue_event.wait()  
         # End While        
-        self.arret_complet()
+        self.arret_complet() #stop relai
         logging.info("Thread moteur terminé")
    
     def stop_thread(self):

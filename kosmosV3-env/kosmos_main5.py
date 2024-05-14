@@ -103,8 +103,8 @@ class kosmos_main():
             self.state = KState.SHUTDOWN
         elif myMain.record_event.is_set():
             self.state = KState.WORKING
-        else:
-            print('WTF !?')
+        #else:
+        #    print('WTF !?')
               
     def working(self):
         logging.info("WORKING : Debut de l'enregistrement")       
