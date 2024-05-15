@@ -92,8 +92,8 @@ class KosmosCam(Thread):
     def apply_timestamp(self,request):
         #Time stamp en haut à gauche de la video
         timestamp = time.strftime("%Y-%m-%d %X")
-        colour = (0, 255, 0)
-        origin = (0, 30)
+        colour = (255, 255, 255)
+        origin = (30, 1050)
         font = cv2.FONT_HERSHEY_SIMPLEX
         scale = 1
         thickness = 2

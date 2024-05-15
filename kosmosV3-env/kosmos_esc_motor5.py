@@ -6,7 +6,7 @@ Controle du moteur ESC
 """
 
 import logging
-from gpiozero import LED, Button, DigitalOutputDevice, PWMOutputDevice
+from gpiozero import Button, DigitalOutputDevice, PWMOutputDevice
 import time
 from threading import Thread
 from threading import Event
@@ -23,7 +23,7 @@ class kosmosEscMotor(Thread):
         self.PWM_GPIO = PWMOutputDevice(pin=aConf.get_val_int("10_MOTOR_esc_gpio"),frequency=50)
         
         # Initialisation du bouton asservissement moteur
-        self.Button_motor = Button(aConf.get_val_int("12_MOTOR_button_gpio"))
+        self.Button_motor = Button(aConf.get_val_int("12_MOTOR_button_gpio"))#,bounce_time=0.5)
         
         # Evénement pour commander l'arrêt du Thread
         self._pause_event = Event()
@@ -34,6 +34,7 @@ class kosmosEscMotor(Thread):
         self.tps_POSE=aConf.get_val_int("15_MOTOR_pause_time")
         self.vitesse_moteur=aConf.get_val_int("14_MOTOR_vitesse_favorite")
         self.vitesse_min = aConf.get_val_int("13_MOTOR_vitesse_min")
+        self.inertie_time = aConf.get_val_int("16_MOTOR_inertie_time")
         
     def power_on(self):
         """Commande le relai d'alimentation de l'ESC"""
@@ -57,9 +58,9 @@ class kosmosEscMotor(Thread):
         time.sleep(2)
         
         self.set_speed(self.vitesse_moteur) 
-        self.Button_motor.wait_for_release(timeout=8)#timeout=8)
+        self.Button_motor.wait_for_release(timeout=5)
         logging.info('Bouton asservissement Moteur détecté')
-        time.sleep(1)
+        time.sleep(self.inertie_time)
         self.set_speed(0)
         
         logging.info('Moteur et ESC prêts !')
@@ -76,7 +77,7 @@ class kosmosEscMotor(Thread):
                 self.set_speed(self.vitesse_moteur)
                 self.Button_motor.wait_for_release(timeout=5)
                 logging.info('Bouton asservissement Moteur détecté')
-                time.sleep(1)
+                time.sleep(self.inertie_time)
                 self.set_speed(0)
                 
                 time_debut=time.time()
