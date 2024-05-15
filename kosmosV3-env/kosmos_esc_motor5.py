@@ -34,7 +34,7 @@ class kosmosEscMotor(Thread):
         self.tps_POSE=aConf.get_val_int("15_MOTOR_pause_time")
         self.vitesse_moteur=aConf.get_val_int("14_MOTOR_vitesse_favorite")
         self.vitesse_min = aConf.get_val_int("13_MOTOR_vitesse_min")
-        self.inertie_time = aConf.get_val_int("16_MOTOR_inertie_time")
+        self.inertie_time = aConf.get_val_int("16_MOTOR_inertie_time") # en ms
         
     def power_on(self):
         """Commande le relai d'alimentation de l'ESC"""
@@ -60,7 +60,7 @@ class kosmosEscMotor(Thread):
         self.set_speed(self.vitesse_moteur) 
         self.Button_motor.wait_for_release(timeout=5)
         logging.info('Bouton asservissement Moteur détecté')
-        time.sleep(self.inertie_time)
+        time.sleep(self.inertie_time/1000)
         self.set_speed(0)
         
         logging.info('Moteur et ESC prêts !')
@@ -77,7 +77,7 @@ class kosmosEscMotor(Thread):
                 self.set_speed(self.vitesse_moteur)
                 self.Button_motor.wait_for_release(timeout=5)
                 logging.info('Bouton asservissement Moteur détecté')
-                time.sleep(self.inertie_time)
+                time.sleep(self.inertie_time/1000)
                 self.set_speed(0)
                 
                 time_debut=time.time()
