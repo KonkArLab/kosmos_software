@@ -76,21 +76,21 @@ sudo raspi-config		//Ouvre les paramètres de configuration de la raspberry
 Un menu s'affiche, utiliser le clavier pour sélectionner les paramètres souhaités (pas de souris).  
 Se déplacer avec les flèches et sélectionner les paramètres en appuyant sur Entrée. 
 
- - Dans le menu, aller dans `6 Advanced Options` puis dans `AA Network Config` choisir `NetworkManager`	 
+ [comment]: <- Dans le menu, aller dans `6 Advanced Options` puis dans `AA Network Config` choisir `NetworkManager`	> 
   
  [comment]: <- Aller ensuite dans `3 Interface options`  >
  [comment]: <pour `I1 Legacy Caméra` choisir `enable`  >
 
- - Aller ensuite dans `3 Interface Options` puis dans `I2 VNC` choisir `Enable`	 
+ - Aller dans `3 Interface Options` puis dans `I2 VNC` choisir `Enable`	 
    
- - Aller enfin dans `Finish` puis sélectionner `Oui`. Le système va redémarrer.  
+ - Aller dans `Finish` puis sélectionner `Oui`.   
 
 ### Création d'un point Hotspot pour l'application KosmosWeb
-Une fois la RPi redémarrée,   
+[comment]: <Une fois la RPi redémarrée,>   
 - Aller dans l'onglet Wifi (icone avec deux flèches de sens inversées) pour créer un Hotspot Wifi :
 - Aller dans `Advanced Options`  
 - Cliquer sur `Create Wifi Hospot`  
-- Lui donner un nom `KosmosWeb2` où 2 est le numéro du Kosmos
+- Lui donner un nom `KosmosWeb2` où 2 est un numéro permettant de distinguer les systèmes kosmos entre eux 
 - Ne pas mettre de sécurité sur le réseau  
 - Cliquer sur `Créer`  
  
@@ -100,7 +100,7 @@ Une fois la RPi redémarrée,
 - Aller dans `Advanced options`  
 - Aller dans `Modifier les connexions`    
 - Choisir le réseau Hotspot  
-- Sélectionner le réseau créé `KosmosWeb`  et aller dans les paramètres (icone en forme d'engrenage)
+- Sélectionner le réseau créé `KosmosWeb2`  et aller dans les paramètres (icone en forme d'engrenage)
 - Aller dans l'onglet `Général` tout à gauche.
 - Cocher `Connect Automatically with priority`, cela vous permettra de vous reconnecter directement lorsque le système effectuera un reboot  
 - Cliquer sur `Enregistrer`
