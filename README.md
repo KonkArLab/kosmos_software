@@ -223,7 +223,7 @@ Il est également possible de modifier les paramètres directement dans le fichi
  - 33_picam_preview :
     * si 0 : pas d'aperçu de ce qu'observe la caméra sur l'écran (préférer ce mode sur le terrain)
     * si 1 : affiche un aperçu de ce qu'observe la caméra sur l'écran (utile pour le développement et le débuggage)
- - 34_picam_framerate : nombre d'image enregistrée par seconde (typiquement 24)
+ - 34_picam_framerate : nombre d'images enregistrées par seconde (typiquement 24)
  - 35_picam_record_time : temps d'enregistement en seconde (typiquement 1600 secondes)
  - 36_picam_conversion_mp4 :
     * si 0 : ne convertit pas les fichiers vidéos en mp4 et les laisse en h264.
