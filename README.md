@@ -14,7 +14,7 @@
 Sur un PC :  
  - Installer [l'imageur Raspberry Pi](https://www.raspberrypi.com/software/)  
  - Choisir le modèle de carte : Raspberry Pi 4  
- - Choisir le système d'exploitation : Raspberry Pi OS (Legacy, 32 bit), Debian bullseye 32 bit  
+ - Choisir le système d'exploitation : Raspberry Pi OS (64 bit), Debian Bookworm
  - Choisir pour emplacement de stockage votre carte SD  
 <br>
 
@@ -31,9 +31,9 @@ Plusieurs fenêtres vont apparaître:
 
 <br>
 
-### Changement du fichier config
-Toujours sur un PC,  
- - Remplacer le fichier config.txt du boot de la carte SD par celui présent dans le fichier kosmos_software du Github.
+[comment]: <### Changement du fichier config>
+[comment]: <Toujours sur un PC,  >
+[comment]: < - Remplacer le fichier config.txt du boot de la carte SD par celui présent dans le fichier kosmos_software du Github.>
 
 ### Premier démarrage de la RPi.  
 Une connexion ethernet filaire plutôt que Wifi est recommandée.
@@ -48,7 +48,7 @@ Plusieurs fenêtres vont s'afficher:
 > - Cliquer sur `Next`    
   
 > Create User  
-> - Compléter les informations demandées (username, password)  
+> - Compléter les informations demandées. Mettre pour username `kosmos` et pour mot de passe `kosmos` 
 > - Cliquer sur `Next`
   
 > Set up Screen  
@@ -90,7 +90,7 @@ Une fois la RPi redémarrée,
 - Aller dans l'onglet Wifi (icone avec deux flèches de sens inversées) pour créer un Hotspot Wifi :
 - Aller dans `Advanced Options`  
 - Cliquer sur `Create Wifi Hospot`  
-- Lui donner un nom  
+- Lui donner un nom `KosmosWeb`
 - Ne pas mettre de sécurité sur le réseau  
 - Cliquer sur `Créer`  
  
@@ -100,7 +100,7 @@ Une fois la RPi redémarrée,
 - Aller dans `Advanced options`  
 - Aller dans `Modifier les connexions`    
 - Choisir le réseau Hotspot  
-- Sélectionner le réseau créé et aller dans les paramètres (icone en forme d'engrenage)
+- Sélectionner le réseau créé `KosmosWeb`  et aller dans les paramètres (icone en forme d'engrenage)
 - Aller dans l'onglet `Général` tout à gauche.
 - Cocher `Connect Automatically with priority`, cela vous permettra de vous reconnecter directement lorsque le système effectuera un reboot  
 - Cliquer sur `Enregistrer`
