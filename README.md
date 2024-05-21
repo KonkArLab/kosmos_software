@@ -80,8 +80,10 @@ Se déplacer avec les flèches et sélectionner les paramètres en appuyant sur 
   
  [comment]: <- Aller ensuite dans `3 Interface options`  >
  [comment]: <pour `I1 Legacy Caméra` choisir `enable`  >
+
+ - Aller ensuite dans `3 Interface Options` puis dans `I2 VNC` choisir `Enable`	 
    
-- Aller enfin dans `Finish` puis sélectionner `Oui`. Le système va redémarrer.  
+ - Aller enfin dans `Finish` puis sélectionner `Oui`. Le système va redémarrer.  
 
 ### Création d'un point Hotspot pour l'application KosmosWeb
 Une fois la RPi redémarrée,   
