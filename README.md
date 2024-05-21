@@ -90,7 +90,7 @@ Une fois la RPi redémarrée,
 - Aller dans l'onglet Wifi (icone avec deux flèches de sens inversées) pour créer un Hotspot Wifi :
 - Aller dans `Advanced Options`  
 - Cliquer sur `Create Wifi Hospot`  
-- Lui donner un nom `KosmosWeb`
+- Lui donner un nom `KosmosWeb2` où 2 est le numéro du Kosmos
 - Ne pas mettre de sécurité sur le réseau  
 - Cliquer sur `Créer`  
  
@@ -210,10 +210,10 @@ Il est également possible de modifier les paramètres directement dans le fichi
  - 12_motor_button_gpio :
  - 13_motor_vitesse_min : vitesse minimale du moteur utilisée lors de son armement
  - 14_motor_vitesse_favorite : vitesse nominale du moteur
- - 15_motor_pause_time : temps en seconde de pause entre les mouvements de rotation (typiquement 30 secondes pour le protocole STAVIRO)
+ - 15_motor_pause_time : temps en seconde de pause entre les mouvements de rotation (typiquement 27 secondes pour le protocole STAVIRO)
 <br>
 
- - 20_csv_step_time : temps en seconde avant la prochaine prise de données dans le fichier csv
+ - 20_csv_step_time : temps en seconde avant la prochaine prise de données dans le fichier csv (typiquement 5 secondes)
  - 21_csc_file_name : début du nom des fichiers csv
 <br>
 
@@ -223,8 +223,8 @@ Il est également possible de modifier les paramètres directement dans le fichi
  - 33_picam_preview :
     * si 0 : pas d'aperçu de ce qu'observe la caméra sur l'écran (préférer ce mode sur le terrain)
     * si 1 : affiche un aperçu de ce qu'observe la caméra sur l'écran (utile pour le développement et le débuggage)
- - 34_picam_framérate : nombre d'image enregistrée par seconde (typiquement 24)
- - 35_picam_record_time : temps d'enregistement en seconde (typiquement 400 secondes)
+ - 34_picam_framerate : nombre d'image enregistrée par seconde (typiquement 24)
+ - 35_picam_record_time : temps d'enregistement en seconde (typiquement 1600 secondes)
  - 36_picam_conversion_mp4 :
     * si 0 : ne convertit pas les fichiers vidéos en mp4 et les laisse en h264.
     * si 1 : convertit les fichiers vidéos en mp4
