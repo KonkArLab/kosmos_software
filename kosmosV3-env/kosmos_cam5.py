@@ -125,11 +125,15 @@ class KosmosCam(Thread):
         if self._AWB == 0:
             logging.info('Gains AWB ajustés par Rpi')
             self._camera.controls.AwbMode=0
-        else:
+        elif self._AWB == 1:
             logging.info('Gains AWB fixés par Rpi')
             self._camera.set_controls({'AwbEnable': False})
-            self._camera.set_controls({'ColourGains': (5, 0.2)})
-        
+            #self._camera.set_controls({'ColourGains': (5, 0.2)})
+        elif self._AWB == 2:
+            logging.info('Gains AWB ajustés par Algo Maison (pas pret pour le moment)')
+            # à coder, pas pret pour le moment 
+            self._camera.controls.AwbMode = 0
+         
     def run(self):       
         while not self._end:
             i=0
