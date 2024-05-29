@@ -5,12 +5,8 @@ sudo apt update
 sudo apt upgrade
 sudo apt autoremove
 
-#installation de pip et de opencv car bug si fait via pip 
-sudo apt install python3-pip
-sudo apt install python3-opencv
-
-#Installation des packages python necessaires via pip
-sudo pip install -r requirements.txt
+#Installation des packages python necessaires 
+sudo apt install `cat requirements.txt`
 
 #Recuperation du nom de la raspberry
 nom_raspberry=$(whoami)
