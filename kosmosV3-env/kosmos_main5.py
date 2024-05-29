@@ -54,8 +54,8 @@ class kosmos_main():
         self._ledR.off()        
 
         # Boutons
-        self.Button_Stop = Button(self._conf.get_val_int("02_SYSTEM_stop_button_gpio"))#,bounce_time=0.5)
-        self.Button_Record = Button(self._conf.get_val_int("01_SYSTEM_record_button_gpio"))#,bounce_time=0.5)
+        self.Button_Stop = Button(self._conf.get_val_int("02_SYSTEM_stop_button_gpio"))
+        self.Button_Record = Button(self._conf.get_val_int("01_SYSTEM_record_button_gpio"))
         
         # Mode du système
         self.MODE=self._conf.get_val_int("00_SYSTEM_mode") 

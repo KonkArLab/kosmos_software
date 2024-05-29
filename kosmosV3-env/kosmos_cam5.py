@@ -12,10 +12,12 @@ import cv2
 
 import os
 from kosmos_config import *
+from kosmos_esc_motor5 import 
 from PIL import Image
 import numpy as np
 import time
-import RPi.GPIO as GPIO  # Importe la bibliotheque pour contrôler les GPIOs
+import csv
+
 
 class KosmosCam(Thread):
     """
@@ -126,20 +128,23 @@ class KosmosCam(Thread):
             logging.info('Gains AWB ajustés par Rpi')
             self._camera.controls.AwbMode=0
         elif self._AWB == 1:
-            logging.info('Gains AWB fixés par Rpi')
+            logging.info('Gains AWB fixes')
+            self._camera.controls.AwbMode=0
+            time.sleep(0.5)
             self._camera.set_controls({'AwbEnable': False})
-            #self._camera.set_controls({'ColourGains': (5, 0.2)})
         elif self._AWB == 2:
-            logging.info('Gains AWB ajustés par Algo Maison (pas pret pour le moment)')
-            # à coder, pas pret pour le moment 
-            self._camera.controls.AwbMode = 0
+            logging.info('Gains AWB ajustés par Algo Maison')
+            self._camera.controls.AwbMode=0
+            time.sleep(0.5)
+            self._camera.set_controls({'AwbEnable': False})
+            self._camera.set_controls({'ColourGains': (5, 0.2)})
          
     def run(self):       
         while not self._end:
             i=0
             self._base_name = self._Conf.get_val("30_PICAM_file_name") + '_' + self._Conf.get_date()
            
-            while self._boucle == True:                
+            while self._boucle == True:
                 self._file_name = self._base_name +'_' + '{:04.0f}'.format(i) + '.h264'
                 logging.info(f"Debut de l'enregistrement video {self._file_name}")
                 self._output=VIDEO_ROOT_PATH+self._file_name
@@ -150,11 +155,24 @@ class KosmosCam(Thread):
                 
                 # Bloc d'enregistrement/encodage à proprement parler
                 self._camera.start_encoder(self._encoder,self._output)
+                
+                #sauvegarde metadata cam
+                self._dict_metadata=self._camera.capture_metadata()
+                with open(VIDEO_ROOT_PATH+self._base_name +'_' + '{:04.0f}'.format(i) + '.csv', 'w') as f:
+                    w = csv.writer(f)
+                    for row in self._dict_metadata.items():
+                        w.writerow(row) 
+                
                 time_debut=time.time()
                 delta_time=0
                 while self._boucle == True and delta_time < self._record_time:
                     delta_time = time.time()-time_debut
-                    time.sleep(0.25)    
+                    if self._AWB == 2: #Gains ajustés par algo maison
+                        self.adjust_histo(1,1,0.1)
+                        time.sleep(3.0)
+                    else:
+                        time.sleep(0.25)
+                        
                 self._camera.stop_encoder()
                 # Fin de l'encodage
                                
@@ -171,14 +189,10 @@ class KosmosCam(Thread):
             self._start_again.clear()            
         logging.info('Thread Camera terminé')       
 
-    
-    
     def do_capture(self) :
-        self._camera.capture_file(LOG_PATH+'test.jpg')#,use_video_port=True,resize=(int(self._X_RESOLUTION/4),int(self._Y_RESOLUTION/4)))
+        self._camera.capture_file(LOG_PATH+'test.jpg')
         logging.debug("Capture reussie")
-    
-    
-    '''  
+      
     def histo(self):
         img= Image.open(LOG_PATH+'test.jpg')
         r,g,b = img.split()
@@ -186,24 +200,20 @@ class KosmosCam(Thread):
         r_med= sum(r.histogram()*xx)/sum(r.histogram())
         g_med= sum(g.histogram()*xx)/sum(g.histogram())
         b_med= sum(b.histogram()*xx)/sum(b.histogram())    
-        return r_med,g_med,b_med
-        
+        return r_med/g_med,b_med/g_med
+       
     def adjust_histo(self,rh,bh,tolerance):
-        self._camera.awb_mode='off'
-        red=self._camera.awb_gains[0]
-        blue=self._camera.awb_gains[1]       
         self.do_capture()
-        time.sleep(0.1)
+        ColourGains = self._camera.capture_metadata()['ColourGains']       
+        red=ColourGains[0]
+        blue=ColourGains[1]               
         HH=self.histo()
-        rr=HH[0]
-        gg=HH[1]
-        bb=HH[2]
-        coef_convergence=0.9 # pas d'ajustement des gains awb
+        ratioR=HH[0]
+        ratioB=HH[1]
+        coef_convergence=0.9 # step de l'ajustement des gains awb
         i=0 # compteur initialisé pour sortir de la boucle si trop long
         imax=10 # nombre d'itérations max avant retour à référence
-        while i<imax and (rr/gg > rh+tolerance or rr/gg < rh-tolerance or bb/gg > bh+tolerance or bb/gg < bh-tolerance) :
-            ratioR=rr/gg
-            ratioB=bb/gg
+        while i<imax and (ratioR > rh+tolerance or ratioR < rh-tolerance or ratioB > bh+tolerance or ratioB < bh-tolerance) :
             red = red + coef_convergence*(rh-ratioR)
             blue = blue + coef_convergence*(bh-ratioB)
             # On threshold pour rester dans les clous 0&8
@@ -212,22 +222,22 @@ class KosmosCam(Thread):
             b=min(7.8,blue)
             blue=max(0.5,b)
             #MàJ
-            self._camera.awb_gains=(red,blue)
+            self._camera.set_controls({'ColourGains': (red, blue)})
             self.do_capture()
-            time.sleep(0.1)
             HH=self.histo()
-            rr=HH[0]
-            gg=HH[1]
-            bb=HH[2]
+            ratioR=HH[0]
+            ratioB=HH[1]
             i=i+1
         else:
             if i < imax:
                 logging.info('Coefficients AWB trouvés pour histogramme ajusté')
             else:
-                self._camera.awb_mode='auto'
                 logging.info('Coefficients AWB non trouvés, retour en mode awb_auto')
+                self._camera.controls.AwbMode=0
+                time.sleep(0.5)
+                self._camera.set_controls({'AwbEnable': False})
             os.remove(LOG_PATH+'test.jpg')
-    '''    
+        
         
     def stopCam(self):
         """  Demande la fin de l'enregistrement et ferme l'objet caméra."""
