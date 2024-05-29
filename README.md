@@ -66,24 +66,6 @@ Plusieurs fenêtres vont s'afficher:
 > Set up complete  
 > - Cliquer sur `Restart`  
 
-### Première installation du logiciel KOSMOS
- - Ouvrir un terminal et taper la commande suivante:
-```
-sudo raspi-config		//Ouvre les paramètres de configuration de la raspberry
-```
-<br>
-
-Un menu s'affiche, utiliser le clavier pour sélectionner les paramètres souhaités (pas de souris).  
-Se déplacer avec les flèches et sélectionner les paramètres en appuyant sur Entrée. 
-
- [comment]: <- Dans le menu, aller dans `6 Advanced Options` puis dans `AA Network Config` choisir `NetworkManager`	> 
-  
- [comment]: <- Aller ensuite dans `3 Interface options`  >
- [comment]: <pour `I1 Legacy Caméra` choisir `enable`  >
-
- - Aller dans `3 Interface Options` puis dans `I2 VNC` choisir `Enable`	 
-   
- - Aller dans `Finish` puis sélectionner `Oui`.   
 
 ### Création d'un point Hotspot pour l'application KosmosWeb
 [comment]: <Une fois la RPi redémarrée,>   

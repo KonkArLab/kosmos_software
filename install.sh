@@ -2,18 +2,14 @@
 
 #Effectuer une mise a jour la carte
 sudo apt update
-
-#Installation du dernier OS
 sudo apt upgrade
 sudo apt autoremove
 
-#Telechargement de python 3
+#installation de pip et de opencv car bug si fait via pip 
 sudo apt install python3-pip
 sudo apt install python3-opencv
-sudo apt install python3-flask-cors
 
-
-#Installation des packages necessaires 
+#Installation des packages python necessaires via pip
 sudo pip install -r requirements.txt
 
 #Recuperation du nom de la raspberry
@@ -38,8 +34,9 @@ sudo python3 kosmos_main5.py" >> lancement_kosmos.sh
 #Rendre le lancement.sh executable
 sudo chmod 755 lancement_kosmos.sh
 
-#Activation de "i2c"
+#Activation de "i2c" et du vnc
 sudo raspi-config nonint do_i2c 0
+sudo raspi-config nonint do_vnc 0
 
 #Ajout de la ligne de commande dans crontab qui permet le lancement au demarrage et création d'un dossier log
 mkdir -p /home/$nom_raspberry/logfile_kosmos
