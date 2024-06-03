@@ -12,7 +12,6 @@ import cv2
 
 import os
 from kosmos_config import *
-from kosmos_esc_motor5 import 
 from PIL import Image
 import numpy as np
 import time
