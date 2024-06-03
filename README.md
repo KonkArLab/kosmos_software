@@ -204,7 +204,7 @@ Il est également possible de modifier les paramètres directement dans le fichi
  - `31_PICAM_resolution_x = 1920` résolution de l'image selon l'axe des x (typiquement 1920)
  - `32_PICAM_resolution_y = 1080` résolution de l'image selon l'axe des y (typiquement 1080)
  - `33_PICAM_preview = 0` Affiche ce que voit la caméra pendant qu'elle enregistre
-    * si `0` pas d'aperçu (CHOISIR IMPERATIVEMENT CE MODE SURT LE TERRAIN)
+    * si `0` pas d'aperçu (CHOISIR IMPERATIVEMENT CE MODE SUR LE TERRAIN)
     * si `1` affiche un aperçu de ce qu'observe la caméra sur l'écran (utile pour le développement et le débug car ne fonctionne qu'avec un lancement de kosmos_main.py via la terminal)
  - `34_PICAM_framerate = 24` nombre d'images enregistrées par seconde (typiquement 24)
  - `35_PICAM_record_time = 1600` temps d'enregistement en secondes (typiquement 1600 secondes) des séquences vidéos. Si le système doit filmer plus longtemps que ce temps d'enregistrement, la vidéo sera découpée en plusieurs séquences. Ceci permet d'éviter la perte de données si un arrêt brutal se produit.
