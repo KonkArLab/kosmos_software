@@ -35,6 +35,7 @@ class kosmosEscMotor(Thread):
         self.vitesse_moteur=aConf.get_val_int("14_MOTOR_vitesse_favorite")
         self.vitesse_min = aConf.get_val_int("13_MOTOR_vitesse_min")
         self.inertie_time = aConf.get_val_int("16_MOTOR_inertie_time") # en ms
+        self.timeout = aConf.get_val_int("17_MOTOR_timeout") # en s
         
     def power_on(self):
         """Commande le relai d'alimentation de l'ESC"""
@@ -75,7 +76,7 @@ class kosmosEscMotor(Thread):
             if not self._pause_event.isSet():
                 
                 self.set_speed(self.vitesse_moteur)
-                self.Button_motor.wait_for_release(timeout=5)
+                self.Button_motor.wait_for_release(timeout=self.timeout)
                 logging.info('Bouton asservissement Moteur détecté')
                 time.sleep(self.inertie_time/1000)
                 self.set_speed(0)
