@@ -7,7 +7,7 @@ from threading import Thread, Event
 import subprocess
 import logging
 from picamera2.encoders import H264Encoder
-from picamera2 import Picamera2,Preview,MappedArray
+from picamera2 import Picamera2,Preview,MappedArray,Metadata
 import cv2
 
 import os
@@ -136,7 +136,7 @@ class KosmosCam(Thread):
             self._camera.controls.AwbMode=0
             time.sleep(0.5)
             self._camera.set_controls({'AwbEnable': False})
-            self._camera.set_controls({'ColourGains': (5, 0.2)})
+            #self._camera.set_controls({'ColourGains': (5, 0.2)})
          
     def run(self):       
         while not self._end:
@@ -153,25 +153,54 @@ class KosmosCam(Thread):
                     self._camera.start_preview(Preview.QTGL,width=800,height=600)
                 
                 # Bloc d'enregistrement/encodage à proprement parler
-                self._camera.start_encoder(self._encoder,self._output)
+                self._camera.start_encoder(self._encoder,self._output,pts =VIDEO_ROOT_PATH+self._base_name +'_' + '{:04.0f}'.format(i) + '.txt')
+                # à noter la sauvegarde du timestamp de la caméra
                 
+                '''
                 #sauvegarde metadata cam
                 self._dict_metadata=self._camera.capture_metadata()
-                with open(VIDEO_ROOT_PATH+self._base_name +'_' + '{:04.0f}'.format(i) + '.csv', 'w') as f:
+                with open(VIDEO_ROOT_PATH+self._base_name +'_' + '{:04.0f}'.format(i) + '2.csv', 'w') as f:
                     w = csv.writer(f)
                     for row in self._dict_metadata.items():
-                        w.writerow(row) 
+                        w.writerow(row)
+                '''
                 
+                #Création d'un CSV vidéo
+                logging.debug("Fichier metadata caméra ouvert")
+                self._csvv_file = open(VIDEO_ROOT_PATH+self._base_name +'_' + '{:04.0f}'.format(i) + '.csv', 'w')
+                ligne = "Tps (s) ; TimeStamp ; ExpTime (µs) ; AnGain ; DiGain ; FrameDur (µs) ; Lux ; RedGains ; BlueGains"
+                self._csvv_file.write(ligne + '\n')
+                self._csvv_file.flush()
+            
+                paas=1. # pas de la boucle while qui vérifie si le bouton stop a été activé ou que le temps de séquence n'est pas dépassé
                 time_debut=time.time()
-                delta_time=0
+                delta_time=0 #initialisation pour durée de la séquence
+                j = 0 # initialisation pour ajustement Maison AWB
+                k = 0 # initialisation pour 
                 while self._boucle == True and delta_time < self._record_time:
                     delta_time = time.time()-time_debut
-                    if self._AWB == 2: #Gains ajustés par algo maison
-                        self.adjust_histo(1,1,0.1)
-                        time.sleep(3.0)
-                    else:
-                        time.sleep(0.25)
-                        
+                    
+                    if k % 5 == 0: # écriture métadata tous les 5*paas
+                        mtd = Metadata(self._camera.capture_metadata())
+                        ligne = f'{delta_time:.3f} ; {mtd.SensorTimestamp} ; {mtd.ExposureTime} ; {mtd.AnalogueGain:.2f} ; {mtd.DigitalGain:.2f} ; {mtd.FrameDuration} ; {mtd.Lux:.2f} ; {mtd.ColourGains[0]:.3f}; {mtd.ColourGains[1]:.3f}'
+                        self._csvv_file.write(ligne + '\n')
+                        self._csvv_file.flush()
+                    
+                    k = k+1
+                    
+                    if self._AWB == 2: #Ajustement Maison des gains AWB 
+                        j=j+1
+                        if j == int(15/paas): # 60 * 0.25 = 15 s entre les ajustements
+                            self.adjust_histo(1,1,0.2) # on vise des ratios unitaires avec une tolérance de +- 20%
+                            j = 0
+                        else :
+                            time.sleep(paas)
+                    else: # Ajustement auto ou fixé, càd self._AWB = 0 ou 1               
+                        time.sleep(paas)
+                                        
+                self._csvv_file.close()
+                logging.debug("Fichier metadata caméra fermé")
+                
                 self._camera.stop_encoder()
                 # Fin de l'encodage
                                
@@ -186,15 +215,12 @@ class KosmosCam(Thread):
                 i=i+1
             self._start_again.wait()
             self._start_again.clear()            
-        logging.info('Thread Camera terminé')       
-
-    def do_capture(self) :
-        self._camera.capture_file(LOG_PATH+'test.jpg')
-        logging.debug("Capture reussie")
-      
-    def histo(self):
-        img= Image.open(LOG_PATH+'test.jpg')
-        r,g,b = img.split()
+        logging.info('Thread Camera terminé')
+    
+    def RatiosRBsurG(self):
+        """Capture puis calcul des ratios R/G et B/G"""        
+        img = self._camera.capture_image("main")
+        r,g,b,a = img.split()
         xx=np.linspace(0,255,256)
         r_med= sum(r.histogram()*xx)/sum(r.histogram())
         g_med= sum(g.histogram()*xx)/sum(g.histogram())
@@ -202,13 +228,13 @@ class KosmosCam(Thread):
         return r_med/g_med,b_med/g_med
        
     def adjust_histo(self,rh,bh,tolerance):
-        self.do_capture()
+        # Capture des gains AWB
         ColourGains = self._camera.capture_metadata()['ColourGains']       
         red=ColourGains[0]
         blue=ColourGains[1]               
-        HH=self.histo()
-        ratioR=HH[0]
-        ratioB=HH[1]
+        # Calcul des ratios R/G B/G
+        ratioR,ratioB = self.RatiosRBsurG()
+        # Paramètres de l'algo d'ajustement
         coef_convergence=0.9 # step de l'ajustement des gains awb
         i=0 # compteur initialisé pour sortir de la boucle si trop long
         imax=10 # nombre d'itérations max avant retour à référence
@@ -222,10 +248,8 @@ class KosmosCam(Thread):
             blue=max(0.5,b)
             #MàJ
             self._camera.set_controls({'ColourGains': (red, blue)})
-            self.do_capture()
-            HH=self.histo()
-            ratioR=HH[0]
-            ratioB=HH[1]
+            time.sleep(3*1/self._FRAMERATE) # 3 frames de décalage entre modif des gain awb et calcul des nouveaux R/G etB/G
+            ratioR,ratioB = self.RatiosRBsurG()
             i=i+1
         else:
             if i < imax:
@@ -235,9 +259,7 @@ class KosmosCam(Thread):
                 self._camera.controls.AwbMode=0
                 time.sleep(0.5)
                 self._camera.set_controls({'AwbEnable': False})
-            os.remove(LOG_PATH+'test.jpg')
-        
-        
+              
     def stopCam(self):
         """  Demande la fin de l'enregistrement et ferme l'objet caméra."""
         # permet d'arrêter l'enregistrement si on passe par le bouton stop"
