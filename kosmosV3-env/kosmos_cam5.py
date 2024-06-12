@@ -248,7 +248,7 @@ class KosmosCam(Thread):
             blue=max(0.5,b)
             #MàJ
             self._camera.set_controls({'ColourGains': (red, blue)})
-            time.sleep(3*1/self._FRAMERATE) # 3 frames de décalage entre modif des gain awb et calcul des nouveaux R/G etB/G
+            time.sleep(5*1/self._FRAMERATE) # 5 frames de décalage entre modif des gain awb et calcul des nouveaux R/G etB/G
             ratioR,ratioB = self.RatiosRBsurG()
             i=i+1
         else:
