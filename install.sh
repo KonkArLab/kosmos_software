@@ -30,9 +30,8 @@ sudo python3 kosmos_main5.py" >> lancement_kosmos.sh
 #Rendre le lancement.sh executable
 sudo chmod 755 lancement_kosmos.sh
 
-#Activation de i2c (capteur pression température), spi (GPS) et du vnc (communication)
+#Activation de i2c (capteur pression température) et du vnc (communication)
 sudo raspi-config nonint do_i2c 0
-sudo raspi-config nonint do_spi 0
 sudo raspi-config nonint do_vnc 0
 
 #Ajout de la ligne de commande dans crontab qui permet le lancement au demarrage et création d'un dossier log
