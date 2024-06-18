@@ -87,6 +87,15 @@ Plusieurs fenêtres vont s'afficher:
 - Cocher `Connect Automatically with priority`, cela vous permettra de vous reconnecter directement lorsque le système effectuera un reboot  
 - Cliquer sur `Enregistrer`
 
+### Activation du port Serial pour le GPS [Non testé sur RPi4 mais OK sur RPi5]
+- Dans un terminal taper :
+```
+sudo raspi-config
+```
+- Aller dans `3 Interface Options` puis dans `I6 Serial Port`
+- Mettre `Oui` aux deux questions posées.
+- Redémarrer enfin la Rpi.
+
 ### Importation du dossier software
 Dans un terminal taper les commandes suivantes:  
 ```
