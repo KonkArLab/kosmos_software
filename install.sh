@@ -12,6 +12,9 @@ sudo apt install `cat requirements.txt`
 nom_raspberry=$(whoami)
 echo "$nom_raspberry"
 
+#Desactivation du bluetooth (raisons énergétiques)
+sudo systemctl disable bluetooth
+
 #Creation du fichier de lancement
 cd
 echo "#!/bin/bash" > lancement_kosmos.sh
