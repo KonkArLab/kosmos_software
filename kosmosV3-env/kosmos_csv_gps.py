@@ -16,10 +16,10 @@ from kosmos_config import *
 
 
 class kosmosCSV_GPS(Thread):
-    """Classe dérivée de Thread qui gère l'enregistrement du CSV"""
+    """Classe dérivée de Thread qui gère l'enregistrement du CSV_GPS"""
 
     def __init__(self, aConf: KosmosConfig):
-        """Constructeur de la classe kosmosCSV
+        """Constructeur de la classe kosmosCSV_GPS
         Parameters :
             aConf : la classe qui lit le fichier de configuration
 
@@ -55,15 +55,16 @@ class kosmosCSV_GPS(Thread):
         self.stop = False
     
     def run(self):
-        """Ecriture des données sur le fichier CSV"""
+        """Ecriture des données sur le fichier CSV_GPS"""
         while self.stop is False:
-            logging.info("Fichier CSV ouvert")
+            logging.info("Fichier CSV_GPS ouvert")
             dateN = datetime.now()
-            self._csv_file = open(CSV_ROOT_PATH+self._file_name + dateN.strftime("%Y-%m-%d-%H-%M-%S") + ".csv", 'w')
+            self._csv_gps_file = open(CSV_ROOT_PATH+self._file_name + dateN.strftime("%Y-%m-%d-%H-%M-%S") + ".csv", 'w')
+            
             ligne = "heure ; pression (mb); température °C ; profondeur (m)"
             logging.debug(f"Ecriture CSV : {ligne}")
-            self._csv_file.write(ligne + '\n')
-            self._csv_file.flush()
+            self._csv_gps_file.write(ligne + '\n')
+            self._csv_gps_file.flush()
             
             while not self._pause_event.isSet():
                 pressStr = ""
@@ -82,8 +83,8 @@ class kosmosCSV_GPS(Thread):
                 vHeure = date.strftime("%H:%M:%S")
                 ligne = f'{vHeure} ; {pressStr} ; {tempStr} ; {profStr}'
                 try:
-                    self._csv_file.write(ligne + '\n')
-                    self._csv_file.flush()
+                    self._csv_gps_file.write(ligne + '\n')
+                    self._csv_gps_file.flush()
                     
                 except Exception as e:
                     logging.error(f"Error writing to CSV file: {e}")
@@ -91,7 +92,7 @@ class kosmosCSV_GPS(Thread):
                 # Attendre le prochain enregistrement ou l'évènement d'arrêt.
                 self._stopevent.wait(self._time_step)
             else:
-                self._csv_file.close()
+                self._csv_gps_file.close()
                 logging.info("Fichier CSV fermé")
                 self._continue_event.wait()
         logging.info("Thread CSV terminé") 
