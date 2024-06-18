@@ -13,7 +13,7 @@
 ### Installation du système d'exploitation (OS) de la Raspberry  
 Sur un PC :  
  - Installer [l'imageur Raspberry Pi](https://www.raspberrypi.com/software/)  
- - Choisir le modèle de carte : Raspberry Pi 4  
+ - Choisir le modèle de carte : Raspberry Pi 4 (ou 5 selon le modèle)
  - Choisir le système d'exploitation : Raspberry Pi OS (64 bit), Debian Bookworm
  - Choisir pour emplacement de stockage votre carte SD  
 <br>
