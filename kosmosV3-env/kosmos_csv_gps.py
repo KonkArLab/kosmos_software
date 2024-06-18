@@ -7,12 +7,15 @@ from threading import Event
 
 import logging
 import os
-import ms5837  # librairie du capteur de pression et temperature
+
+"""Connexion série du module gps"""
+import serial
+import serial.tools.list_ports as stlp
 
 from kosmos_config import *
 
 
-class kosmosCSV(Thread):
+class kosmosCSV_GPS(Thread):
     """Classe dérivée de Thread qui gère l'enregistrement du CSV"""
 
     def __init__(self, aConf: KosmosConfig):
@@ -33,26 +36,24 @@ class kosmosCSV(Thread):
         self._continue_event = Event()
         self._t_stop = False
         
-        self._time_step = aConf.get_val_int("20_CSV_step_time")
-        self._file_name = aConf.get_val("21_CSV_file_name") + "_"
+        self.__step = aConf.get_val_int("20_CSV_step_time")
+        self._file_name = aConf.get_val("21_CSV_file_name") + "_GPS_"
         
         os.chdir(USB_INSIDE_PATH)
-        if not os.path.exists("CSV"): 
-                os.mkdir("CSV")
+        if not os.path.exists("CSV_GPS"): 
+                os.mkdir("CSV_GPS")
         os.chdir(WORK_PATH)
-        
-        # Initialisation Capteur TP
-        self._press_sensor_ok = False
-        try:
-            # capteur T et P Default I2C bus is 1 (Raspberry Pi 3)
-            self.pressure_sensor = ms5837.MS5837_30BA()
-            if self.pressure_sensor.init():
-                self._press_sensor_ok = True
-            logging.info("Capteur de pression OK")
-        except:
-            logging.error("Erreur d'initialisation du capteur de pression")
-        self.stop = False
 
+        self._gps_ok = False
+        try:
+            ser = serial.Serial('/dev/ttyAMA0', 9600)
+            if ser.is_open:
+                self._gps_ok = True
+            logging.info("GPS OK")
+        except:
+            logging.error("Erreur d'initialisation du port série GPS")
+        self.stop = False
+    
     def run(self):
         """Ecriture des données sur le fichier CSV"""
         while self.stop is False:
