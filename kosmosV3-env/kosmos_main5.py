@@ -19,6 +19,7 @@ from kosmos_state import KState
 from kosmos_config import *
 import kosmos_config as KConf
 import kosmos_csv as KCsv
+import kosmos_csv_gps as KCsv_gps 
 import kosmos_cam5 as KCam
 import kosmos_esc_motor5 as KMotor
 import sys
@@ -69,6 +70,9 @@ class kosmos_main():
         #Definition Thread CSV
         self.thread_csv = KCsv.kosmosCSV(self._conf)
         
+        #Definition Thread CSV gps
+        self.thread_csv_gps = KCsv_gps.kosmosCSV_GPS(self._conf)
+        
         #Definition Thread Moteur
         self.PRESENCE_MOTEUR = self._conf.get_val_int("06_SYSTEM_moteur") # Fonctionnement moteur si 1
         if self.PRESENCE_MOTEUR==1:
@@ -115,8 +119,9 @@ class kosmos_main():
             # Run thread moteur
             self.motorThread.restart()
         
-        # Run thread CSV
+        # Run thread CSV TP et GPS
         self.thread_csv.restart()
+        self.thread_csv_gps.restart()
         
         # Run thread camera
         self.thread_camera.restart()
@@ -148,8 +153,9 @@ class kosmos_main():
             # Pause Moteur
             self.motorThread.pause()
                 
-        # Pause Thread CSV
+        # Pause Thread CSV TP et GPS
         self.thread_csv.pause()
+        self.thread_csv_gps.pause()
         
         if self._extinction == False:
             # On s'est arrêté via un bouton, on retourne donc en stand by
@@ -164,11 +170,16 @@ class kosmos_main():
               
         self._ledR.on()
         
-        # Arrêt de l'écriture du CSV
+        # Arrêt de l'écriture du CSV TP
         self.thread_csv.stop_thread()
         if self.thread_csv.is_alive():
             self.thread_csv.join()
-
+        
+        # arrêt de l'écriture du csv gps
+        self.thread_csv_gps.stop_thread()
+        if self.thread_csv_gps.is_alive():
+            self.thread_csv_gps.join()
+    
         # Arrêt de la caméra
         self.thread_camera.closeCam()   # Stop caméra
         if self.thread_camera.is_alive():
