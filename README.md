@@ -110,7 +110,7 @@ dtoverlay=disable-bt
 - Dans l'onglet `Interface`
 - Passer le `Port serial` à `Enable`
 - Passer le `Serial Console` à `Disable`
-- Rebooter la Rpi
+- Redémarrer enfin la Rpi.
 
 #### Sur Rpi5
 - Dans un terminal taper :
