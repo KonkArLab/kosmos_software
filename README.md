@@ -87,40 +87,6 @@ Plusieurs fenêtres vont s'afficher:
 - Cocher `Connect Automatically with priority`, cela vous permettra de vous reconnecter directement lorsque le système effectuera un reboot  
 - Cliquer sur `Enregistrer`
 
-### Activation du port Serial pour le GPS
-#### Sur Rpi4
-Modification du fichier config.txt
-
-- Dans un terminal taper la commande suivante pour ouvrir le fichier config.txt:
-```
-sudo nano /boot/firmware/config.txt
-```
-- Ajouter à la fin du fichier les lignes suivantes:
-```
-dtoverlay=uart2
-dtoverlay=w1-gpio
-enable_uart=1
-dtoverlay=disable-bt
-```
-- Sauvegarder les modifications en appuyant sur `Ctrl + Shift + o`
-- Quitter le fichier en appuyant sur `Ctrl + Shift + x`
-
-- Aller dans le menu principal (icone avec la framboise en haut à gauche de l'écran)
-- Cliquer sur `Préférence` puis `Configuration du Raspberry Pi`
-- Dans l'onglet `Interface`
-- Passer le `Port serial` à `Enable`
-- Passer le `Serial Console` à `Disable`
-- Redémarrer enfin la Rpi.
-
-#### Sur Rpi5
-- Dans un terminal taper :
-```
-sudo raspi-config
-```
-- Aller dans `3 Interface Options` puis dans `I6 Serial Port`
-- Mettre `Oui` aux deux questions posées.
-- Redémarrer enfin la Rpi.
-
 ### Importation du dossier software
 Dans un terminal taper les commandes suivantes:  
 ```
