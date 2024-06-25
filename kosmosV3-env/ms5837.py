@@ -3,7 +3,7 @@
 try:
     import smbus
 except:
-    print ('Try sudo apt-get install python-smbus') #D. Hanon ajout de () pour être compatible python_3
+    print ('Try sudo apt install python3-smbus2') #D. Hanon ajout de () pour être compatible python_3
     
 from time import sleep
 

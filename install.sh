@@ -2,21 +2,18 @@
 
 #Effectuer une mise a jour la carte
 sudo apt update
-
-#Installation du dernier OS
 sudo apt upgrade
 sudo apt autoremove
 
-#Telechargement de python 3
-sudo apt install python3-pip
-
-#Installation des packages necessaires 
-sudo pip install -r requirements.txt
-#sudo pip install flask_cors
+#Installation des packages python necessaires 
+sudo apt install `cat requirements.txt`
 
 #Recuperation du nom de la raspberry
 nom_raspberry=$(whoami)
 echo "$nom_raspberry"
+
+#Desactivation du bluetooth (raisons énergétiques)
+sudo systemctl disable bluetooth
 
 #Creation du fichier de lancement
 cd
@@ -31,13 +28,14 @@ sudo python3 -m http.server 80 &
 
 #Lance kosmos_main.py 
 cd /home/$nom_raspberry/kosmos_software/kosmosV3-env
-sudo python3 kosmos_main.py" >> lancement_kosmos.sh
+sudo python3 kosmos_main5.py" >> lancement_kosmos.sh
 
 #Rendre le lancement.sh executable
 sudo chmod 755 lancement_kosmos.sh
 
-#Activation de "i2c"
+#Activation de i2c (capteur pression température) et du vnc (communication)
 sudo raspi-config nonint do_i2c 0
+sudo raspi-config nonint do_vnc 0
 
 #Ajout de la ligne de commande dans crontab qui permet le lancement au demarrage et création d'un dossier log
 mkdir -p /home/$nom_raspberry/logfile_kosmos

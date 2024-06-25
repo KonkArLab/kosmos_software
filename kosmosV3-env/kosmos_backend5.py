@@ -5,12 +5,15 @@ from PIL import Image
 import io
 import os
 
+
 import logging
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 
+
 from kosmos_state import KState
 from kosmos_config import *
+
 
 class Server:
     
@@ -27,7 +30,7 @@ class Server:
         self.app.add_url_rule("/changeConfig", view_func=self.changeConfig,methods=['POST'])
         self.app.add_url_rule("/getConfig", view_func=self.getConfig)
         self.app.add_url_rule("/frame", view_func=self.image)
-    
+
     def run(self) :
         logging.info("Server is running !")
         self.app.run(host="0.0.0.0",port=5000,debug=False)
@@ -80,11 +83,24 @@ class Server:
                 self.myMain._conf.set_val(key,data[key])
             self.myMain._conf.update_file()
             self.myMain.thread_camera.closeCam()
+            
+            # Désallocation des GPIOs avant reboot
+            self.myMain._ledR.close()
+            self.myMain._ledB.close()
+            self.myMain.Button_Stop.close() 
+            self.myMain.Button_Record.close()
+            if self.myMain.PRESENCE_MOTEUR==1:
+                self.myMain.motorThread.Relai_GPIO.close()
+                self.myMain.motorThread.PWM_GPIO.close()
+                self.myMain.motorThread.Button_motor.close()
+            
+            # Arrêt des Thread en cours
             if self.myMain.PRESENCE_MOTEUR==1:
                 del self.myMain.motorThread
             del self.myMain.thread_camera
             del self.myMain.thread_csv
-
+            
+            # Réinitialisation
             self.myMain.init()
             self.myMain.button_event.set()
             return {
@@ -125,16 +141,14 @@ class Server:
         response["status"]="ok"
         return response
 
+
     def image(self):
         camera=self.myMain.thread_camera._camera
-        camera.resolution=(320,240)
-        shape=(camera.resolution[1],camera.resolution[0],3)
-        frame=np.empty(shape,dtype=np.uint8)
-        camera.capture(frame,'rgb')
-        camera.resolution=(self.myMain.thread_camera._X_RESOLUTION,self.myMain.thread_camera._Y_RESOLUTION)
-        image=Image.fromarray(frame)
         buf=io.BytesIO()
-        image.save(buf,format='jpeg')
+        camera.options["quality"]=10 # compression pour fluidifier
+        camera.capture_file(buf,format='jpeg')
         response=make_response(buf.getvalue())
         response.headers['Content-Type']='image/jpg'
         return response    
+
+        

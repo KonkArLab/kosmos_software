@@ -1,2 +1,2 @@
-# Ignorer les évolutions des fichiers .pyc qui ne sont que des compilations des fichiers python renouvelées à chaque fois qu'est lancé le script
+# Ignorer tous les fichiers .pyc
 *.pyc
