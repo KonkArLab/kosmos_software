@@ -101,20 +101,15 @@ class KosmosCam(Thread):
         with MappedArray(request, "main") as m:
             cv2.putText(m.array, timestamp, origin, font, scale, colour, thickness)
       
-    def convert_to_mp4(self, input_file, path):
+    def convert_to_mp4(self, input_file):
         if self._CONVERSION == 1:
             #Conversion h264 vers mp4 puis effacement du .h264
             output_file = os.path.splitext(input_file)[0] + '.mp4'
-            full_input_path = os.path.join(path, input_file)
-            full_output_path = os.path.join(path, output_file) 
-
-            if not os.path.exists(full_input_path):
-                logging.error(f"Input file '{full_input_path}' not found.")
-                return                
+               
             try:
-                subprocess.run(['sudo', 'ffmpeg', '-probesize', '2G', '-i', full_input_path, '-c', 'copy', full_output_path, '-loglevel', 'warning'])
+                subprocess.run(['sudo', 'ffmpeg', '-probesize', '2G', '-i', input_file, '-c', 'copy', output_file, '-loglevel', 'warning'])
                 logging.info("Conversion successful !")
-                os.remove(full_input_path)
+                os.remove(input_file)
                 logging.debug(f"Deleted input H.264 file: {input_file}")                
             except subprocess.CalledProcessError as e:
                 logging.error("Error during conversion:", e, " !!!")
@@ -140,34 +135,22 @@ class KosmosCam(Thread):
          
     def run(self):       
         while not self._end:
-            i=0
-            self._base_name = self._Conf.get_val("30_PICAM_file_name") + '_' + self._Conf.get_date()
-           
+            i=0            
             while self._boucle == True:
-                self._file_name = self._base_name +'_' + '{:04.0f}'.format(i) + '.h264'
+                self._file_name = '{:02.0f}'.format(i) 
                 logging.info(f"Debut de l'enregistrement video {self._file_name}")
-                self._output=VIDEO_ROOT_PATH+self._file_name
+                self._output = self._file_name + '_Video.h264'
                 
                 if self._PREVIEW == 1:
                     self._camera.stop_preview() #éteint le Preview.NULL
                     self._camera.start_preview(Preview.QTGL,width=800,height=600)
                 
                 # Bloc d'enregistrement/encodage à proprement parler
-                self._camera.start_encoder(self._encoder,self._output,pts =VIDEO_ROOT_PATH+self._base_name +'_' + '{:04.0f}'.format(i) + '.txt')
-                # à noter la sauvegarde du timestamp de la caméra
-                
-                '''
-                #sauvegarde metadata cam
-                self._dict_metadata=self._camera.capture_metadata()
-                with open(VIDEO_ROOT_PATH+self._base_name +'_' + '{:04.0f}'.format(i) + '2.csv', 'w') as f:
-                    w = csv.writer(f)
-                    for row in self._dict_metadata.items():
-                        w.writerow(row)
-                '''
+                self._camera.start_encoder(self._encoder,self._output,pts = self._file_name+'_TimeStamp.txt')
                 
                 #Création d'un CSV vidéo
                 logging.debug("Fichier metadata caméra ouvert")
-                self._csvv_file = open(VIDEO_ROOT_PATH+self._base_name +'_' + '{:04.0f}'.format(i) + '.csv', 'w')
+                self._csvv_file = open(self._file_name + '_CamParam.csv', 'w')
                 ligne = "Tps (s) ; TimeStamp ; ExpTime (µs) ; AnGain ; DiGain ; FrameDur (µs) ; Lux ; RedGains ; BlueGains"
                 self._csvv_file.write(ligne + '\n')
                 self._csvv_file.flush()
@@ -201,8 +184,8 @@ class KosmosCam(Thread):
                 self._csvv_file.close()
                 logging.debug("Fichier metadata caméra fermé")
                 
-                self._camera.stop_encoder()
                 # Fin de l'encodage
+                self._camera.stop_encoder()
                                
                 if self._PREVIEW == 1:
                     self._camera.stop_preview() #stop .QTGL
@@ -211,7 +194,7 @@ class KosmosCam(Thread):
                 logging.info(f"Fin de l'enregistrement video {self._file_name}")
                 
                 # Conversion mp4 si demandée
-                self.convert_to_mp4(self._file_name, VIDEO_ROOT_PATH)
+                self.convert_to_mp4(self._output)
                 i=i+1
             self._start_again.wait()
             self._start_again.clear()            

@@ -10,15 +10,18 @@ from datetime import datetime
 
 CONF_FILE = "kosmos_config.ini"
 
+#Arborescence USB
 USB_ROOT_PATH = "/media/"+(os.listdir("/home")[0])
-USB_NAME=os.listdir(USB_ROOT_PATH)[0]
+USB_NAME = os.listdir(USB_ROOT_PATH)[0]
 USB_INSIDE_PATH = USB_ROOT_PATH+"/"+USB_NAME+"/"
-VIDEO_ROOT_PATH=USB_INSIDE_PATH+"Video/"
-CSV_ROOT_PATH=USB_INSIDE_PATH+"CSV/"
 
-LOG_PATH="/home/"+os.listdir("/home")[0]+"/logfile_kosmos/"
-GIT_PATH="/home/"+os.listdir("/home")[0]+"/kosmos_software/"
-WORK_PATH=GIT_PATH+"kosmosV3-env/"
+VIDEO_ROOT_PATH = USB_INSIDE_PATH+"Video/"
+CSV_ROOT_PATH = USB_INSIDE_PATH+"CSV/"
+
+# Arborescence Picam
+LOG_PATH = "/home/"+os.listdir("/home")[0]+"/logfile_kosmos/"
+GIT_PATH = "/home/"+os.listdir("/home")[0]+"/kosmos_software/"
+WORK_PATH = GIT_PATH+"kosmosV3-env/"
 
 BASIC_SECTION = "KOSMOS"   
 
@@ -35,7 +38,31 @@ class KosmosConfig:
         self.config = configparser.ConfigParser()
         self.config.read(self._file_path)
         logging.info("kosmos_config.ini lu sur clé usb")
+        
+        # Création Dossier Campagne si non existant
+        CAMPAGNE_FILE = self.get_val("22_CSV_campagne")+self.get_date_Yms()
+        os.chdir(USB_INSIDE_PATH)            
+        if not os.path.exists(CAMPAGNE_FILE):
+            os.mkdir(CAMPAGNE_FILE)
+        self.CAMPAGNE_PATH = USB_INSIDE_PATH + CAMPAGNE_FILE + "/"
+        os.chdir(WORK_PATH)
 
+    def get_date_Yms(self) -> str:
+        """Retourne la date formatée en string"""
+        date = datetime.now()
+        Y=date.year-2000
+        m=date.month
+        d=date.day
+        return f'{Y:02}{m:02}{d:02}'
+
+    def get_date_HMS(self) -> str:
+        """Retourne la date formatée en string"""
+        date = datetime.now()
+        H=date.hour
+        M=date.minute
+        S=date.second
+        return f'{H:02}{M:02}{S:02}'
+    
     def get_date(self) -> str:
         """Retourne la date formatée en string"""
         date = datetime.now()
@@ -68,45 +95,3 @@ class KosmosConfig:
         with open(self._file_path, 'w') as configfile:
             self.config.write(configfile)
             
-            
-            
-    '''
-    def copy_file(self, aFileName: str) -> bool:
-        """ copy le fichier vers la clef USB """
-        logging.debug(f"cp {aFileName} {self._usb_path}")
-        if self._usb_path != "":
-            result = subprocess.run(["sudo", "cp", aFileName, self._usb_path],
-                                    capture_output=True)
-            if result.returncode == 0:
-                return True
-        return False
-       
-    def print_all(self):
-        """Affiche le fichier de configuration (pour debug). """
-        # Parcourt des sections
-        for sec in self.config.sections():
-            logging.info("section : {}".format(sec))
-            # parcourir parametres et valeurs
-            for name, value in self.config.items(sec):
-                logging.info("{} = {}".format(name, value))
-
-    
-    def rm_file(self, aFileName: str) -> bool:
-        """ Supprime le fichier dans le répertoire courant
-        NE PAS OUBLIER DE LE COPIER la clef USB """
-        logging.debug(f"rm {aFileName}")
-        result = subprocess.run(["rm", aFileName],
-                                capture_output=True)
-        if result.returncode == 0:
-            return True
-        return False
-
-    def moove_file(self, aFileName: str) -> bool:
-        """ Déplacer le fichier après la copie la clef USB """
-        if self.copy_file(aFileName) is True:
-            if self.rm_file(aFileName):
-                logging.info(f"Le fichier {aFileName} a bien été déplacé vers la clef USB.")
-                return True
-        logging.warning(f"Impossible de déplacer le {aFileName} vers la clef USB.")
-        return False
-    '''

@@ -5,22 +5,42 @@ sudo apt update
 sudo apt upgrade
 sudo apt autoremove
 
+
+
+
 #Installation des packages python necessaires 
-sudo apt install `cat requirements.txt`
+#sudo apt install `cat requirements.txt`
 
 #Recuperation du nom de la raspberry
 nom_raspberry=$(whoami)
 echo "$nom_raspberry"
 
+
+# Creation de l'environnement Python
+mkdir -p /home/$nom_raspberry/env_kosmos
+python3 -m venv --system-site-packages /home/$nom_raspberry/env_kosmos/kosmos
+
+source /home/$nom_raspberry/env_kosmos/kosmos/bin/activate
+pip install --upgrade pip
+pip install numpy
+pip install opencv-python
+pip install flask-cors
+pip install smbus2
+
+
+
 #Desactivation du bluetooth (raisons énergétiques)
 sudo systemctl disable bluetooth
 
 #Creation du fichier de lancement
-cd
+cd /home/$nom_raspberry
 echo "#!/bin/bash" > lancement_kosmos.sh
 
 #Ajout de la commande de lancement du programme
 sudo echo "sleep 20
+
+# On se place dans l'environnement python 
+source /home/$nom_raspberry/kosmos/bin/activate
 
 # Demarrage du serveur
 cd /home/$nom_raspberry/kosmos_software/frontend
@@ -31,7 +51,7 @@ cd /home/$nom_raspberry/kosmos_software/kosmosV3-env
 sudo python3 kosmos_main5.py" >> lancement_kosmos.sh
 
 #Rendre le lancement.sh executable
-sudo chmod 755 lancement_kosmos.sh
+sudo chmod 755 /home/$nom_raspberry/lancement_kosmos.sh
 
 #Activation de i2c (capteur pression température) et du vnc (communication)
 sudo raspi-config nonint do_i2c 0
