@@ -131,7 +131,7 @@ cd kosmos_software							//Ouvre le dossier kosmos_software
 
 ```
 sudo chmod 755 install.sh		//Rend exécutable le fichier install.sh
-sh install.sh				//Lance le fichier install.sh
+source install.sh				//Lance le fichier install.sh
 ```  
 <br>
 Une question apparaît dans le terminal:  
