@@ -19,7 +19,6 @@ from kosmos_state import KState
 from kosmos_config import *
 import kosmos_config as KConf
 import kosmos_csv as KCsv
-import kosmos_csv_gps as KCsv_gps 
 import kosmos_cam5 as KCam
 import kosmos_esc_motor5 as KMotor
 import sys

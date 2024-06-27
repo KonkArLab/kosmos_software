@@ -15,9 +15,6 @@ USB_ROOT_PATH = "/media/"+(os.listdir("/home")[0])
 USB_NAME = os.listdir(USB_ROOT_PATH)[0]
 USB_INSIDE_PATH = USB_ROOT_PATH+"/"+USB_NAME+"/"
 
-VIDEO_ROOT_PATH = USB_INSIDE_PATH+"Video/"
-CSV_ROOT_PATH = USB_INSIDE_PATH+"CSV/"
-
 # Arborescence Picam
 LOG_PATH = "/home/"+os.listdir("/home")[0]+"/logfile_kosmos/"
 GIT_PATH = "/home/"+os.listdir("/home")[0]+"/kosmos_software/"
@@ -61,7 +58,7 @@ class KosmosConfig:
         H=date.hour
         M=date.minute
         S=date.second
-        return f'{H:02}{M:02}{S:02}'
+        return f'{H:02}h{M:02}m{S:02}s'
     
     def get_date(self) -> str:
         """Retourne la date formatée en string"""

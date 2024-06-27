@@ -17,7 +17,6 @@ import numpy as np
 import time
 import csv
 
-
 class KosmosCam(Thread):
     """
     Classe dérivée de Thread qui gère l'enregistrement video.
@@ -32,7 +31,6 @@ class KosmosCam(Thread):
              32_PICAM_resolution_y : la résolution verticale
              34_PICAM_framerate  : framerate
              33_PICAM_preview : si 1 : Lance la fenêtre de preview (utile en debug)
-             30_PICAM_file_name  : le nom du fichier (sans extension)
              35_PICAM_record_time : le temps d'enregistrement en secondes.
              36_PICAM_conversion_mp4 : 1 si on souhaite effectuer la conversion juste après l'acquisition
              37_PICAM_AWB : Règle l'ajustemetn de paramètres awb pour controle couleur : 0 picam classique, 1 awb fixé, 2 awb ajusté
@@ -131,7 +129,6 @@ class KosmosCam(Thread):
             self._camera.controls.AwbMode=0
             time.sleep(0.5)
             self._camera.set_controls({'AwbEnable': False})
-            #self._camera.set_controls({'ColourGains': (5, 0.2)})
          
     def run(self):       
         while not self._end:

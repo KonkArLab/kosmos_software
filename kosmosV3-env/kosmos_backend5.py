@@ -113,30 +113,36 @@ class Server:
 
     def getConfig(self):
         response=dict()
-        response["data"]=dict(self.myMain._conf.config["KOSMOS"])
+        response["data"]=dict(self.myMain._conf.config[BASIC_SECTION])
         response["status"]="ok"
         return response  
 
     def getRecords(self):
         response=dict()
-        strr="ls -l "+"'"+VIDEO_ROOT_PATH+"'"
-        stream =os.popen(strr)
-        streamOutput = stream.read()
-        strRef=streamOutput.split('\n')[1][0:11]
-        if len(strRef) !=0:
+        try:
             outputList=[]
-            listTemp = streamOutput.split(strRef)[1:]
-            for e in listTemp:
-                d=dict()
-                data=e.split()
-                d["size"]="{:.4f}".format(int(data[3])/(1024**2))
-                d["month"]=data[4]
-                d["day"]=data[5]
-                d["time"]=data[6]
-                d["fileName"]=data[7]
-                outputList.append(d)
-        else:
-            outputList=[]
+            strr="ls -l -R " + USB_INSIDE_PATH+self.myMain._conf.get_val("22_CSV_campagne")+self.myMain._conf.get_date_Yms() 
+            stream =os.popen(strr)       
+            streamOutput = stream.read()
+            strRef=streamOutput.split('./')
+            strRef2=strRef[0].split('\n\n')
+            
+            for i in range(1,len(strRef2)): 
+                strRef3=strRef2[i].split('\n')
+                ligne1=strRef3[0][-10:-1] # premier sous dossier
+                lignes=strRef3[2][0:11]                    
+                listTemp = strRef2[1].split(lignes)[1:]
+                for e in listTemp:
+                    d=dict()
+                    data=e.split()
+                    d["size"]="{:.4f}".format(int(data[3])/(1024**2))
+                    d["month"]=data[4]
+                    d["day"]=data[5]
+                    d["time"]=data[6]
+                    d["fileName"]=ligne1+'/'+data[7]
+                    outputList.append(d)
+        except:
+           outputList=[] 
         response["data"]=outputList
         response["status"]="ok"
         return response
