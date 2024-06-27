@@ -20,7 +20,9 @@ LOG_PATH = "/home/"+os.listdir("/home")[0]+"/logfile_kosmos/"
 GIT_PATH = "/home/"+os.listdir("/home")[0]+"/kosmos_software/"
 WORK_PATH = GIT_PATH+"kosmosV3-env/"
 
-BASIC_SECTION = "KOSMOS"   
+TERRAIN_SECTION = "KOSMOS-terrain"
+DEBUG_SECTION = "KOSMOS-debug"
+
 
 class KosmosConfig:
     """
@@ -37,7 +39,7 @@ class KosmosConfig:
         logging.info("kosmos_config.ini lu sur clé usb")
         
         # Création Dossier Campagne si non existant
-        CAMPAGNE_FILE = self.get_val("22_CSV_campagne")+self.get_date_Yms()
+        CAMPAGNE_FILE = self.get_val("22_CSV_campagne",TERRAIN_SECTION)+self.get_date_Yms()
         os.chdir(USB_INSIDE_PATH)            
         if not os.path.exists(CAMPAGNE_FILE):
             os.mkdir(CAMPAGNE_FILE)
@@ -65,7 +67,7 @@ class KosmosConfig:
         date = datetime.now()
         return date.strftime("%Y-%m-%d-%H-%M-%S")
     
-    def get_val_int(self, aKey, aSection=BASIC_SECTION):
+    def get_val_int(self, aKey, aSection):
         """
         Retourne la valeur d'un paramètre dont le nom est passé en argument.
         Parameters:
@@ -75,7 +77,7 @@ class KosmosConfig:
         """
         return self.config.getint(aSection, aKey)
     
-    def get_val(self, aKey, aSection=BASIC_SECTION):
+    def get_val(self, aKey, aSection):
         """
         Retourne la valeur d'un paramètre dont le nom est passé en argument.
         Parameters:
@@ -85,7 +87,7 @@ class KosmosConfig:
         """
         return self.config.get(aSection, aKey)
     
-    def set_val(self,aKey,aValue ,aSection=BASIC_SECTION):
+    def set_val(self,aKey,aValue ,aSection=TERRAIN_SECTION):
         self.config.set(aSection, aKey,str(aValue))
         
     def update_file(self):

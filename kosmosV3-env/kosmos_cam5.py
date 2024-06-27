@@ -43,22 +43,22 @@ class KosmosCam(Thread):
         Thread.__init__(self)
         self._Conf = aConf    
         # Résolutions horizontale
-        self._X_RESOLUTION = aConf.get_val_int("31_PICAM_resolution_x")
-        self._Y_RESOLUTION = aConf.get_val_int("32_PICAM_resolution_y")
+        self._X_RESOLUTION = aConf.get_val_int("31_PICAM_resolution_x",TERRAIN_SECTION)
+        self._Y_RESOLUTION = aConf.get_val_int("32_PICAM_resolution_y",TERRAIN_SECTION)
         
         # Framerate et frameduration camera
-        self._FRAMERATE=aConf.get_val_int("34_PICAM_framerate")
+        self._FRAMERATE=aConf.get_val_int("34_PICAM_framerate",TERRAIN_SECTION)
         self._FRAMEDURATION = int(1/self._FRAMERATE*1000000)
         
         # Preview ou non
-        self._PREVIEW = aConf.get_val_int("33_PICAM_preview")
+        self._PREVIEW = aConf.get_val_int("33_PICAM_preview",TERRAIN_SECTION)
         
         # si 1 : conversion mp4
-        self._CONVERSION = aConf.get_val_int("36_PICAM_conversion_mp4")
+        self._CONVERSION = aConf.get_val_int("36_PICAM_conversion_mp4",TERRAIN_SECTION)
         
         # A clarifier
-        self._AWB = aConf.get_val_int("37_PICAM_AWB")
-        self._record_time = aConf.get_val_int("35_PICAM_record_time")
+        self._AWB = aConf.get_val_int("37_PICAM_AWB",TERRAIN_SECTION)
+        self._record_time = aConf.get_val_int("35_PICAM_record_time",TERRAIN_SECTION)
 
         # Booléens pour les évènements
         self._end = False
@@ -84,7 +84,7 @@ class KosmosCam(Thread):
         os.chdir(WORK_PATH)
         
         # Appel heure pour affichage sur la frame
-        if aConf.get_val_int("38_PICAM_timestamp") == 1:
+        if aConf.get_val_int("38_PICAM_timestamp",TERRAIN_SECTION) == 1:
             self._camera.pre_callback = self.apply_timestamp
 
     

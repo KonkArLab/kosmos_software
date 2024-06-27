@@ -113,7 +113,7 @@ class Server:
 
     def getConfig(self):
         response=dict()
-        response["data"]=dict(self.myMain._conf.config[BASIC_SECTION])
+        response["data"]=dict(self.myMain._conf.config[TERRAIN_SECTION])
         response["status"]="ok"
         return response  
 
@@ -121,7 +121,7 @@ class Server:
         response=dict()
         try:
             outputList=[]
-            strr="ls -l -R " + USB_INSIDE_PATH+self.myMain._conf.get_val("22_CSV_campagne")+self.myMain._conf.get_date_Yms() 
+            strr="ls -l -R " + USB_INSIDE_PATH+self.myMain._conf.get_val("22_CSV_campagne",TERRAIN_SECTION)+self.myMain._conf.get_date_Yms() 
             stream =os.popen(strr)       
             streamOutput = stream.read()
             strRef=streamOutput.split('./')

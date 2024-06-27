@@ -36,7 +36,7 @@ class kosmosCSV(Thread):
         self._continue_event = Event()
         self._t_stop = False
         
-        self._time_step = aConf.get_val_int("20_CSV_step_time")
+        self._time_step = aConf.get_val_int("20_CSV_step_time",TERRAIN_SECTION)
         
         # Initialisation Capteur TP
         self._press_sensor_ok = False
