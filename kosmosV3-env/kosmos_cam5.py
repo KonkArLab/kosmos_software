@@ -50,6 +50,9 @@ class KosmosCam(Thread):
         self._FRAMERATE=aConf.get_val_int("34_PICAM_framerate",TERRAIN_SECTION)
         self._FRAMEDURATION = int(1/self._FRAMERATE*1000000)
         
+        # Temps de l'échantillonnage temporel des infos caméra. égal à celui le CSV TPGPS
+        self._time_step = aConf.get_val_int("20_CSV_step_time",TERRAIN_SECTION)
+        
         # Preview ou non
         self._PREVIEW = aConf.get_val_int("33_PICAM_preview",TERRAIN_SECTION)
         
@@ -70,11 +73,11 @@ class KosmosCam(Thread):
         self._video_config=self._camera.create_video_configuration()
         self._video_config['main']['size']=(self._X_RESOLUTION,self._Y_RESOLUTION)
         self._video_config['controls']['FrameDurationLimits']=(self._FRAMEDURATION,self._FRAMEDURATION)
-        self._camera.set_controls({'AwbEnable': False})
+        self._camera.set_controls({'AeExposureMode': 'Short'}) # on privilégie une adaptation par gain analogique que par augmentation du tps d'expo, et ce, pour limiter le flou de bougé
 
         self._camera.configure(self._video_config)
         self._camera.start() #A noter que le Preview.NULL démarre également 
-        logging.info("Camera démarrée")
+        logging.info("Caméra démarrée")
         
         # Instanciation Encoder
         self._encoder=H264Encoder(framerate=self._FRAMERATE, bitrate=10000000)
@@ -99,16 +102,14 @@ class KosmosCam(Thread):
     def convert_to_mp4(self, input_file):
         if self._CONVERSION == 1:
             #Conversion h264 vers mp4 puis effacement du .h264
-            output_file = os.path.splitext(input_file)[0] + '.mp4'
-               
+            output_file = os.path.splitext(input_file)[0] + '.mp4'              
             try:
                 subprocess.run(['sudo', 'ffmpeg', '-probesize', '2G', '-i', input_file, '-c', 'copy', output_file, '-loglevel', 'warning'])
                 logging.info("Conversion successful !")
                 os.remove(input_file)
                 logging.debug(f"Deleted input H.264 file: {input_file}")                
             except subprocess.CalledProcessError as e:
-                logging.error("Error during conversion:", e, " !!!")
-        
+                logging.error("Error during conversion:", e, " !!!")       
         else:
             logging.info("Pas de conversion mp4 demandée")
       
@@ -150,24 +151,23 @@ class KosmosCam(Thread):
                 self._csvv_file.flush()
             
                 paas=1. # pas de la boucle while qui vérifie si le bouton stop a été activé ou que le temps de séquence n'est pas dépassé
+                k_sampling = int(self._time_step / paas)
+                intervalle_awb = 15 # en sec
                 time_debut=time.time()
                 delta_time=0 #initialisation pour durée de la séquence
                 j = 0 # initialisation pour ajustement Maison AWB
                 k = 0 # initialisation pour 
                 while self._boucle == True and delta_time < self._record_time:
-                    delta_time = time.time()-time_debut
-                    
-                    if k % 5 == 0: # écriture métadata tous les 5*paas
+                    delta_time = time.time()-time_debut    
+                    if k % k_sampling == 0: # écriture métadata tous les 5*paas
                         mtd = Metadata(self._camera.capture_metadata())
                         ligne = f'{delta_time:.3f} ; {mtd.SensorTimestamp} ; {mtd.ExposureTime} ; {mtd.AnalogueGain:.2f} ; {mtd.DigitalGain:.2f} ; {mtd.FrameDuration} ; {mtd.Lux:.2f} ; {mtd.ColourGains[0]:.3f}; {mtd.ColourGains[1]:.3f}'
                         self._csvv_file.write(ligne + '\n')
-                        self._csvv_file.flush()
-                    
+                        self._csvv_file.flush()    
                     k = k+1
-                    
                     if self._AWB == 2: #Ajustement Maison des gains AWB 
                         j=j+1
-                        if j == int(15/paas): # 60 * 0.25 = 15 s entre les ajustements
+                        if j == int(intervalle_awb/paas): 
                             self.adjust_histo(1,1,0.2) # on vise des ratios unitaires avec une tolérance de +- 20%
                             j = 0
                         else :
@@ -206,13 +206,14 @@ class KosmosCam(Thread):
        
     def adjust_histo(self,rh,bh,tolerance):
         # Capture des gains AWB
-        ColourGains = self._camera.capture_metadata()['ColourGains']       
+        ColourGains = self._camera.capture_metadata()['ColourGains']
+        ExposureTime = self._camera.capture_metadata()['ExposureTime']*0.000001
         red=ColourGains[0]
         blue=ColourGains[1]               
         # Calcul des ratios R/G B/G
         ratioR,ratioB = self.RatiosRBsurG()
         # Paramètres de l'algo d'ajustement
-        coef_convergence=0.9 # step de l'ajustement des gains awb
+        coef_convergence=0.8 # step de l'ajustement des gains awb
         i=0 # compteur initialisé pour sortir de la boucle si trop long
         imax=10 # nombre d'itérations max avant retour à référence
         while i<imax and (ratioR > rh+tolerance or ratioR < rh-tolerance or ratioB > bh+tolerance or ratioB < bh-tolerance) :
@@ -225,7 +226,7 @@ class KosmosCam(Thread):
             blue=max(0.5,b)
             #MàJ
             self._camera.set_controls({'ColourGains': (red, blue)})
-            time.sleep(5*1/self._FRAMERATE) # 5 frames de décalage entre modif des gain awb et calcul des nouveaux R/G etB/G
+            time.sleep(10*ExposureTime) # 10 frames de décalage entre modif des gain awb et calcul des nouveaux R/G etB/G
             ratioR,ratioB = self.RatiosRBsurG()
             i=i+1
         else:
@@ -234,7 +235,7 @@ class KosmosCam(Thread):
             else:
                 logging.info('Coefficients AWB non trouvés, retour en mode awb_auto')
                 self._camera.controls.AwbMode=0
-                time.sleep(0.5)
+                time.sleep(0.5) 
                 self._camera.set_controls({'AwbEnable': False})
               
     def stopCam(self):

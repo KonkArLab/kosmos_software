@@ -11,7 +11,7 @@ import time
 import ms5837  # librairie du capteur de pression et temperature
 import serial # librairie pour le GPS
 
-from GPS import *
+#from GPS import *
 
 from kosmos_config import *
 
@@ -50,8 +50,8 @@ class kosmosCSV(Thread):
             logging.error("Erreur d'initialisation du capteur de pression")
                 
         # Initialisation GPS
-        self.gps = GPS()
-        self.gps.start()
+        #self.gps = GPS()
+        #self.gps.start()
         
         # Booléen de capture
         self.stop = False
@@ -86,11 +86,14 @@ class kosmosCSV(Thread):
                         profStr=f'{prof:2f}'
             
                 #Bloc GPS
-                LAT = f'{self.gps.get_latitude():.5f}'
-                LONG = f'{self.gps.get_longitude():.5f}'
+                LAT = ""
+                LONG = ""
+                #LAT = f'{self.gps.get_latitude():.5f}'
+                #LONG = f'{self.gps.get_longitude():.5f}'
                 
                 # Ecriture de la ligne
                 ligne = f'{vHeure} ; {pressStr} ; {tempStr} ; {profStr} ; {LAT} ; {LONG}'
+
                 try:
                     self._csv_file.write(ligne + '\n')
                     self._csv_file.flush()                    
@@ -108,7 +111,7 @@ class kosmosCSV(Thread):
     
     def pause(self):
         """suspend le thread pour pouvoir le redémarrer."""
-        self.gps.pause()
+        #self.gps.pause()
         self._continue_event.clear()
         self._pause_event.set()
 
@@ -123,7 +126,7 @@ class kosmosCSV(Thread):
     def stop_thread(self):
         """positionne l'évènement qui va provoquer l'arrêt du thread"""
         self.stop = True
-        self.gps.stop_thread()
+        #self.gps.stop_thread()
         self._stopevent.set()
         self._continue_event.set()
         self._pause_event.set()
