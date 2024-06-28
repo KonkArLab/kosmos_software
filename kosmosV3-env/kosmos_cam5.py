@@ -207,7 +207,6 @@ class KosmosCam(Thread):
     def adjust_histo(self,rh,bh,tolerance):
         # Capture des gains AWB
         ColourGains = self._camera.capture_metadata()['ColourGains']
-        ExposureTime = self._camera.capture_metadata()['ExposureTime']*0.000001
         red=ColourGains[0]
         blue=ColourGains[1]               
         # Calcul des ratios R/G B/G
@@ -226,7 +225,7 @@ class KosmosCam(Thread):
             blue=max(0.5,b)
             #MàJ
             self._camera.set_controls({'ColourGains': (red, blue)})
-            time.sleep(10*ExposureTime) # 10 frames de décalage entre modif des gain awb et calcul des nouveaux R/G etB/G
+            time.sleep(10*self._FRAMEDURATION*0.000001) # 10 frames de décalage entre modif des gain awb et calcul des nouveaux R/G etB/G
             ratioR,ratioB = self.RatiosRBsurG()
             i=i+1
         else:
