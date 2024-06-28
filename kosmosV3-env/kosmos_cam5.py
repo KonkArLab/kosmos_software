@@ -70,18 +70,15 @@ class KosmosCam(Thread):
         self._video_config=self._camera.create_video_configuration()
         self._video_config['main']['size']=(self._X_RESOLUTION,self._Y_RESOLUTION)
         self._video_config['controls']['FrameDurationLimits']=(self._FRAMEDURATION,self._FRAMEDURATION)
+        self._camera.set_controls({'AwbEnable': False})
+
         self._camera.configure(self._video_config)
         self._camera.start() #A noter que le Preview.NULL démarre également 
         logging.info("Camera démarrée")
         
         # Instanciation Encoder
         self._encoder=H264Encoder(framerate=self._FRAMERATE, bitrate=10000000)
-                
-        #Creation du dossier Video dans la clé usb si pas déjà présent.
-        os.chdir(USB_INSIDE_PATH)            
-        if not os.path.exists("Video"):
-            os.mkdir("Video")
-        os.chdir(WORK_PATH)
+            
         
         # Appel heure pour affichage sur la frame
         if aConf.get_val_int("38_PICAM_timestamp",TERRAIN_SECTION) == 1:

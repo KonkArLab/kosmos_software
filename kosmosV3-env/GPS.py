@@ -33,16 +33,22 @@ class GPS(Thread):
                 rcv = self.ser.readline()
                 rcvsplit = rcv.split(b',')
                 if rcvsplit[0] == b'$GNGGA':
-                    LATGPS = rcvsplit[2:4]
-                    if LATGPS[0] != b'':
-                        LAT = (self.card2sign(LATGPS[1])*(int(float(LATGPS[0])/100) + ((float(LATGPS[0])/100) % 1)*100/60))
-                    else:
+                    try : # sécurité pour éviter toute erreur bloquante
+                        LATGPS = rcvsplit[2:4]
+                        if LATGPS[0] != b'':
+                            LAT = (self.card2sign(LATGPS[1])*(int(float(LATGPS[0])/100) + ((float(LATGPS[0])/100) % 1)*100/60))
+                        else:
+                            LAT = 0.
+                    except :
                         LAT = 0.
-                    LONGGPS = rcvsplit[4:6]
-                    if LONGGPS[0] != b'':    
-                        LONG = (self.card2sign(LONGGPS[1])*(int(float(LONGGPS[0])/100) + ((float(LONGGPS[0])/100) % 1)*100/60))
-                    else:
-                        LONG = 0.
+                    try : # sécurité pour éviter toute erreur bloquante
+                        LONGGPS = rcvsplit[4:6]
+                        if LONGGPS[0] != b'':    
+                            LONG = (self.card2sign(LONGGPS[1])*(int(float(LONGGPS[0])/100) + ((float(LONGGPS[0])/100) % 1)*100/60))
+                        else:
+                            LONG = 0.
+                    except :
+                        LONG = 0.    
                     self.latitude = LAT
                     self.longitude = LONG
                 time.sleep(0.01)

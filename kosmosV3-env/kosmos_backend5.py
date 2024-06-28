@@ -10,7 +10,6 @@ import logging
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 
-
 from kosmos_state import KState
 from kosmos_config import *
 
@@ -18,6 +17,7 @@ from kosmos_config import *
 class Server:
     
     app = Flask(__name__)
+
     def __init__(self,myMain):
         self.myMain=myMain
         CORS(self.app)
@@ -131,7 +131,7 @@ class Server:
                 strRef3=strRef2[i].split('\n')
                 ligne1=strRef3[0][-10:-1] # premier sous dossier
                 lignes=strRef3[2][0:11]                    
-                listTemp = strRef2[1].split(lignes)[1:]
+                listTemp = strRef2[i].split(lignes)[1:]
                 for e in listTemp:
                     d=dict()
                     data=e.split()
