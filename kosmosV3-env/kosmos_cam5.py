@@ -104,7 +104,8 @@ class KosmosCam(Thread):
             #Conversion h264 vers mp4 puis effacement du .h264
             output_file = os.path.splitext(input_file)[0] + '.mp4'              
             try:
-                subprocess.run(['sudo', 'ffmpeg', '-probesize', '2G', '-i', input_file, '-c', 'copy', output_file, '-loglevel', 'warning'])
+                #subprocess.run(['sudo', 'ffmpeg', '-probesize', '2G', '-i', input_file, '-c', 'copy', output_file, '-loglevel', 'warning'])
+                subprocess.run(['sudo', 'ffmpeg', '-r', str(self._FRAMERATE), '-i', input_file, '-c', 'copy', output_file, '-loglevel', 'warning'])
                 logging.info("Conversion successful !")
                 os.remove(input_file)
                 logging.debug(f"Deleted input H.264 file: {input_file}")                
