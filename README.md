@@ -157,6 +157,17 @@ Toutes les vidéos et métadata associées seront enregistrées dans ce dossier.
 A noter qu'il peut y avoir un nombre devant les trois premiesr fichiers. Typiquement 00_ puis 01_ etc. Il correspond au numéro de séquence vidéo lorsque de très longues captures sont demandées. En effet dans ce cas là, les vidéos sont découpées pour éviter la perte éventuelle de données.
 
 ## Mode d'emploi
+
+### Procédure de mise au point de la caméra
+- La première étape consiste à oter le filtre IR présent sur le capteur de la picam afin de maximiser le nombre de photons incidents. Pour cela on peut suivre le [guide](https://www.raspberrypi.com/documentation/accessories/camera.html#filter-removal) proposé par Raspberry.
+- Cette étape réalisée, on nettoiera toutes les surfaces avec un chiffon microfibre puis on remontera l'objectif Edmund sur le capteur. Ré-assembler enfin ce module optique sur le système.
+- Pour faire la mise au point de la caméra, le système ne sera pas placé dans le caisson. On branchera par ailleurs un écran à la Raspberry pour visualiser ce que filme la caméra.
+- Une fois l'écran branché, on allumera le système et on attendra que le système KOSMOS soit en STAND BY.
+- Dans l'interface WEB, modifier le paramètre `05_SYSTEM_shutdown ` pour le mettre à 0 et effectuer un `Reboot`. Aller ensuite dans l'onglet `Camera` et éteindre arrêter le système KOSMOS en appuyant sur `Shutdown`. (Cette manipulation permet d'arrêter le script KOSMOS sans éteindre la Rpi. La caméra peut ainsi être utilisée.)
+- Dans le terminal, taper ```rpicam-hello --timeout 0 ``` Cette instruction permet d'afficher le preview. Pour le quitter il suffira de taper ```Ctrl + C ```
+- Placer une mire à cinq mètres de l'objectif. Ouvrir à fond l'objectif (le petit point blanc devant 1.8) pour avoir une profondeur de champ minimale. Réaliser le focus sur la mire avec la bague puis la bloquer solidement. Fermer enfin l'objectif à fond (le petit point blanc sur 11) pour récupérer une profondeur de champ maximale. Bloquer la bague d'ouverture dans cette position. Vérifier que le focus est toujours bon (le fait de serrer les bagues peut parfois les faire bouger.)
+- Sortir du preview puis redémarrer la Raspberry Pi. Le soft kosmos va se remettre en route. Dans l'interface web, remettre le paramètre  `05_SYSTEM_shutdown ` sur 1. Effectuer un `Reboot` puis éteindre le système avec un `Shutdown`.
+
 ### Processus de mise à l'eau
 Pour déployer KOSMOS en mer suivre le [guide de mise en service](https://kosmos.fish/index.php/deployer/).
 
