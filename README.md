@@ -147,8 +147,14 @@ Une question apparaît dans le terminal:
 
 Le fichier kosmos_config.ini contient les paramètres de configuration du système. Ces paramètres seront visibles depuis l'interface web grâce à un ficher Javascript. [Explication](https://github.com/KonkArLab/kosmos_software/blob/Refonte_fromIMT2/READ_ME.md#configuration)  
 
-Le dossier s'appelle normalement "Nom du Kosmos" + "date" au format annéemoisjour. L'association de ces deux informations définit une campagne journalière. Toutes les vidéos seront enregistrées dans ce dossier.
+Le dossier s'appelle normalement "Nom du Kosmos" + "date" au format annéemoisjour. L'association de ces deux informations définit une campagne sur un instrument pour un jour donné. 
 
+Toutes les vidéos et métadata associées seront enregistrées dans ce dossier. Concrètement, à chaque activation du kosmos (passage de l'état STANDBY à WORKING) un dossier dont le nom sera l'heure (au format XXhXXmXXs) sera créé et contiendra quatre fichiers : 
+- Le fichier vidéo .mp4
+- Un fichier Timestamp.txt qui stocke l'instant de chaque frame de la video
+- Un fichier CamParam.csv qui stocke des paramètres de la caméra pendant la prise de vue
+- Une fichier TemperaturePressionGPS.csv qui conserve les données T,P et position pendant la prise de vue. 
+A noter qu'il peut y avoir un nombre devant les trois premiesr fichiers. Typiquement 00_ puis 01_ etc. Il correspond au numéro de séquence vidéo lorsque de très longues captures sont demandées. En effet dans ce cas là, les vidéos sont découpées pour éviter la perte éventuelle de données.
 
 ## Mode d'emploi
 ### Processus de mise à l'eau
