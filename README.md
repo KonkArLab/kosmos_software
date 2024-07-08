@@ -145,7 +145,7 @@ Une question apparaît dans le terminal:
   
  - Redémarrer maintenant la RPi. Si au démarrage, la led verte de la carte électronique clignote c'est que le système est opérationnel. Si la clé était vierge, elle doit maintenant contenir un dossiers et un ficher texte :
 
-Le fichier kosmos_config.ini contient les paramètres de configuration du système. Ces paramètres seront visibles depuis l'interface web grâce à un ficher Javascript. [Explication](https://github.com/KonkArLab/kosmos_software/blob/Refonte_fromIMT2/READ_ME.md#configuration)  
+Le fichier kosmos_config.ini contient les paramètres de configuration du système. Ces paramètres seront visibles depuis l'interface web grâce à un ficher Javascript. [Explication](https://github.com/KonkArLab/kosmos_software/blob/dev_stereo2/README.md#prise-en-main-de-linterface-web)  
 
 Le dossier s'appelle normalement "Nom du Kosmos" + "date" au format annéemoisjour. L'association de ces deux informations définit une campagne sur un instrument pour un jour donné. 
 
