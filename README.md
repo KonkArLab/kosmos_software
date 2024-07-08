@@ -141,16 +141,14 @@ Une question apparaît dans le terminal:
   
 ### Stockage des données
 
- - Brancher la clé USB pour le stockage des données. Elle peut être vide ou contenir déjà les dossiers CSV et Video d'un précédente campagne. (Nous recommandons toutefois de repartir d'une clé vierge pour éviter des incompatibilités dues à l'évolution du software.) 
+ - Brancher la clé USB pour le stockage des données. Elle peut être vide ou contenir déjà des dossiers des campagnes précédentes. Nous recommandons toutefois de repartir d'une clé vierge pour éviter une saturation mémoire de la clé usb. 
   
- - Redémarrer maintenant la RPi. Si au démarrage, la led verte de la carte électronique clignote c'est que le système est opérationnel. Si la clé était vierge, elle doit maintenant contenir deux dossiers et un ficher texte :
-
-![dossier cle usb](fichiers-annexe/dossier_cle_usb.png)
+ - Redémarrer maintenant la RPi. Si au démarrage, la led verte de la carte électronique clignote c'est que le système est opérationnel. Si la clé était vierge, elle doit maintenant contenir un dossiers et un ficher texte :
 
 Le fichier kosmos_config.ini contient les paramètres de configuration du système. Ces paramètres seront visibles depuis l'interface web grâce à un ficher Javascript. [Explication](https://github.com/KonkArLab/kosmos_software/blob/Refonte_fromIMT2/READ_ME.md#configuration)  
 
-Vos fichiers enregistrés avec kosmos seront sauvegardés dans les dossiers CSV et Video.
-Les fichiers vidéos et csv ne sont pas effacés à chaque démarrage. Si vous avez déjà enregistré des vidéos elles resteront stockées dans ces fichiers. 
+Le dossier s'appelle normalement "Nom du Kosmos" + "date" au format annéemoisjour. L'association de ces deux informations définit une campagne journalière. Toutes les vidéos seront enregistrées dans ce dossier.
+
 
 ## Mode d'emploi
 ### Processus de mise à l'eau
