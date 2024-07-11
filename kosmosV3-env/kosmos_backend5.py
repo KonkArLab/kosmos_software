@@ -98,7 +98,6 @@ class Server:
             if self.myMain.PRESENCE_MOTEUR==1:
                 del self.myMain.motorThread
             del self.myMain.thread_camera
-            del self.myMain.thread_csv
             
             # Réinitialisation
             self.myMain.init()

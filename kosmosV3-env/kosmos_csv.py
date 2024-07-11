@@ -9,9 +9,8 @@ import os
 import time
 
 import ms5837  # librairie du capteur de pression et temperature
-import serial # librairie pour le GPS
 
-#from GPS import *
+from GPS import *
 
 from kosmos_config import *
 

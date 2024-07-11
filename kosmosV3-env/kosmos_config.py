@@ -94,3 +94,11 @@ class KosmosConfig:
         with open(self._file_path, 'w') as configfile:
             self.config.write(configfile)
             
+    def add_line(self,csv_file,ligne):
+        try:
+            with open(csv_file,'a') as csv_variable:
+                csv_variable.write(ligne + '\n')
+                csv_variable.flush() 
+                csv_variable.close()
+        except:
+            logging.info('Problème écriture dans le CSV Event')

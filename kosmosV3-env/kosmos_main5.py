@@ -18,7 +18,6 @@ from kosmos_state import KState
 
 from kosmos_config import *
 import kosmos_config as KConf
-import kosmos_csv as KCsv
 import kosmos_cam5 as KCam
 import kosmos_esc_motor5 as KMotor
 import sys
@@ -28,14 +27,14 @@ logging.basicConfig(level=logging.INFO,
                     datefmt='%d/%m %I:%M:%S')#,filename='kosmos.log')
 
 class kosmos_main():
-
     """ 
         On a divisé l'initialisation en deux methodes:
         Dans le constructeur, on a conservé la creation des evenement qui doit s'executé seulement une fois dans tous le programme.
         Une methode init() qui contient le reste d'initialisation qui peut étre appeler plusieur fois au besoin.
     """
     def __init__(self):
-         # évènements
+        
+        # évènements
         self.button_event = Event()  # un ILS a été activé
         self.record_event = Event()  # l'ILS start or stop record été activé
         self.stop_event = Event()    # l'ILS du shutdown or stop record activé      
@@ -65,18 +64,12 @@ class kosmos_main():
         
         # Paramètres camera & définition Thread Camera
         self.thread_camera = KCam.KosmosCam(self._conf)
-        
-        # Definition Thread CSV TP et GPS
-        self.thread_csv = KCsv.kosmosCSV(self._conf)
-         
+                 
         # Definition Thread Moteur
         self.PRESENCE_MOTEUR = self._conf.get_val_int("06_SYSTEM_moteur",TERRAIN_SECTION) # Fonctionnement moteur si 1
         if self.PRESENCE_MOTEUR==1:
             self.motorThread = KMotor.kosmosEscMotor(self._conf)
-        
-        
-        
-        
+ 
     def clear_events(self):
         """Mise à 0 des evenements attachés aux boutons"""
         self.record_event.clear()
@@ -106,9 +99,7 @@ class kosmos_main():
             self.state = KState.SHUTDOWN
         elif myMain.record_event.is_set():
             self.state = KState.WORKING
-        #else:
-        #    print('WTF !?')
-              
+             
     def working(self):
         logging.info("WORKING : Debut de l'enregistrement")       
         
@@ -116,16 +107,13 @@ class kosmos_main():
         os.chdir(self._conf.CAMPAGNE_PATH)
         os.mkdir(self._conf.get_date_HMS())
         VID_PATH = self._conf.CAMPAGNE_PATH+self._conf.get_date_HMS()
-        os.chdir(VID_PATH)
+        os.chdir(VID_PATH) # Ligne très importante pour bonne destination des fichiers !!!
         
         self._ledB.off()
         
         if self.PRESENCE_MOTEUR == 1:
             # Run thread moteur
             self.motorThread.restart()
-        
-        # Run thread CSV TP et GPS
-        self.thread_csv.restart()
         
         # Run thread camera
         self.thread_camera.restart()
@@ -141,7 +129,7 @@ class kosmos_main():
                 self._extinction = True
                 logging.info('Sortie par extinction')
                 break
-                
+      
         self.state = KState.STOPPING       
     
     def stopping(self):
@@ -156,15 +144,16 @@ class kosmos_main():
         if self.PRESENCE_MOTEUR==1:
             # Pause Moteur
             self.motorThread.pause()
-                
-        # Pause Thread CSV TP et GPS
-        self.thread_csv.pause()
-        
-        
+       
         if self._extinction == False:
             # On s'est arrêté via un bouton, on retourne donc en stand by
             self.state = KState.STANDBY
+            event_line = self._conf.get_date_HMS()  + "; SORTIE BOUTON"
+            self._conf.add_line("Events.csv",event_line)
+            
         elif self._extinction == True:
+            event_line = self._conf.get_date_HMS()  + "; SORTIE DUREE LIMITE"
+            self._conf.add_line("Events.csv",event_line)
             # On s'est arrêté car arrivé au bout du temps_total de fonctionnement du système
             time.sleep(5) #tempo pour gérer la boucle while d'enregistrement
             self.state = KState.SHUTDOWN
@@ -173,11 +162,6 @@ class kosmos_main():
         logging.info("SHUTDOWN : Kosmos passe à l'arrêt total")
               
         self._ledR.on()
-        
-        # Arrêt de l'écriture du CSV TP
-        self.thread_csv.stop_thread()
-        if self.thread_csv.is_alive():
-            self.thread_csv.join()
              
         # Arrêt de la caméra
         self.thread_camera.closeCam()   # Stop caméra
