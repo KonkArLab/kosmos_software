@@ -229,10 +229,10 @@ class KosmosCam(Thread):
                 logging.info(f"Fin de l'enregistrement video {self._file_name}")
                 
                 # Conversion mp4 si demandée
-                event_line =  self._Conf.get_date_HMS()  + "; START CONVERSION ; " + self._output
+                event_line =  self._Conf.get_date_HMS()  + "; START CONVERSION ;" + self._output
                 self._Conf.add_line("Events.csv",event_line)
                 self.convert_to_mp4(self._output)
-                event_line =  self._Conf.get_date_HMS()  + "; END CONVERSION ;" + self._file_name +'.mp4'
+                event_line =  self._Conf.get_date_HMS()  + "; END CONVERSION ;" + self._file_name +'_Video.mp4'
                 self._Conf.add_line("Events.csv",event_line)
                 
                 i=i+1
