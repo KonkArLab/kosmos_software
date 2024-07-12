@@ -170,7 +170,7 @@ class KosmosCam(Thread):
                 self._camera.start_encoder(self._encoder,self._output,pts = self._file_name+'_TimeStamp.txt')
                 
                 #Création CSV
-                ligne = "Heure ; Latitude ; Longitude ; pression (mb); température °C ; profondeur (m); ; Delta (s) ; TimeStamp ; ExpTime (micros) ; AnGain ; DiGain ; FrameDur (micros) ; Lux ; RedGains ; BlueGains"
+                ligne = "Heure;Latitude;Longitude;Pression;Température;Profondeur;DeltaTime;TimeStamp;ExposureTime;AnGain;DiGain;FrameDuration;Lux;RedGain;BlueGain"
                 self._Conf.add_line(self._file_name + '_CamParam.csv',ligne)
                 paas=1. # pas de la boucle while qui vérifie si le bouton stop a été activé ou que le temps de séquence n'est pas dépassé
                 k_sampling = int(self._time_step / paas)
@@ -203,7 +203,7 @@ class KosmosCam(Thread):
                         # Récupération metadata caméra
                         mtd = Metadata(self._camera.capture_metadata())
                         # Ecriture des données dans le CSV
-                        ligne = f'{self._Conf.get_date_HMS()}; {LAT} ; {LONG} ;{pressStr} ; {tempStr} ; {profStr} ; ; {delta_time:.3f} ; {mtd.SensorTimestamp} ; {mtd.ExposureTime} ; {mtd.AnalogueGain:.2f} ; {mtd.DigitalGain:.2f} ; {mtd.FrameDuration} ; {mtd.Lux:.2f} ; {mtd.ColourGains[0]:.3f}; {mtd.ColourGains[1]:.3f} '
+                        ligne = f'{self._Conf.get_date_HMS()};{LAT};{LONG};{pressStr};{tempStr};{profStr};{delta_time:.3f};{mtd.SensorTimestamp};{mtd.ExposureTime};{mtd.AnalogueGain:.2f};{mtd.DigitalGain:.2f};{mtd.FrameDuration};{mtd.Lux:.2f};{mtd.ColourGains[0]:.3f};{mtd.ColourGains[1]:.3f}'
                         self._Conf.add_line(self._file_name + '_CamParam.csv',ligne)   
                     k = k+1
                     if self._AWB == 2: #Ajustement Maison des gains AWB 
