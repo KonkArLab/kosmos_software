@@ -186,7 +186,7 @@ class kosmos_main():
         if self._conf.get_val_int("05_SYSTEM_shutdown",TERRAIN_SECTION) != 0 :
             os.system("sudo shutdown -h now")
         else :
-            sys.exit(0)
+            os._exit(0)
 
     def modeRotatif(self):
         """programme principal du mode rotatif"""

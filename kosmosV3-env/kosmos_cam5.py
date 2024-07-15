@@ -17,9 +17,9 @@ import numpy as np
 import time
 import csv
 
-#import GPS
+#import GPS & capteur TP
 from GPS import *
-
+import ms5837
 
 
 class KosmosCam(Thread):
@@ -165,12 +165,12 @@ class KosmosCam(Thread):
                     self._camera.start_preview(Preview.QTGL,width=800,height=600)
                 
                 # Bloc d'enregistrement/encodage à proprement parler
-                event_line = self._Conf.get_date_HMS()  + "; START ENCODER ;" + self._output
+                event_line = self._Conf.get_date_HMS()  + ";START ENCODER;" + self._output
                 self._Conf.add_line("Events.csv",event_line)
                 self._camera.start_encoder(self._encoder,self._output,pts = self._file_name+'_TimeStamp.txt')
                 
                 #Création CSV
-                ligne = "HMS;Lat;Long;Pression;TempC;Pfdeur;Delta(s);TStamp;ExpTime;AnG;DiG;FrmDuration;Lux;RedG;BlueG"
+                ligne = "HMS;Lat;Long;Pression;TempC;Delta(s);TStamp;ExpTime;AnG;DiG;FrmDuration;Lux;RedG;BlueG"
                 self._Conf.add_line(self._file_name + '_CamParam.csv',ligne)
                 paas=1. # pas de la boucle while qui vérifie si le bouton stop a été activé ou que le temps de séquence n'est pas dépassé
                 k_sampling = int(self._time_step / paas)
@@ -191,19 +191,19 @@ class KosmosCam(Thread):
                         #Récupération données TP
                         pressStr = ""
                         tempStr = ""
-                        profStr = ""
+                        #profStr = ""
                         if self._press_sensor_ok:
                             if self.pressure_sensor.read():
                                 press = self.pressure_sensor.pressure()  # Default is mbar (no arguments)
                                 pressStr = f'{press:.1f}'
                                 temp = self.pressure_sensor.temperature()  # Default is degrees C (no arguments)
                                 tempStr = f'{temp:.1f}'
-                                prof=(press-1013)/100
-                                profStr=f'{prof:2f}'
+                                #prof=(press-1013)/100
+                                #profStr=f'{prof:2f}'
                         # Récupération metadata caméra
                         mtd = Metadata(self._camera.capture_metadata())
                         # Ecriture des données dans le CSV
-                        ligne = f'{self._Conf.get_date_HMS()};{LAT};{LONG};{pressStr};{tempStr};{profStr};{delta_time:.1f};{mtd.SensorTimestamp};{mtd.ExposureTime};{mtd.AnalogueGain:.2f};{mtd.DigitalGain:.2f};{mtd.FrameDuration};{mtd.Lux:.1f};{mtd.ColourGains[0]:.2f};{mtd.ColourGains[1]:.2f}'
+                        ligne = f'{self._Conf.get_date_HMS()};{LAT};{LONG};{pressStr};{tempStr};{delta_time:.1f};{mtd.SensorTimestamp};{mtd.ExposureTime};{mtd.AnalogueGain:.2f};{mtd.DigitalGain:.2f};{mtd.FrameDuration};{mtd.Lux:.1f};{mtd.ColourGains[0]:.2f};{mtd.ColourGains[1]:.2f}'
                         self._Conf.add_line(self._file_name + '_CamParam.csv',ligne)   
                     k = k+1
                     if self._AWB == 2: #Ajustement Maison des gains AWB 
@@ -219,7 +219,7 @@ class KosmosCam(Thread):
                 
                 # Fin de l'encodage
                 self._camera.stop_encoder()
-                event_line = self._Conf.get_date_HMS() + "; END ENCODER ;" + self._output
+                event_line = self._Conf.get_date_HMS() + ";END ENCODER;" + self._output
                 self._Conf.add_line("Events.csv",event_line)
                                
                 if self._PREVIEW == 1:
@@ -229,10 +229,10 @@ class KosmosCam(Thread):
                 logging.info(f"Fin de l'enregistrement video {self._file_name}")
                 
                 # Conversion mp4 si demandée
-                event_line =  self._Conf.get_date_HMS()  + "; START CONVERSION ;" + self._output
+                event_line =  self._Conf.get_date_HMS()  + ";START CONVERSION;" + self._output
                 self._Conf.add_line("Events.csv",event_line)
                 self.convert_to_mp4(self._output)
-                event_line =  self._Conf.get_date_HMS()  + "; END CONVERSION ;" + self._file_name +'_Video.mp4'
+                event_line =  self._Conf.get_date_HMS()  + ";END CONVERSION;" + self._file_name +'_Video.mp4'
                 self._Conf.add_line("Events.csv",event_line)
                 
                 i=i+1
@@ -251,7 +251,7 @@ class KosmosCam(Thread):
         return r_med/g_med,b_med/g_med
        
     def adjust_histo(self,rh,bh,tolerance):
-        event_line =  self._Conf.get_date_HMS()  + "; START AWB ALGO "
+        event_line =  self._Conf.get_date_HMS()  + ";START AWB ALGO"
         self._Conf.add_line("Events.csv",event_line)
         
         # Capture des gains AWB
@@ -286,15 +286,16 @@ class KosmosCam(Thread):
                 time.sleep(0.5) 
                 self._camera.set_controls({'AwbEnable': False})
                 
-        event_line =  self._Conf.get_date_HMS()  + "; END AWB ALGO "
+        event_line =  self._Conf.get_date_HMS()  + ";END AWB ALGO "
         self._Conf.add_line("Events.csv",event_line)
         
         
     def stopCam(self):
         """  Demande la fin de l'enregistrement et ferme l'objet caméra."""
         # permet d'arrêter l'enregistrement si on passe par le bouton stop"
-        self._boucle=False
-        self.gps.stop_thread()
+        self._boucle = False
+        if self._gps_ok == True:
+            self.gps.stop_thread()
         
     def closeCam(self):
         """Arrêt définitif de la caméra"""
