@@ -30,7 +30,10 @@ class GPS(Thread):
     def run(self):       
         while not self._t_stop:
             while not self._pause_event.isSet():
-                rcv = self.ser.readline()
+                try:
+                    rcv = self.ser.readline()
+                except:
+                    rcv = b''
                 rcvsplit = rcv.split(b',')
                 if rcvsplit[0] == b'$GNGGA':
                     try : # sécurité pour éviter toute erreur bloquante

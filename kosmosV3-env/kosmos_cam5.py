@@ -170,11 +170,11 @@ class KosmosCam(Thread):
                 self._camera.start_encoder(self._encoder,self._output,pts = self._file_name+'_TimeStamp.txt')
                 
                 #Création CSV
-                ligne = "HMS;Lat;Long;Pression;TempC;Delta(s);TStamp;ExpTime;AnG;DiG;FrmDuration;Lux;RedG;BlueG"
+                ligne = "HMS;Lat;Long;Pression;TempC;Delta(s);TStamp;ExpTime;AnG;DiG;Lux;RedG;BlueG;Bright"
                 self._Conf.add_line(self._file_name + '_CamParam.csv',ligne)
                 paas=1. # pas de la boucle while qui vérifie si le bouton stop a été activé ou que le temps de séquence n'est pas dépassé
                 k_sampling = int(self._time_step / paas)
-                intervalle_awb = 15 # en sec
+                intervalle_awb = 10 # en sec
                 time_debut=time.time()
                 delta_time=0 #initialisation pour durée de la séquence
                 j = 0 # initialisation pour ajustement Maison AWB
@@ -202,14 +202,18 @@ class KosmosCam(Thread):
                                 #profStr=f'{prof:2f}'
                         # Récupération metadata caméra
                         mtd = Metadata(self._camera.capture_metadata())
+                        bright = self._camera.camera_controls['Brightness'][2]
+                        brightStr = f'{bright:.1f}'
                         # Ecriture des données dans le CSV
-                        ligne = f'{self._Conf.get_date_HMS()};{LAT};{LONG};{pressStr};{tempStr};{delta_time:.1f};{mtd.SensorTimestamp};{mtd.ExposureTime};{mtd.AnalogueGain:.2f};{mtd.DigitalGain:.2f};{mtd.FrameDuration};{mtd.Lux:.1f};{mtd.ColourGains[0]:.2f};{mtd.ColourGains[1]:.2f}'
+                        ligne = f'{self._Conf.get_date_HMS()};{LAT};{LONG};{pressStr};{tempStr};{delta_time:.1f};{mtd.SensorTimestamp};{mtd.ExposureTime};{mtd.AnalogueGain:.1f};{mtd.DigitalGain:.1f};{mtd.Lux:.1f};{mtd.ColourGains[0]:.1f};{mtd.ColourGains[1]:.1f};{brightStr}'
                         self._Conf.add_line(self._file_name + '_CamParam.csv',ligne)   
                     k = k+1
                     if self._AWB == 2: #Ajustement Maison des gains AWB 
                         j=j+1
                         if j == int(intervalle_awb/paas): 
-                            self.adjust_histo(1,1,0.2) # on vise des ratios unitaires avec une tolérance de +- 20%
+                            self.adjust_awb(1,1,0.2) # on vise des ratios unitaires avec une tolérance de +- 20%
+                            #time.sleep(0.5)
+                            #self.adjust_brightness(120,20)
                             j = 0
                         else :
                             time.sleep(paas)
@@ -247,10 +251,11 @@ class KosmosCam(Thread):
         xx=np.linspace(0,255,256)
         r_med= sum(r.histogram()*xx)/sum(r.histogram())
         g_med= sum(g.histogram()*xx)/sum(g.histogram())
-        b_med= sum(b.histogram()*xx)/sum(b.histogram())    
-        return r_med/g_med,b_med/g_med
+        b_med= sum(b.histogram()*xx)/sum(b.histogram())
+        print(r_med,g_med,b_med)
+        return r_med/g_med,b_med/g_med,(r_med+g_med+b_med)/3
        
-    def adjust_histo(self,rh,bh,tolerance):
+    def adjust_awb(self,rh,bh,tolerance):
         event_line =  self._Conf.get_date_HMS()  + ";START AWB ALGO"
         self._Conf.add_line("Events.csv",event_line)
         
@@ -259,7 +264,7 @@ class KosmosCam(Thread):
         red=ColourGains[0]
         blue=ColourGains[1]               
         # Calcul des ratios R/G B/G
-        ratioR,ratioB = self.RatiosRBsurG()
+        ratioR,ratioB = self.RatiosRBsurG()[0:2]
         # Paramètres de l'algo d'ajustement
         coef_convergence=0.8 # step de l'ajustement des gains awb
         i=0 # compteur initialisé pour sortir de la boucle si trop long
@@ -275,20 +280,53 @@ class KosmosCam(Thread):
             #MàJ
             self._camera.set_controls({'ColourGains': (red, blue)})
             time.sleep(10*self._FRAMEDURATION*0.000001) # 10 frames de décalage entre modif des gain awb et calcul des nouveaux R/G etB/G
-            ratioR,ratioB = self.RatiosRBsurG()
+            ratioR,ratioB = self.RatiosRBsurG()[0:2]
             i=i+1
         else:
             if i < imax:
-                logging.info('Coefficients AWB trouvés pour histogramme ajusté')
+                logging.info('Coefficients AWB trouvés')
             else:
                 logging.info('Coefficients AWB non trouvés, retour en mode awb_auto')
                 self._camera.controls.AwbMode=0
                 time.sleep(0.5) 
                 self._camera.set_controls({'AwbEnable': False})
                 
-        event_line =  self._Conf.get_date_HMS()  + ";END AWB ALGO "
+        event_line =  self._Conf.get_date_HMS()  + ";END AWB ALGO"
+        self._Conf.add_line("Events.csv",event_line)
+    
+    def adjust_brightness(self,br,tolerance):
+        event_line =  self._Conf.get_date_HMS()  + ";START BRIGHT ALGO"
         self._Conf.add_line("Events.csv",event_line)
         
+        # Capture de la brigthness
+        brightness = self._camera.camera_controls['Brightness'][2]               
+        # Calcul des ratios R/G B/G
+        histo_med = self.RatiosRBsurG()[2]
+        # Paramètres de l'algo d'ajustement
+        coef_convergence=0.002 # step de l'ajustement de la brightness
+        i=0 # compteur initialisé pour sortir de la boucle si trop long
+        imax=10 # nombre d'itérations max avant retour à référence
+        while i<imax and ( histo_med > br+tolerance or histo_med < br-tolerance ) :
+            brightness = brightness + coef_convergence*(br-histo_med)
+            # On threshold pour rester dans les clous 0&8
+            a=min(0.99,brightness)
+            brightness=max(-0.99,a)
+            #MàJ
+            self._camera.set_controls({'Brightness': brightness})                      
+            time.sleep(10*self._FRAMEDURATION*0.000001) # 10 frames de décalage entre modif des gain awb et calcul des nouveaux R/G etB/G
+            histo_med = self.RatiosRBsurG()[2]
+            print(histo_med)
+            i=i+1
+        else:
+            if i < imax:
+                logging.info('Coefficient Brightness trouvé')
+            else:
+                logging.info('Coefficient Brightness non trouvé, retour à la normale')
+                self._camera.set_controls({'Brightness': 0})
+                
+                
+        event_line =  self._Conf.get_date_HMS()  + ";END BRIGHT ALGO"
+        self._Conf.add_line("Events.csv",event_line) 
         
     def stopCam(self):
         """  Demande la fin de l'enregistrement et ferme l'objet caméra."""
