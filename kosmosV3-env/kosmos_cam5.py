@@ -256,7 +256,7 @@ class KosmosCam(Thread):
         return r_med/g_med,b_med/g_med,(r_med+g_med+b_med)/3
        
     def adjust_awb(self,rh,bh,tolerance):
-        event_line =  self._Conf.get_date_HMS()  + ";START AWB ALGO"
+        event_line =  self._Conf.get_date_HMS()  + ";START AWB ALGO; "
         self._Conf.add_line("Events.csv",event_line)
         
         # Capture des gains AWB
@@ -291,11 +291,11 @@ class KosmosCam(Thread):
                 time.sleep(0.5) 
                 self._camera.set_controls({'AwbEnable': False})
                 
-        event_line =  self._Conf.get_date_HMS()  + ";END AWB ALGO"
+        event_line =  self._Conf.get_date_HMS()  + ";END AWB ALGO; "
         self._Conf.add_line("Events.csv",event_line)
     
     def adjust_brightness(self,br,tolerance):
-        event_line =  self._Conf.get_date_HMS()  + ";START BRIGHT ALGO"
+        event_line =  self._Conf.get_date_HMS()  + ";START BRIGHT ALGO; "
         self._Conf.add_line("Events.csv",event_line)
         
         # Capture de la brigthness
@@ -325,7 +325,7 @@ class KosmosCam(Thread):
                 self._camera.set_controls({'Brightness': 0})
                 
                 
-        event_line =  self._Conf.get_date_HMS()  + ";END BRIGHT ALGO"
+        event_line =  self._Conf.get_date_HMS()  + ";END BRIGHT ALGO; "
         self._Conf.add_line("Events.csv",event_line) 
         
     def stopCam(self):
