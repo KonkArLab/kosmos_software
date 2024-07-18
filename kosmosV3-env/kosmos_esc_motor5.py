@@ -80,7 +80,7 @@ class kosmosEscMotor(Thread):
         while not self._t_stop:
             if not self._pause_event.isSet():
                 
-                event_line = self._Conf.get_date_HMS()  + ";START MOTEUR" 
+                event_line = self._Conf.get_date_HMS()  + ";START MOTEUR; " 
                 self._Conf.add_line("Events.csv",event_line)
                 self.set_speed(self.vitesse_moteur)
                 if self.pressORrelease == 0:
@@ -91,7 +91,7 @@ class kosmosEscMotor(Thread):
                 time.sleep(self.inertie_time/1000)
                 self.set_speed(0)
                 
-                event_line =  self._Conf.get_date_HMS()  + ";END MOTEUR" 
+                event_line =  self._Conf.get_date_HMS()  + ";END MOTEUR; " 
                 self._Conf.add_line("Events.csv",event_line)
                 
                 time_debut=time.time()
