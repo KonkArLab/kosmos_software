@@ -108,7 +108,11 @@ class kosmos_main():
         os.mkdir(self._conf.get_date_HMS())
         VID_PATH = self._conf.CAMPAGNE_PATH+self._conf.get_date_HMS()
         os.chdir(VID_PATH) # Ligne très importante pour bonne destination des fichiers !!!
-        
+
+        # Initialisation de fichier Event
+        event_line = "Heure;Event;Fichier"        
+        self._conf.add_line("Events.csv",event_line)
+      
         self._ledB.off()
         
         if self.PRESENCE_MOTEUR == 1:
