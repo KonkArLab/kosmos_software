@@ -129,8 +129,8 @@ class KosmosCam(Thread):
             try:
                 subprocess.run(['sudo', 'ffmpeg', '-probesize','2G','-r', str(self._FRAMERATE), '-i', input_file, '-c', 'copy', output_file, '-loglevel', 'warning'])
                 logging.info("Conversion successful !")
-                os.remove(input_file)
-                logging.debug(f"Deleted input H.264 file: {input_file}")                
+                #os.remove(input_file)
+                #logging.debug(f"Deleted input H.264 file: {input_file}")                
             except subprocess.CalledProcessError as e:
                 logging.error("Error during conversion:", e, " !!!")       
         else:
@@ -252,7 +252,7 @@ class KosmosCam(Thread):
         r_med= sum(r.histogram()*xx)/sum(r.histogram())
         g_med= sum(g.histogram()*xx)/sum(g.histogram())
         b_med= sum(b.histogram()*xx)/sum(b.histogram())
-        print(r_med,g_med,b_med)
+        #print(r_med,g_med,b_med)
         return r_med/g_med,b_med/g_med,(r_med+g_med+b_med)/3
        
     def adjust_awb(self,rh,bh,tolerance):
@@ -315,7 +315,7 @@ class KosmosCam(Thread):
             self._camera.set_controls({'Brightness': brightness})                      
             time.sleep(10*self._FRAMEDURATION*0.000001) # 10 frames de décalage entre modif des gain awb et calcul des nouveaux R/G etB/G
             histo_med = self.RatiosRBsurG()[2]
-            print(histo_med)
+            #print(histo_med)
             i=i+1
         else:
             if i < imax:
