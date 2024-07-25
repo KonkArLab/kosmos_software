@@ -129,8 +129,8 @@ class KosmosCam(Thread):
             try:
                 subprocess.run(['sudo', 'ffmpeg', '-probesize','2G','-r', str(self._FRAMERATE), '-i', input_file, '-c', 'copy', output_file, '-loglevel', 'warning'])
                 logging.info("Conversion successful !")
-                #os.remove(input_file)
-                #logging.debug(f"Deleted input H.264 file: {input_file}")                
+                os.remove(input_file)
+                logging.debug(f"Deleted input H.264 file: {input_file}")                
             except subprocess.CalledProcessError as e:
                 logging.error("Error during conversion:", e, " !!!")       
         else:
