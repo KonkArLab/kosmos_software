@@ -38,7 +38,8 @@ class kosmosEscMotor(Thread):
         self.inertie_time = aConf.get_val_int("16_MOTOR_inertie_time",TERRAIN_SECTION) # en ms
         self.timeout = aConf.get_val_int("17_MOTOR_timeout",TERRAIN_SECTION) # en s
         self.pressORrelease = aConf.get_val_int("18_MOTOR_pressORrelease",TERRAIN_SECTION)
-        
+        self.shift_time = aConf.get_val_int("19_MOTOR_shift_time",TERRAIN_SECTION) # en ms
+
     def power_on(self):
         """Commande le relai d'alimentation de l'ESC"""
         self.Relai_GPIO.on() # Fermeture du relai
@@ -62,8 +63,16 @@ class kosmosEscMotor(Thread):
         
         self.set_speed(self.vitesse_moteur) 
         if self.pressORrelease == 0:
+            if self.Button_motor.value == 1:
+                time.sleep(self.shift_time/1000)
+            else:
+                time.sleep(0)
             self.Button_motor.wait_for_press(timeout=self.timeout)
         if self.pressORrelease == 1:
+            if self.Button_motor.value == 0:
+                time.sleep(self.shift_time/1000)
+            else:
+                time.sleep(0)
             self.Button_motor.wait_for_release(timeout=self.timeout)
         logging.info('Bouton asservissement Moteur détecté')
         time.sleep(self.inertie_time/1000)
@@ -84,8 +93,16 @@ class kosmosEscMotor(Thread):
                 self._Conf.add_line("Events.csv",event_line)
                 self.set_speed(self.vitesse_moteur)
                 if self.pressORrelease == 0:
+                    if self.Button_motor.value == 1:
+                        time.sleep(self.shift_time/1000)
+                    else:
+                        time.sleep(0)
                     self.Button_motor.wait_for_press(timeout=self.timeout)
                 if self.pressORrelease == 1:
+                    if self.Button_motor.value == 0:
+                        time.sleep(self.shift_time/1000)
+                    else:
+                        time.sleep(0)
                     self.Button_motor.wait_for_release(timeout=self.timeout)                    
                 logging.info('Bouton asservissement Moteur détecté')
                 time.sleep(self.inertie_time/1000)
