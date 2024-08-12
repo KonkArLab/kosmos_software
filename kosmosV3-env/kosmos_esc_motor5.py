@@ -62,17 +62,22 @@ class kosmosEscMotor(Thread):
         time.sleep(2)
         
         self.set_speed(self.vitesse_moteur) 
+        time.sleep(self.shift_time/1000)
         if self.pressORrelease == 0:
+            """
             if self.Button_motor.value == 1:
                 time.sleep(self.shift_time/1000)
             else:
                 time.sleep(0)
+            """
             self.Button_motor.wait_for_press(timeout=self.timeout)
         if self.pressORrelease == 1:
+            """
             if self.Button_motor.value == 0:
                 time.sleep(self.shift_time/1000)
             else:
                 time.sleep(0)
+            """
             self.Button_motor.wait_for_release(timeout=self.timeout)
         logging.info('Bouton asservissement Moteur détecté')
         time.sleep(self.inertie_time/1000)
@@ -92,17 +97,22 @@ class kosmosEscMotor(Thread):
                 event_line = self._Conf.get_date_HMS()  + ";START MOTEUR; " 
                 self._Conf.add_line("Events.csv",event_line)
                 self.set_speed(self.vitesse_moteur)
+                time.sleep(self.shift_time/1000)
                 if self.pressORrelease == 0:
+                    """
                     if self.Button_motor.value == 1:
                         time.sleep(self.shift_time/1000)
                     else:
                         time.sleep(0)
+                    """
                     self.Button_motor.wait_for_press(timeout=self.timeout)
                 if self.pressORrelease == 1:
+                    """
                     if self.Button_motor.value == 0:
                         time.sleep(self.shift_time/1000)
                     else:
                         time.sleep(0)
+                    """
                     self.Button_motor.wait_for_release(timeout=self.timeout)                    
                 logging.info('Bouton asservissement Moteur détecté')
                 time.sleep(self.inertie_time/1000)
