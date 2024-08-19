@@ -8,7 +8,7 @@ import subprocess
 from datetime import datetime
 
 
-CONF_FILE = "kosmos_config.ini"
+
 
 #Arborescence USB
 USB_ROOT_PATH = "/media/"+(os.listdir("/home")[0])
@@ -16,12 +16,20 @@ USB_NAME = os.listdir(USB_ROOT_PATH)[0]
 USB_INSIDE_PATH = USB_ROOT_PATH+"/"+USB_NAME+"/"
 
 # Arborescence Picam
-LOG_PATH = "/home/"+os.listdir("/home")[0]+"/logfile_kosmos/"
-GIT_PATH = "/home/"+os.listdir("/home")[0]+"/kosmos_software/"
+ROOT_PATH = "/home/"+os.listdir("/home")[0]+"/"
+LOG_PATH = ROOT_PATH+"logfile_kosmos/"
+GIT_PATH = ROOT_PATH+"kosmos_software/"
 WORK_PATH = GIT_PATH+"kosmosV3-env/"
 
+# Fichier config et sections associées
+CONF_FILE = "kosmos_config.ini"
 TERRAIN_SECTION = "KOSMOS-terrain"
 DEBUG_SECTION = "KOSMOS-debug"
+
+# Fichier system et sections associées
+SYSTEM_FILE = "kosmos_system.ini"
+SYSTEM_SECTION = "KOSMOS-system"
+INCREMENT_SECTION = "KOSMOS-increment"
 
 
 class KosmosConfig:
@@ -33,26 +41,42 @@ class KosmosConfig:
     def __init__(self):
         logging.debug("Lecture kosmos_config.ini")        
         subprocess.run(["sudo", "cp", "-n", GIT_PATH+CONF_FILE,USB_INSIDE_PATH+CONF_FILE])
-        self._file_path=USB_INSIDE_PATH+CONF_FILE
+        self._config_path=USB_INSIDE_PATH+CONF_FILE
         self.config = configparser.ConfigParser()
-        self.config.read(self._file_path)
+        self.config.read(self._config_path)
         logging.info("kosmos_config.ini lu sur clé usb")
         
-        # Création Dossier Campagne si non existant
-        CAMPAGNE_FILE = self.get_val("22_CSV_campagne",TERRAIN_SECTION)+self.get_date_Yms()
+        logging.debug("Lecture kosmos_system.ini")        
+        subprocess.run(["sudo", "cp", "-n", GIT_PATH+SYSTEM_FILE,ROOT_PATH+SYSTEM_FILE])
+        self._system_path=ROOT_PATH+SYSTEM_FILE
+        self.system = configparser.ConfigParser()
+        self.system.read(self._system_path)
+        logging.info("kosmos_system.ini lu dans home")
+        
+        
+        # Création Dossier Campagne si non existant               
+        CAMPAGNE_FILE = self.get_date_YMDHM() + '_' + self.system.get(SYSTEM_SECTION,"00_name") + '_' + self.config.get(TERRAIN_SECTION,"22_CSV_campagne") + '_' + self.config.get(TERRAIN_SECTION,"21_CSV_zone") + '_' + self.get_date_Y() + f'{self.system.getint(INCREMENT_SECTION,"10_increment"):04}' 
         os.chdir(USB_INSIDE_PATH)            
         if not os.path.exists(CAMPAGNE_FILE):
             os.mkdir(CAMPAGNE_FILE)
         self.CAMPAGNE_PATH = USB_INSIDE_PATH + CAMPAGNE_FILE + "/"
         os.chdir(WORK_PATH)
-
-    def get_date_Yms(self) -> str:
-        """Retourne la date formatée en string"""
+        
+        # Creation du CSV info station si non existant
+    
+    def get_date_Y(self) -> str:
         date = datetime.now()
         Y=date.year-2000
+        return f'{Y:02}'    
+        
+    def get_date_YMDHM(self) -> str:
+        date = datetime.now()
+        Y=date.year
         m=date.month
         d=date.day
-        return f'{Y:02}{m:02}{d:02}'
+        H=date.hour
+        M=date.minute
+        return f'{Y}{m:02}{d:02}{H:02}{M:02}'
 
     def get_date_HMS(self) -> str:
         """Retourne la date formatée en string"""
@@ -91,7 +115,7 @@ class KosmosConfig:
         self.config.set(aSection, aKey,str(aValue))
         
     def update_file(self):
-        with open(self._file_path, 'w') as configfile:
+        with open(self._config_path, 'w') as configfile:
             self.config.write(configfile)
             
     def add_line(self,csv_file,ligne):

@@ -105,8 +105,9 @@ class kosmos_main():
         
         # Création du dossier enregistrement dans le dossier Campagne
         os.chdir(self._conf.CAMPAGNE_PATH)
-        os.mkdir(self._conf.get_date_HMS())
-        VID_PATH = self._conf.CAMPAGNE_PATH+self._conf.get_date_HMS()
+        video_file = self._conf.config.get(TERRAIN_SECTION,"21_CSV_zone") + f'{self._conf.system.getint(INCREMENT_SECTION,"10_increment"):04}'
+        os.mkdir(video_file)
+        VID_PATH = self._conf.CAMPAGNE_PATH+video_file
         os.chdir(VID_PATH) # Ligne très importante pour bonne destination des fichiers !!!
 
         # Initialisation de fichier Event
