@@ -35,6 +35,8 @@ class GPS(Thread):
                 except:
                     rcv = b''
                 rcvsplit = rcv.split(b',')
+                LAT = 0.
+                LONG = 0.
                 if rcvsplit[0] == b'$GNGGA':
                     try : # sécurité pour éviter toute erreur bloquante
                         LATGPS = rcvsplit[2:4]
@@ -52,8 +54,8 @@ class GPS(Thread):
                             LONG = 0.
                     except :
                         LONG = 0.    
-                    self.latitude = LAT
-                    self.longitude = LONG
+                self.latitude = LAT
+                self.longitude = LONG
                 time.sleep(0.01)
             else:
                 self._continue_event.wait()
