@@ -22,7 +22,7 @@ import kosmos_cam5 as KCam
 import kosmos_esc_motor5 as KMotor
 import sys
 
-logging.basicConfig(level=logging.INFO,
+logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(levelname)s : %(message)s',
                     datefmt='%d/%m %I:%M:%S')#,filename='kosmos.log')
 
@@ -103,9 +103,10 @@ class kosmos_main():
     def working(self):
         logging.info("WORKING : Debut de l'enregistrement")       
         
+        increment = self._conf.system.getint(INCREMENT_SECTION,"10_increment")        
         # Création du dossier enregistrement dans le dossier Campagne
         os.chdir(self._conf.CAMPAGNE_PATH)
-        video_file = self._conf.config.get(TERRAIN_SECTION,"21_CSV_zone") + f'{self._conf.system.getint(INCREMENT_SECTION,"10_increment"):04}'
+        video_file = self._conf.config.get(TERRAIN_SECTION,"21_CSV_zone") + f'{self._conf.get_date_Y()}' + f'{increment:04}'     
         os.mkdir(video_file)
         VID_PATH = self._conf.CAMPAGNE_PATH+video_file
         os.chdir(VID_PATH) # Ligne très importante pour bonne destination des fichiers !!!
@@ -134,7 +135,11 @@ class kosmos_main():
                 self._extinction = True
                 logging.info('Sortie par extinction')
                 break
-      
+        
+        #increment du code station
+        self._conf.system.set(INCREMENT_SECTION,"10_increment",str(increment+1))       
+        self._conf.update_system()
+        
         self.state = KState.STOPPING       
     
     def stopping(self):
@@ -184,6 +189,8 @@ class kosmos_main():
         self._ledR.off()
         self._ledB.off()
         
+        
+        logging.info("EXTINCTION")
         #Arrêt du logging
         logging.shutdown()
 

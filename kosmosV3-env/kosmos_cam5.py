@@ -48,25 +48,25 @@ class KosmosCam(Thread):
         Thread.__init__(self)
         self._Conf = aConf    
         # Résolutions horizontale
-        self._X_RESOLUTION = aConf.get_val_int("31_PICAM_resolution_x",TERRAIN_SECTION)
-        self._Y_RESOLUTION = aConf.get_val_int("32_PICAM_resolution_y",TERRAIN_SECTION)
+        self._X_RESOLUTION = aConf.config.getint(TERRAIN_SECTION,"31_PICAM_resolution_x")
+        self._Y_RESOLUTION = aConf.config.getint(TERRAIN_SECTION,"32_PICAM_resolution_y")
         
         # Framerate et frameduration camera
-        self._FRAMERATE=aConf.get_val_int("34_PICAM_framerate",TERRAIN_SECTION)
+        self._FRAMERATE=aConf.config.getint(TERRAIN_SECTION,"34_PICAM_framerate")
         self._FRAMEDURATION = int(1/self._FRAMERATE*1000000)
         
         # Temps de l'échantillonnage temporel des infos caméra. égal à celui le CSV TPGPS
-        self._time_step = aConf.get_val_int("20_CSV_step_time",TERRAIN_SECTION)
+        self._time_step = aConf.config.getint(TERRAIN_SECTION,"20_CSV_step_time")
         
         # Preview ou non
-        self._PREVIEW = aConf.get_val_int("33_PICAM_preview",TERRAIN_SECTION)
+        self._PREVIEW = aConf.config.getint(TERRAIN_SECTION,"33_PICAM_preview")
         
         # si 1 : conversion mp4
-        self._CONVERSION = aConf.get_val_int("36_PICAM_conversion_mp4",TERRAIN_SECTION)
+        self._CONVERSION = aConf.config.getint(TERRAIN_SECTION,"36_PICAM_conversion_mp4")
         
         # A clarifier
-        self._AWB = aConf.get_val_int("37_PICAM_AWB",TERRAIN_SECTION)
-        self._record_time = aConf.get_val_int("35_PICAM_record_time",TERRAIN_SECTION)
+        self._AWB = aConf.config.getint(TERRAIN_SECTION,"37_PICAM_AWB")
+        self._record_time = aConf.config.getint(TERRAIN_SECTION,"35_PICAM_record_time")
 
         # Booléens pour les évènements
         self._end = False
@@ -88,17 +88,17 @@ class KosmosCam(Thread):
         self._encoder=H264Encoder(framerate=self._FRAMERATE, bitrate=10000000)
              
         # Appel heure pour affichage sur la frame
-        if aConf.get_val_int("38_PICAM_timestamp",TERRAIN_SECTION) == 1:
+        if aConf.config.getint(TERRAIN_SECTION,"38_PICAM_timestamp") == 1:
             self._camera.pre_callback = self.apply_timestamp
         
         #Initialisation GPS
         self._gps_ok = False
-        try:
-            self.gps = GPS()
-            self.gps.start()  
+        self.gps = GPS()
+        if self.gps.init():
             logging.info("Capteur GPS OK")
             self._gps_ok = True
-        except:
+            self.gps.start()
+        else:    
             logging.error("Erreur d'initialisation du GPS")
             
         # Initialisation Capteur TP
@@ -155,10 +155,15 @@ class KosmosCam(Thread):
         while not self._end:
             i=0            
             while self._boucle == True:
-                self._file_name = '{:02.0f}'.format(i) 
+                increment = self._Conf.system.getint(INCREMENT_SECTION,"10_increment") 
+                video_file = self._Conf.config.get(TERRAIN_SECTION,"21_CSV_zone") + f'{self._Conf.get_date_Y()}' + f'{increment:04}'
+                if i == 0:
+                    self._file_name = video_file
+                else:
+                    self._file_name = video_file + '{:02.0f}'.format(i)+'_' 
                 logging.info(f"Debut de l'enregistrement video {self._file_name}")
                 
-                self._output = self._file_name + '_Video.h264'
+                self._output = self._file_name + '.h264'
                 
                 if self._PREVIEW == 1:
                     self._camera.stop_preview() #éteint le Preview.NULL
@@ -167,11 +172,11 @@ class KosmosCam(Thread):
                 # Bloc d'enregistrement/encodage à proprement parler
                 event_line = self._Conf.get_date_HMS()  + ";START ENCODER;" + self._output
                 self._Conf.add_line("Events.csv",event_line)
-                self._camera.start_encoder(self._encoder,self._output,pts = self._file_name+'_TimeStamp.txt')
+                self._camera.start_encoder(self._encoder,self._output,pts = self._file_name+'.txt')
                 
                 #Création CSV
                 ligne = "HMS;Lat;Long;Pression;TempC;Delta(s);TStamp;ExpTime;AnG;DiG;Lux;RedG;BlueG;Bright"
-                self._Conf.add_line(self._file_name + '_CamParam.csv',ligne)
+                self._Conf.add_line(self._file_name + '.csv',ligne)
                 paas=1. # pas de la boucle while qui vérifie si le bouton stop a été activé ou que le temps de séquence n'est pas dépassé
                 k_sampling = int(self._time_step / paas)
                 intervalle_awb = 10 # en sec
@@ -186,8 +191,8 @@ class KosmosCam(Thread):
                         LAT = ""
                         LONG = ""
                         if self._gps_ok:
-                            LAT = f'{self.gps.get_latitude():.5f}'
-                            LONG = f'{self.gps.get_longitude():.5f}' 
+                            LAT = self.gps.get_latitude()
+                            LONG = self.gps.get_longitude() 
                         #Récupération données TP
                         pressStr = ""
                         tempStr = ""
@@ -206,7 +211,7 @@ class KosmosCam(Thread):
                         brightStr = f'{bright:.1f}'
                         # Ecriture des données dans le CSV
                         ligne = f'{self._Conf.get_date_HMS()};{LAT};{LONG};{pressStr};{tempStr};{delta_time:.1f};{mtd.SensorTimestamp};{mtd.ExposureTime};{mtd.AnalogueGain:.1f};{mtd.DigitalGain:.1f};{mtd.Lux:.1f};{mtd.ColourGains[0]:.1f};{mtd.ColourGains[1]:.1f};{brightStr}'
-                        self._Conf.add_line(self._file_name + '_CamParam.csv',ligne)   
+                        self._Conf.add_line(self._file_name + '.csv',ligne)   
                     k = k+1
                     if self._AWB == 2: #Ajustement Maison des gains AWB 
                         j=j+1
@@ -236,7 +241,7 @@ class KosmosCam(Thread):
                 event_line =  self._Conf.get_date_HMS()  + ";START CONVERSION;" + self._output
                 self._Conf.add_line("Events.csv",event_line)
                 self.convert_to_mp4(self._output)
-                event_line =  self._Conf.get_date_HMS()  + ";END CONVERSION;" + self._file_name +'_Video.mp4'
+                event_line =  self._Conf.get_date_HMS()  + ";END CONVERSION;" + self._file_name +'.mp4'
                 self._Conf.add_line("Events.csv",event_line)
                 
                 i=i+1
@@ -332,10 +337,11 @@ class KosmosCam(Thread):
         """  Demande la fin de l'enregistrement et ferme l'objet caméra."""
         # permet d'arrêter l'enregistrement si on passe par le bouton stop"
         self._boucle = False
+              
+    def closeCam(self):
+        """Arrêt du GPS"""
         if self._gps_ok == True:
             self.gps.stop_thread()
-        
-    def closeCam(self):
         """Arrêt définitif de la caméra"""
         self._end = True
         self._start_again.set()
@@ -343,7 +349,8 @@ class KosmosCam(Thread):
         logging.info("Caméra arrêtée")
         self._camera.close()
         logging.info("Caméra éteinte")
-
+        
+            
     def restart(self):
         """démarre ou redémarre le thread"""
         self._boucle=True

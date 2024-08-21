@@ -52,10 +52,9 @@ class KosmosConfig:
         self.system = configparser.ConfigParser()
         self.system.read(self._system_path)
         logging.info("kosmos_system.ini lu dans home")
-        
-        
+               
         # Création Dossier Campagne si non existant               
-        CAMPAGNE_FILE = self.get_date_YMDHM() + '_' + self.system.get(SYSTEM_SECTION,"00_name") + '_' + self.config.get(TERRAIN_SECTION,"22_CSV_campagne") + '_' + self.config.get(TERRAIN_SECTION,"21_CSV_zone") + '_' + self.get_date_Y() + f'{self.system.getint(INCREMENT_SECTION,"10_increment"):04}' 
+        CAMPAGNE_FILE = self.get_date_YMD() + '_' + self.system.get(SYSTEM_SECTION,"00_name") + '_' + self.config.get(TERRAIN_SECTION,"22_CSV_campagne") + '_' + self.config.get(TERRAIN_SECTION,"21_CSV_zone") 
         os.chdir(USB_INSIDE_PATH)            
         if not os.path.exists(CAMPAGNE_FILE):
             os.mkdir(CAMPAGNE_FILE)
@@ -69,6 +68,13 @@ class KosmosConfig:
         Y=date.year-2000
         return f'{Y:02}'    
         
+    def get_date_YMD(self) -> str:
+        date = datetime.now()
+        Y=date.year-2000
+        m=date.month
+        d=date.day
+        return f'{Y}{m:02}{d:02}'
+       
     def get_date_YMDHM(self) -> str:
         date = datetime.now()
         Y=date.year
@@ -117,6 +123,11 @@ class KosmosConfig:
     def update_file(self):
         with open(self._config_path, 'w') as configfile:
             self.config.write(configfile)
+            
+    def update_system(self):
+        with open(self._system_path, 'w') as systemfile:
+            self.system.write(systemfile)
+            
             
     def add_line(self,csv_file,ligne):
         try:
