@@ -6,6 +6,7 @@ from threading import Event
 import threading
 from gpiozero import LED, Button
 import os
+import json
 
 #Le programme est divisé en deux threads donc on a besoind du bibliotheque Thread
 from threading import Thread
@@ -22,7 +23,7 @@ import kosmos_cam5 as KCam
 import kosmos_esc_motor5 as KMotor
 import sys
 
-logging.basicConfig(level=logging.DEBUG,
+logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)s : %(message)s',
                     datefmt='%d/%m %I:%M:%S')#,filename='kosmos.log')
 

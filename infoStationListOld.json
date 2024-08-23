@@ -1,0 +1,20 @@
+{
+    "staticMetadata": [
+                    "systeme",
+                    "zone",
+                    "date",
+                    "codeStation",
+                    "heure",
+                    "latitude",
+                    "longitude",
+                    "profondeur",
+                    "maree",
+                    "lune",
+                    "vent",
+                    "mer",
+                    "houle",
+                    "bateau",
+                    "pilote",
+                    "equipage"
+                ]
+}

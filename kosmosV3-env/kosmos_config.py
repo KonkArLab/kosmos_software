@@ -6,7 +6,7 @@ import configparser
 import os.path
 import subprocess
 from datetime import datetime
-
+import json
 
 
 
@@ -62,7 +62,11 @@ class KosmosConfig:
         os.chdir(WORK_PATH)
         
         # Creation du CSV info station si non existant
-    
+        with open(GIT_PATH+'infoStationList.json') as f:
+            self.infoStationList = json.load(f)
+        
+        print(self.infoStationList)
+        
     def get_date_Y(self) -> str:
         date = datetime.now()
         Y=date.year-2000

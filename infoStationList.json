@@ -1,0 +1,61 @@
+{
+     "systemMetadata": 
+          {
+               "system": "K5",
+               "camera": "Picam HQ"
+          },
+     "campagneMetadata" :
+          {
+               "zoneDict":
+                    {
+                         "zone": "BR",
+                         "lieudit": "Illien",
+                         "protection": "Parc naturel marin d'iroise"
+                    },
+               "dateDict":
+                    {
+                         "year": 2024,
+                         "month": 8,
+                         "day": 12
+                    },
+               "deploiementDict":
+                    {
+                         "bateau": "Beneteau Capelan",
+                         "pilote": "Olivier F.",
+                         "equipage": ["C.HH.", "J.C."]
+                    }
+          },
+     "videoMetadata" :
+          {
+               "codeStation": "K5_BR240024",
+               "heureDict":
+                    {
+                         "heure": 11,
+                         "minute": 26,
+                         "seconde": 37
+                    },
+               "gpsDict":
+                    {
+                         "latitude": 47.85762,
+                         "longitude": -3.97411
+                    }, 
+               "ctdDict":
+                    {
+                         "profondeur": 9.5,
+                         "temperature": 15.9,
+                         "salinite": ""
+                    },
+               "meteoAirDict":
+                    {
+                         "ciel": "Soleil",
+                         "vent": 2,
+                         "direction": "NE"
+                    }, 
+               "meteoMerDict":
+                    {
+                         "ciel": "Soleil",
+                         "vent": 2,
+                         "direction": "NE"
+                    }
+          }
+}
