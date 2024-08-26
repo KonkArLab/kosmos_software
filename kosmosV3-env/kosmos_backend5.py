@@ -111,8 +111,10 @@ class Server:
             }
 
     def getConfig(self):
-        response=dict()
-        response["data"]=dict(self.myMain._conf.config[TERRAIN_SECTION])
+        response=dict()        
+        dict_total = dict(self.myMain._conf.config[CONFIG_SECTION])
+        dict_total.update(dict(self.myMain._conf.config[CAMPAGNE_SECTION]))
+        response["data"]=dict_total
         response["status"]="ok"
         return response  
 

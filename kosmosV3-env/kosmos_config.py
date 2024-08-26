@@ -7,7 +7,7 @@ import os.path
 import subprocess
 from datetime import datetime
 import json
-
+import pandas as pd
 
 
 #Arborescence USB
@@ -21,16 +21,23 @@ LOG_PATH = ROOT_PATH+"logfile_kosmos/"
 GIT_PATH = ROOT_PATH+"kosmos_software/"
 WORK_PATH = GIT_PATH+"kosmosV3-env/"
 
-# Fichier config et sections associées
+#  Sections config, campagne, et debug 
 CONF_FILE = "kosmos_config.ini"
-TERRAIN_SECTION = "KOSMOS-terrain"
+CONFIG_SECTION = "KOSMOS-config"
+CAMPAGNE_SECTION = "KOSMOS-campagne"
 DEBUG_SECTION = "KOSMOS-debug"
+
+# Section video
+VIDEO_SECTION = "KOSMOS-video"
 
 # Fichier system et sections associées
 SYSTEM_FILE = "kosmos_system.ini"
 SYSTEM_SECTION = "KOSMOS-system"
 INCREMENT_SECTION = "KOSMOS-increment"
 
+# Choix des infos station résumées dans le infoStation.csv 
+headerInfoStation = ['codeStation','zone','system','latitude','longitude','date']
+INFOSTATION_FILE = 'infoStation.csv'
 
 class KosmosConfig:
     """
@@ -54,19 +61,16 @@ class KosmosConfig:
         logging.info("kosmos_system.ini lu dans home")
                
         # Création Dossier Campagne si non existant               
-        CAMPAGNE_FILE = self.get_date_YMD() + '_' + self.system.get(SYSTEM_SECTION,"00_name") + '_' + self.config.get(TERRAIN_SECTION,"22_CSV_campagne") + '_' + self.config.get(TERRAIN_SECTION,"21_CSV_zone") 
+        campagneFile = self.get_date_YMD() + '_' + self.system.get(SYSTEM_SECTION,"system") + '_' + self.config.get(CAMPAGNE_SECTION,"campagne") + '_' + self.config.get(CAMPAGNE_SECTION,"zone") 
         os.chdir(USB_INSIDE_PATH)            
-        if not os.path.exists(CAMPAGNE_FILE):
-            os.mkdir(CAMPAGNE_FILE)
-        self.CAMPAGNE_PATH = USB_INSIDE_PATH + CAMPAGNE_FILE + "/"
+        if not os.path.exists(campagneFile):
+            os.mkdir(campagneFile)
+        self.CAMPAGNE_PATH = USB_INSIDE_PATH + campagneFile + "/"
         os.chdir(WORK_PATH)
         
         # Creation du CSV info station si non existant
-        with open(GIT_PATH+'infoStationList.json') as f:
-            self.infoStationList = json.load(f)
-        
-        print(self.infoStationList)
-        
+        # self.addInfoStation(GIT_PATH +'infoStationTemplate.json')
+
     def get_date_Y(self) -> str:
         date = datetime.now()
         Y=date.year-2000
@@ -121,7 +125,7 @@ class KosmosConfig:
         """
         return self.config.get(aSection, aKey)
     
-    def set_val(self,aKey,aValue ,aSection=TERRAIN_SECTION):
+    def set_val(self,aKey,aValue ,aSection=CONFIG_SECTION):
         self.config.set(aSection, aKey,str(aValue))
         
     def update_file(self):
@@ -131,8 +135,7 @@ class KosmosConfig:
     def update_system(self):
         with open(self._system_path, 'w') as systemfile:
             self.system.write(systemfile)
-            
-            
+                      
     def add_line(self,csv_file,ligne):
         try:
             with open(csv_file,'a') as csv_variable:
@@ -141,3 +144,21 @@ class KosmosConfig:
                 csv_variable.close()
         except:
             logging.info('Problème écriture dans le CSV Event')
+    
+    def json2dict(self,json_file):
+        with open(json_file) as f:
+            infoStation = json.load(f)
+            infoStationDict = {}
+            for k in infoStation.keys():
+                for l in infoStation[k].keys():
+                    if type(infoStation[k][l]) is dict:
+                        for m in infoStation[k][l]:
+                            infoStationDict[m] = infoStation[k][l][m]
+                    else:
+                        infoStationDict[l]=infoStation[k][l]
+        return infoStationDict
+    
+    def addInfoStation(self,json_file):
+        infoStationDict = self.json2dict(json_file)
+        print(infoStationDict)
+        pd.DataFrame(infoStationDict, index = [0]).to_csv(self.CAMPAGNE_PATH + INFOSTATION_FILE,columns = headerInfoStation, sep =';', mode='a',index= False)

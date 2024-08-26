@@ -1,7 +1,7 @@
 python3-opencv
 python3-smbus2
 python3-flask-cors
-
+python3-pandas
 
 
 

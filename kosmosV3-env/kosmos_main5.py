@@ -48,26 +48,26 @@ class kosmos_main():
         self.state = KState.STARTING
 
         # LEDs
-        self._ledB = LED(self._conf.get_val_int("03_SYSTEM_led_b",DEBUG_SECTION))
-        self._ledR = LED(self._conf.get_val_int("04_SYSTEM_led_r",DEBUG_SECTION))
+        self._ledB = LED(self._conf.config.getint(DEBUG_SECTION,"03_SYSTEM_led_b"))
+        self._ledR = LED(self._conf.config.getint(DEBUG_SECTION,"04_SYSTEM_led_r"))
         self._ledB.on()
         self._ledR.off()        
 
         # Boutons
-        self.Button_Stop = Button(self._conf.get_val_int("02_SYSTEM_stop_button_gpio",DEBUG_SECTION))
-        self.Button_Record = Button(self._conf.get_val_int("01_SYSTEM_record_button_gpio",DEBUG_SECTION))
+        self.Button_Stop = Button(self._conf.config.getint(DEBUG_SECTION,"02_SYSTEM_stop_button_gpio"))
+        self.Button_Record = Button(self._conf.config.getint(DEBUG_SECTION,"01_SYSTEM_record_button_gpio"))
         
         # Mode du système
-        self.MODE=self._conf.get_val_int("00_SYSTEM_mode",TERRAIN_SECTION) 
+        self.MODE=self._conf.config.getint(CONFIG_SECTION,"00_SYSTEM_mode") 
         
         # Temps total de fonctionnement de l'appareil (pour éviter des crashs batteries)
-        self.tps_total_acquisition = self._conf.get_val_int("07_SYSTEM_tps_fonctionnement",TERRAIN_SECTION) 
+        self.tps_total_acquisition = self._conf.config.getint(CONFIG_SECTION,"07_SYSTEM_tps_fonctionnement") 
         
         # Paramètres camera & définition Thread Camera
         self.thread_camera = KCam.KosmosCam(self._conf)
                  
         # Definition Thread Moteur
-        self.PRESENCE_MOTEUR = self._conf.get_val_int("06_SYSTEM_moteur",TERRAIN_SECTION) # Fonctionnement moteur si 1
+        self.PRESENCE_MOTEUR = self._conf.config.getint(CONFIG_SECTION,"06_SYSTEM_moteur") # Fonctionnement moteur si 1
         if self.PRESENCE_MOTEUR==1:
             self.motorThread = KMotor.kosmosEscMotor(self._conf)
  
@@ -104,10 +104,10 @@ class kosmos_main():
     def working(self):
         logging.info("WORKING : Debut de l'enregistrement")       
         
-        increment = self._conf.system.getint(INCREMENT_SECTION,"10_increment")        
+        increment = self._conf.system.getint(INCREMENT_SECTION,"increment")        
         # Création du dossier enregistrement dans le dossier Campagne
         os.chdir(self._conf.CAMPAGNE_PATH)
-        video_file = self._conf.config.get(TERRAIN_SECTION,"21_CSV_zone") + f'{self._conf.get_date_Y()}' + f'{increment:04}'     
+        video_file = self._conf.config.get(CAMPAGNE_SECTION,"zone") + f'{self._conf.get_date_Y()}' + f'{increment:04}'     
         os.mkdir(video_file)
         VID_PATH = self._conf.CAMPAGNE_PATH+video_file
         os.chdir(VID_PATH) # Ligne très importante pour bonne destination des fichiers !!!
@@ -138,7 +138,7 @@ class kosmos_main():
                 break
         
         #increment du code station
-        self._conf.system.set(INCREMENT_SECTION,"10_increment",str(increment+1))       
+        self._conf.system.set(INCREMENT_SECTION,"increment",str(increment+1))       
         self._conf.update_system()
         
         self.state = KState.STOPPING       
@@ -196,7 +196,7 @@ class kosmos_main():
         logging.shutdown()
 
         # Commande de stop au choix arrêt du programme ou du PC
-        if self._conf.get_val_int("05_SYSTEM_shutdown",TERRAIN_SECTION) != 0 :
+        if self._conf.config.getint(CONFIG_SECTION,"05_SYSTEM_shutdown") != 0 :
             os.system("sudo shutdown -h now")
         else :
             os._exit(0)

@@ -16,6 +16,7 @@ from PIL import Image
 import numpy as np
 import time
 import csv
+import json
 
 #import GPS & capteur TP
 from GPS import *
@@ -48,25 +49,25 @@ class KosmosCam(Thread):
         Thread.__init__(self)
         self._Conf = aConf    
         # Résolutions horizontale
-        self._X_RESOLUTION = aConf.config.getint(TERRAIN_SECTION,"31_PICAM_resolution_x")
-        self._Y_RESOLUTION = aConf.config.getint(TERRAIN_SECTION,"32_PICAM_resolution_y")
+        self._X_RESOLUTION = aConf.config.getint(CONFIG_SECTION,"31_PICAM_resolution_x")
+        self._Y_RESOLUTION = aConf.config.getint(CONFIG_SECTION,"32_PICAM_resolution_y")
         
         # Framerate et frameduration camera
-        self._FRAMERATE=aConf.config.getint(TERRAIN_SECTION,"34_PICAM_framerate")
+        self._FRAMERATE=aConf.config.getint(CONFIG_SECTION,"34_PICAM_framerate")
         self._FRAMEDURATION = int(1/self._FRAMERATE*1000000)
         
         # Temps de l'échantillonnage temporel des infos caméra. égal à celui le CSV TPGPS
-        self._time_step = aConf.config.getint(TERRAIN_SECTION,"20_CSV_step_time")
+        self._time_step = aConf.config.getint(CONFIG_SECTION,"20_CSV_step_time")
         
         # Preview ou non
-        self._PREVIEW = aConf.config.getint(TERRAIN_SECTION,"33_PICAM_preview")
+        self._PREVIEW = aConf.config.getint(CONFIG_SECTION,"33_PICAM_preview")
         
         # si 1 : conversion mp4
-        self._CONVERSION = aConf.config.getint(TERRAIN_SECTION,"36_PICAM_conversion_mp4")
+        self._CONVERSION = aConf.config.getint(CONFIG_SECTION,"36_PICAM_conversion_mp4")
         
         # A clarifier
-        self._AWB = aConf.config.getint(TERRAIN_SECTION,"37_PICAM_AWB")
-        self._record_time = aConf.config.getint(TERRAIN_SECTION,"35_PICAM_record_time")
+        self._AWB = aConf.config.getint(CONFIG_SECTION,"37_PICAM_AWB")
+        self._record_time = aConf.config.getint(CONFIG_SECTION,"35_PICAM_record_time")
 
         # Booléens pour les évènements
         self._end = False
@@ -88,7 +89,7 @@ class KosmosCam(Thread):
         self._encoder=H264Encoder(framerate=self._FRAMERATE, bitrate=10000000)
              
         # Appel heure pour affichage sur la frame
-        if aConf.config.getint(TERRAIN_SECTION,"38_PICAM_timestamp") == 1:
+        if aConf.config.getint(CONFIG_SECTION,"38_PICAM_timestamp") == 1:
             self._camera.pre_callback = self.apply_timestamp
         
         #Initialisation GPS
@@ -155,8 +156,8 @@ class KosmosCam(Thread):
         while not self._end:
             i=0            
             while self._boucle == True:
-                increment = self._Conf.system.getint(INCREMENT_SECTION,"10_increment") 
-                video_file = self._Conf.config.get(TERRAIN_SECTION,"21_CSV_zone") + f'{self._Conf.get_date_Y()}' + f'{increment:04}'
+                increment = self._Conf.system.getint(INCREMENT_SECTION,"increment") 
+                video_file = self._Conf.config.get(CAMPAGNE_SECTION,"zone") + f'{self._Conf.get_date_Y()}' + f'{increment:04}'
                 if i == 0:
                     self._file_name = video_file
                 else:
@@ -225,11 +226,14 @@ class KosmosCam(Thread):
                     else: # Ajustement auto ou fixé, càd self._AWB = 0 ou 1               
                         time.sleep(paas)
                                         
-                
                 # Fin de l'encodage
                 self._camera.stop_encoder()
                 event_line = self._Conf.get_date_HMS() + ";END ENCODER;" + self._output
                 self._Conf.add_line("Events.csv",event_line)
+                               
+                # ecriture json
+                self.writeJSON(self._file_name)
+                self._Conf.addInfoStation(self._file_name+'.json')
                                
                 if self._PREVIEW == 1:
                     self._camera.stop_preview() #stop .QTGL
@@ -248,6 +252,54 @@ class KosmosCam(Thread):
             self._start_again.wait()
             self._start_again.clear()            
         logging.info('Thread Camera terminé')
+    
+    def writeJSON(self,cam_file):
+        # Creation du json contenant les infostations
+        with open(GIT_PATH+'infoStationTemplate.json') as f:
+            infoStationDict = json.load(f)
+            infoStationDict["system"]["system"] = self._Conf.system.get(SYSTEM_SECTION,"system")
+            infoStationDict["system"]["version"] = self._Conf.system.get(SYSTEM_SECTION,"version")
+            infoStationDict["system"]["camera"] = self._Conf.system.get(SYSTEM_SECTION,"camera")
+            infoStationDict["system"]["moteur"] = self._Conf.system.get(SYSTEM_SECTION,"moteur")
+            infoStationDict["campagne"]["zoneDict"]["campagne"] = self._Conf.config.get(CAMPAGNE_SECTION,"campagne")
+            infoStationDict["campagne"]["zoneDict"]["zone"] = self._Conf.config.get(CAMPAGNE_SECTION,"zone")
+            infoStationDict["campagne"]["zoneDict"]["lieudit"] = ""
+            infoStationDict["campagne"]["zoneDict"]["protection"] = ""
+            infoStationDict["campagne"]["dateDict"]["year"] = self._Conf.get_date_Y()
+            infoStationDict["campagne"]["dateDict"]["month"] = ""
+            infoStationDict["campagne"]["dateDict"]["day"] = ""
+            infoStationDict["campagne"]["dateDict"]["date"] = ""
+            infoStationDict["campagne"]["deploiementDict"]["bateau"] = ""
+            infoStationDict["campagne"]["deploiementDict"]["pilote"] = ""
+            infoStationDict["campagne"]["deploiementDict"]["equipage"] = ""
+            infoStationDict["campagne"]["deploiementDict"]["partenaires"] = ""
+            infoStationDict["video"]["codeStation"] = self._Conf.config.get(CAMPAGNE_SECTION,"zone") + f'{self._Conf.get_date_Y()}' + f'{self._Conf.system.getint(INCREMENT_SECTION,"increment"):04}'
+            infoStationDict["video"]["heureDict"]["heure"] = ""
+            infoStationDict["video"]["heureDict"]["minute"] = ""
+            infoStationDict["video"]["heureDict"]["seconde"] = ""
+            infoStationDict["video"]["gpsDict"]["site"] = ""
+            infoStationDict["video"]["gpsDict"]["latitude"] = ""
+            infoStationDict["video"]["gpsDict"]["longitude"] = ""
+            infoStationDict["video"]["ctdDict"]["profondeur"] = ""
+            infoStationDict["video"]["ctdDict"]["temperature"] = ""
+            infoStationDict["video"]["ctdDict"]["salinite"] = ""
+            infoStationDict["video"]["astroDict"]["lune"] = ""
+            infoStationDict["video"]["astroDict"]["maree"] = ""
+            infoStationDict["video"]["astroDict"]["coefficient"] = ""
+            infoStationDict["video"]["meteoAirDict"]["ciel"] = ""
+            infoStationDict["video"]["meteoAirDict"]["vent"] = ""
+            infoStationDict["video"]["meteoAirDict"]["direction"] = ""
+            infoStationDict["video"]["meteoAirDict"]["atmPress"] = ""
+            infoStationDict["video"]["meteoAirDict"]["tempAir"] = ""
+            infoStationDict["video"]["meteoMerDict"]["etatMer"] = ""
+            infoStationDict["video"]["meteoMerDict"]["houle"] = ""
+            infoStationDict["video"]["analyseDict"]["exploitabilite"] = ""
+            infoStationDict["video"]["analyseDict"]["habitat"] = ""
+            infoStationDict["video"]["analyseDict"]["faune"] = ""
+            infoStationDict["video"]["analyseDict"]["visibilite"] = ""
+
+            with open(cam_file + '.json',mode = 'w', encoding = "utf-8") as ff:
+                json.dump(infoStationDict,ff)
     
     def RatiosRBsurG(self):
         """Capture puis calcul des ratios R/G et B/G"""        

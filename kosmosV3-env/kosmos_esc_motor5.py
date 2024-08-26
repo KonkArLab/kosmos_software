@@ -19,11 +19,11 @@ class kosmosEscMotor(Thread):
         Thread.__init__(self)
         
         # Initialisation port GPIO ESC & RElai               
-        self.Relai_GPIO = DigitalOutputDevice(aConf.get_val_int("11_MOTOR_power_gpio",DEBUG_SECTION))
-        self.PWM_GPIO = PWMOutputDevice(pin=aConf.get_val_int("10_MOTOR_esc_gpio",DEBUG_SECTION),frequency=50)
+        self.Relai_GPIO = DigitalOutputDevice(aConf.config.getint(DEBUG_SECTION,"11_MOTOR_power_gpio"))
+        self.PWM_GPIO = PWMOutputDevice(pin=aConf.config.getint(DEBUG_SECTION,"10_MOTOR_esc_gpio"),frequency=50)
         
         # Initialisation du bouton asservissement moteur
-        self.Button_motor = Button(aConf.get_val_int("12_MOTOR_button_gpio",DEBUG_SECTION))#,bounce_time=0.5)
+        self.Button_motor = Button(aConf.config.getint(DEBUG_SECTION,"12_MOTOR_button_gpio"))#,bounce_time=0.5)
         
         # Evénement pour commander l'arrêt du Thread
         self._pause_event = Event()
@@ -32,13 +32,13 @@ class kosmosEscMotor(Thread):
                   
         # Paramètres Moteur
         self._Conf = aConf 
-        self.tps_POSE=aConf.get_val_int("15_MOTOR_pause_time",TERRAIN_SECTION)
-        self.vitesse_moteur=aConf.get_val_int("14_MOTOR_vitesse_favorite",TERRAIN_SECTION)
-        self.vitesse_min = aConf.get_val_int("13_MOTOR_vitesse_min",TERRAIN_SECTION)
-        self.inertie_time = aConf.get_val_int("16_MOTOR_inertie_time",TERRAIN_SECTION) # en ms
-        self.timeout = aConf.get_val_int("17_MOTOR_timeout",TERRAIN_SECTION) # en s
-        self.pressORrelease = aConf.get_val_int("18_MOTOR_pressORrelease",TERRAIN_SECTION)
-        self.shift_time = aConf.get_val_int("19_MOTOR_shift_time",TERRAIN_SECTION) # en ms
+        self.tps_POSE=aConf.config.getint(CONFIG_SECTION,"15_MOTOR_pause_time")
+        self.vitesse_moteur=aConf.config.getint(CONFIG_SECTION,"14_MOTOR_vitesse_favorite")
+        self.vitesse_min = aConf.config.getint(CONFIG_SECTION,"13_MOTOR_vitesse_min")
+        self.inertie_time = aConf.config.getint(CONFIG_SECTION,"16_MOTOR_inertie_time") # en ms
+        self.timeout = aConf.config.getint(CONFIG_SECTION,"17_MOTOR_timeout") # en s
+        self.pressORrelease = aConf.config.getint(CONFIG_SECTION,"18_MOTOR_pressORrelease")
+        self.shift_time = aConf.config.getint(CONFIG_SECTION,"19_MOTOR_shift_time") # en ms
 
     def power_on(self):
         """Commande le relai d'alimentation de l'ESC"""
