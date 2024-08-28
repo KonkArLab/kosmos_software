@@ -9,7 +9,7 @@ let configsData;
 // Function to fetch the configuration from the server and dynamically generate the form
 async function fetchConfig() {
   try {
-    const response = await fetch(serverUrl + "/getCampagne");
+    const response = await fetch(serverUrl + "/getConfig");
     const data = await response.json();
 
     // Assuming the response structure is { data: { ... }, status: "ok" }
@@ -78,7 +78,7 @@ fetchConfig();
 // Function to update the configuration on the server
 async function updateConfigOnServer(updatedConfig) {
   try {
-    const response = await fetch(serverUrl + "/changeCampagne", {
+    const response = await fetch(serverUrl + "/changeConfig", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

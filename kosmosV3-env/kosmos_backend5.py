@@ -27,10 +27,10 @@ class Server:
         self.app.add_url_rule("/stop", view_func=self.stop)
         self.app.add_url_rule("/shutdown", view_func=self.shutdown)
         self.app.add_url_rule("/getRecords", view_func=self.getRecords)
-        self.app.add_url_rule("/changeConfig", view_func=self.changeConfig(CONFIG_SECTION),methods=['POST'])
-        self.app.add_url_rule("/getConfig", view_func=self.getConfig(CONFIG_SECTION))
-        self.app.add_url_rule("/changeCampagne", view_func=self.changeConfig(CAMPAGNE_SECTION),methods=['POST'])
-        self.app.add_url_rule("/getCampagne", view_func=self.getConfig(CAMPAGNE_SECTION))
+        self.app.add_url_rule("/changeConfig", view_func=self.changeConfig,methods=['POST'])
+        self.app.add_url_rule("/getConfig", view_func=self.getConfig)
+        self.app.add_url_rule("/changeCampagne", view_func=self.changeCampagne,methods=['POST'])
+        self.app.add_url_rule("/getCampagne", view_func=self.getCampagne)
         self.app.add_url_rule("/frame", view_func=self.image)
 
     def run(self) :
@@ -80,13 +80,12 @@ class Server:
             }
     
     
-    
-    def changeConfig(self,SECTION):
+    def changeCampagne(self):
         if(self.myMain.state==KState.STANDBY):
             data = request.json
             for key in data:
                 #self.myMain._conf.set_val(key,data[key])
-                self.myMain._conf.config.set(SECTION,key,data[key])
+                self.myMain._conf.config.set(CAMPAGNE_SECTION,key,data[key])
             self.myMain._conf.update_config()
             self.myMain.thread_camera.closeCam()
             
@@ -116,9 +115,50 @@ class Server:
                 "status" : "error"
             }
         
-    def getConfig(self,SECTION):
+    def getCampagne(self):
         response=dict()        
-        response["data"] = dict(self.myMain._conf.config[SECTION])
+        response["data"] = dict(self.myMain._conf.config[CAMPAGNE_SECTION])
+        response["status"]="ok"
+        return response
+    
+    def changeConfig(self):
+        if(self.myMain.state==KState.STANDBY):
+            data = request.json
+            for key in data:
+                #self.myMain._conf.set_val(key,data[key])
+                self.myMain._conf.config.set(CONFIG_SECTION,key,data[key])
+            self.myMain._conf.update_config()
+            self.myMain.thread_camera.closeCam()
+            
+            # Désallocation des GPIOs avant reboot
+            self.myMain._ledR.close()
+            self.myMain._ledB.close()
+            self.myMain.Button_Stop.close() 
+            self.myMain.Button_Record.close()
+            if self.myMain.PRESENCE_MOTEUR==1:
+                self.myMain.motorThread.Relai_GPIO.close()
+                self.myMain.motorThread.PWM_GPIO.close()
+                self.myMain.motorThread.Button_motor.close()
+            
+            # Arrêt des Thread en cours
+            if self.myMain.PRESENCE_MOTEUR==1:
+                del self.myMain.motorThread
+            del self.myMain.thread_camera
+            
+            # Réinitialisation
+            self.myMain.init()
+            self.myMain.button_event.set()
+            return {
+                "status" : "ok"
+            }
+        else:
+            return {
+                "status" : "error"
+            }
+        
+    def getConfig(self):
+        response=dict()        
+        response["data"] = dict(self.myMain._conf.config[CONFIG_SECTION])
         response["status"]="ok"
         return response
     

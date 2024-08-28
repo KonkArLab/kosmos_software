@@ -130,7 +130,7 @@ class KosmosConfig:
     def set_val(self,aKey,aValue ,aSection=CONFIG_SECTION):
         self.config.set(aSection, aKey,str(aValue))
         
-    def update_file(self):
+    def update_config(self):
         with open(self._config_path, 'w') as configfile:
             self.config.write(configfile)
             
