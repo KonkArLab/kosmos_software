@@ -22,6 +22,7 @@ GIT_PATH = ROOT_PATH+"kosmos_software/"
 WORK_PATH = GIT_PATH+"kosmosV3-env/"
 
 #  Sections config, campagne, et debug 
+CONF_FILE_TEMPLATE = "kosmos_config_template.ini"
 CONF_FILE = "kosmos_config.ini"
 CONFIG_SECTION = "KOSMOS-config"
 CAMPAGNE_SECTION = "KOSMOS-campagne"
@@ -31,6 +32,7 @@ DEBUG_SECTION = "KOSMOS-debug"
 VIDEO_SECTION = "KOSMOS-video"
 
 # Fichier system et sections associées
+SYSTEM_FILE_TEMPLATE = "kosmos_system_template.ini"
 SYSTEM_FILE = "kosmos_system.ini"
 SYSTEM_SECTION = "KOSMOS-system"
 INCREMENT_SECTION = "KOSMOS-increment"
@@ -47,14 +49,14 @@ class KosmosConfig:
     
     def __init__(self):
         logging.debug("Lecture kosmos_config.ini")        
-        subprocess.run(["sudo", "cp", "-n", GIT_PATH+CONF_FILE,USB_INSIDE_PATH+CONF_FILE])
+        subprocess.run(["sudo", "cp", "-n", GIT_PATH+CONF_FILE_TEMPLATE,USB_INSIDE_PATH+CONF_FILE])
         self._config_path=USB_INSIDE_PATH+CONF_FILE
         self.config = configparser.ConfigParser()
         self.config.read(self._config_path)
         logging.info("kosmos_config.ini lu sur clé usb")
         
         logging.debug("Lecture kosmos_system.ini")        
-        subprocess.run(["sudo", "cp", "-n", GIT_PATH+SYSTEM_FILE,ROOT_PATH+SYSTEM_FILE])
+        subprocess.run(["sudo", "cp", "-n", GIT_PATH+SYSTEM_FILE_TEMPLATE,ROOT_PATH+SYSTEM_FILE])
         self._system_path=ROOT_PATH+SYSTEM_FILE
         self.system = configparser.ConfigParser()
         self.system.read(self._system_path)

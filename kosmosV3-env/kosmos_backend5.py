@@ -76,11 +76,49 @@ class Server:
             return {
                 "status" : "error"
             }
+    
+    
+    
     def changeConfig(self):
         if(self.myMain.state==KState.STANDBY):
             data = request.json
             for key in data:
-                self.myMain._conf.set_val(key,data[key])
+                #self.myMain._conf.set_val(key,data[key])
+                self.myMain._conf.config.set(CONFIG_SECTION,key,data[key])
+            self.myMain._conf.update_file()
+            self.myMain.thread_camera.closeCam()
+            
+            # Désallocation des GPIOs avant reboot
+            self.myMain._ledR.close()
+            self.myMain._ledB.close()
+            self.myMain.Button_Stop.close() 
+            self.myMain.Button_Record.close()
+            if self.myMain.PRESENCE_MOTEUR==1:
+                self.myMain.motorThread.Relai_GPIO.close()
+                self.myMain.motorThread.PWM_GPIO.close()
+                self.myMain.motorThread.Button_motor.close()
+            
+            # Arrêt des Thread en cours
+            if self.myMain.PRESENCE_MOTEUR==1:
+                del self.myMain.motorThread
+            del self.myMain.thread_camera
+            
+            # Réinitialisation
+            self.myMain.init()
+            self.myMain.button_event.set()
+            return {
+                "status" : "ok"
+            }
+        else:
+            return {
+                "status" : "error"
+            }
+    def changeCampagne(self):
+        if(self.myMain.state==KState.STANDBY):
+            data = request.json
+            for key in data:
+                #self.myMain._conf.set_val(key,data[key])
+                self.myMain._conf.config.set(CAMPAGNE_SECTION,key,data[key])
             self.myMain._conf.update_file()
             self.myMain.thread_camera.closeCam()
             
@@ -112,11 +150,16 @@ class Server:
 
     def getConfig(self):
         response=dict()        
-        dict_total = dict(self.myMain._conf.config[CONFIG_SECTION])
-        dict_total.update(dict(self.myMain._conf.config[CAMPAGNE_SECTION]))
-        response["data"]=dict_total
+        response["data"] = dict(self.myMain._conf.config[CONFIG_SECTION])
         response["status"]="ok"
-        return response  
+        return response
+    
+    def getCampagne(self):
+        response=dict()        
+        response["data"]=dict(self.myMain._conf.config[CAMPAGNE_SECTION])
+        response["status"]="ok"
+        return response
+    
 
     def getRecords(self):
         response=dict()
