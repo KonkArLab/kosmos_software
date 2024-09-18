@@ -98,7 +98,6 @@ sudo nano /boot/firmware/config.txt
 - Ajouter à la fin du fichier les lignes suivantes:
 ```
 dtoverlay=uart2
-dtoverlay=w1-gpio
 enable_uart=1
 dtoverlay=disable-bt
 ```
