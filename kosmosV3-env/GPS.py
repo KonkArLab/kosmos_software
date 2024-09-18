@@ -12,7 +12,6 @@ class GPS(Thread):
         
         Thread.__init__(self)
         self.ser = serial.Serial('/dev/ttyAMA0', 9600, timeout=0.1)
-        
         self._pause_event = Event()
         self._continue_event = Event()
         self._t_stop = False 

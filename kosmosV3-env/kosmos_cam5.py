@@ -94,12 +94,15 @@ class KosmosCam(Thread):
         
         #Initialisation GPS
         self._gps_ok = False
-        self.gps = GPS()
-        if self.gps.init():
-            logging.info("Capteur GPS OK")
-            self._gps_ok = True
-            self.gps.start()
-        else:    
+        try:
+            self.gps = GPS()
+            if self.gps.init():
+                logging.info("Capteur GPS OK")
+                self._gps_ok = True
+                self.gps.start()
+            else:    
+                logging.error("Port Serie GPS OK mais non fonctionnel")
+        except:    
             logging.error("Erreur d'initialisation du GPS")
             
         # Initialisation Capteur TP
