@@ -76,7 +76,17 @@ class KosmosConfig:
     def get_date_Y(self) -> str:
         date = datetime.now()
         Y=date.year-2000
-        return f'{Y:02}'    
+        return f'{Y:02}'
+    
+    def get_date_m(self) -> str:
+        date = datetime.now()
+        m=date.month
+        return f'{m:02}'
+    
+    def get_date_d(self) -> str:
+        date = datetime.now()
+        d=date.day
+        return f'{d:02}'
         
     def get_date_YMD(self) -> str:
         date = datetime.now()
@@ -94,6 +104,7 @@ class KosmosConfig:
         M=date.minute
         return f'{Y}{m:02}{d:02}{H:02}{M:02}'
 
+    
     def get_date_HMS(self) -> str:
         """Retourne la date formatée en string"""
         date = datetime.now()
@@ -102,6 +113,19 @@ class KosmosConfig:
         S=date.second
         return f'{H:02}h{M:02}m{S:02}s'
     
+    def get_date_H(self) -> str:
+        date = datetime.now()
+        H=date.hour
+        return f'{H:02}'
+    def get_date_M(self) -> str:
+        date = datetime.now()
+        M=date.minute
+        return f'{M:02}'
+    def get_date_S(self) -> str:
+        date = datetime.now()
+        S=date.second
+        return f'{S:02}'
+
     def get_date(self) -> str:
         """Retourne la date formatée en string"""
         date = datetime.now()
@@ -162,5 +186,9 @@ class KosmosConfig:
     
     def addInfoStation(self,json_file):
         infoStationDict = self.json2dict(json_file)
-        print(infoStationDict)
-        pd.DataFrame(infoStationDict, index = [0]).to_csv(self.CAMPAGNE_PATH + INFOSTATION_FILE,columns = headerInfoStation, sep =';', mode='a',index= False)
+        if not os.path.exists(self.CAMPAGNE_PATH + INFOSTATION_FILE):
+            bool_header = True
+        else:
+            bool_header = False
+        pd.DataFrame(infoStationDict, index = [0]).to_csv(self.CAMPAGNE_PATH + INFOSTATION_FILE, sep =';', mode='a',index= False,header = bool_header, columns = headerInfoStation)
+        
