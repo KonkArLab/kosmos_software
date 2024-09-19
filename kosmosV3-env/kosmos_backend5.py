@@ -167,25 +167,22 @@ class Server:
         response=dict()
         try:
             outputList=[]
-            strr="ls -l -R " + USB_INSIDE_PATH+self.myMain._conf.get_val("22_CSV_campagne",TERRAIN_SECTION)+self.myMain._conf.get_date_Yms() 
+            strr="ls -l -R " + self.myMain._conf.CAMPAGNE_PATH 
             stream =os.popen(strr)       
             streamOutput = stream.read()
-            strRef=streamOutput.split('./')
-            strRef2=strRef[0].split('\n\n')
-            
-            for i in range(1,len(strRef2)): 
-                strRef3=strRef2[i].split('\n')
-                ligne1=strRef3[0][-10:-1] # premier sous dossier
-                lignes=strRef3[2][0:11]                    
-                listTemp = strRef2[i].split(lignes)[1:]
-                for e in listTemp:
+            strRef=streamOutput.split('\n/')
+            strRef2=strRef[1].split('\n-')
+
+            for i in range(1,len(strRef)):
+                strRef2=strRef[i].split('\n-')
+                for j in range(1,len(strRef2)):
                     d=dict()
-                    data=e.split()
-                    d["size"]="{:.4f}".format(int(data[3])/(1024**2))
-                    d["month"]=data[4]
-                    d["day"]=data[5]
-                    d["time"]=data[6]
-                    d["fileName"]=ligne1+'/'+data[7]
+                    data=strRef2[j].split()
+                    d["size"]="{:.4f}".format(int(data[4])/(1024**2))
+                    d["month"]=data[5]
+                    d["day"]=data[6]
+                    d["time"]=data[7]
+                    d["fileName"]=data[8]
                     outputList.append(d)
         except:
            outputList=[] 
