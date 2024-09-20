@@ -55,8 +55,10 @@ class KosmosConfig:
         self.config.read(self._config_path)
         logging.info("kosmos_config.ini lu sur clé usb")
         
+        # bloc normalement non lu car fait normalement durant l'installation install.sh
         logging.debug("Lecture kosmos_system.ini")        
         subprocess.run(["sudo", "cp", "-n", GIT_PATH+SYSTEM_FILE_TEMPLATE,ROOT_PATH+SYSTEM_FILE])
+        subprocess.run(["sudo", "chown", os.listdir("/home")[0]+":"+os.listdir("/home")[0] , ROOT_PATH+SYSTEM_FILE])
         self._system_path=ROOT_PATH+SYSTEM_FILE
         self.system = configparser.ConfigParser()
         self.system.read(self._system_path)
@@ -69,9 +71,6 @@ class KosmosConfig:
             os.mkdir(campagneFile)
         self.CAMPAGNE_PATH = USB_INSIDE_PATH + campagneFile + "/"
         os.chdir(WORK_PATH)
-        
-        # Creation du CSV info station si non existant
-        # self.addInfoStation(GIT_PATH +'infoStationTemplate.json')
 
     def get_date_Y(self) -> str:
         date = datetime.now()
