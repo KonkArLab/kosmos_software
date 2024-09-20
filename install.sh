@@ -11,6 +11,10 @@ sudo apt install `cat requirements.txt`
 #Desactivation du bluetooth (raisons énergétiques)
 sudo systemctl disable bluetooth
 
+# Copier du fichier kosmos_system.ini
+sudo cp -n /home/$USER/kosmos_software/kosmos_system_template.ini /home/$USER/kosmos_system.ini 
+sudo chown $USER:$USER /home/$USER/kosmos_system.ini
+
 #Creation du fichier de lancement
 cd
 echo "#!/bin/bash" > lancement_kosmos.sh
