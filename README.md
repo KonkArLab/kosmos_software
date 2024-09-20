@@ -138,6 +138,13 @@ Une question apparaît dans le terminal:
 
 > Souhaitez-vous continuer ?[O/n]  
 > - Appuyer sur `Entrée` pour continuer et finir l'exécution de la commande précédente
+
+### Mise-à-jour du fichier kosmos_system.ini
+Ouvrir le fichier `kosmos_system.ini` qui se trouve au même niveau que le dossier `kosmos_software`.
+
+Renseigner le nom du système à l'entrée `system` de la section `[KOSMOS-system]`
+
+Si besoin, mettre également à jour l'`increment`.  Si c'est le premier usage du système, il doit être à 1. Si le système a déjà été utilisé remettre l'incrément + 1 de la dernière vidéo. A noter que cet incrément doit être remis à 1 à chaque nouvelle année.  
   
 ### Stockage des données
 
@@ -147,14 +154,16 @@ Une question apparaît dans le terminal:
 
 Le fichier kosmos_config.ini contient les paramètres de configuration du système. Ces paramètres seront visibles depuis l'interface web grâce à un ficher Javascript. [Explication](https://github.com/KonkArLab/kosmos_software/blob/dev_stereo2/README.md#prise-en-main-de-linterface-web)  
 
-Le dossier s'appelle normalement "Nom du Kosmos" + "date" au format annéemoisjour. L'association de ces deux informations définit une campagne sur un instrument pour un jour donné. 
+Le dossier s'appelle normalement date_system_campagne_zone. L'association de ces informations définit une campagne sur un instrument pour un jour donné. 
 
-Toutes les vidéos et métadata associées seront enregistrées dans ce dossier. Concrètement, à chaque activation du kosmos (passage de l'état STANDBY à WORKING) un dossier dont le nom sera l'heure (au format XXhXXmXXs) sera créé et contiendra quatre fichiers : 
-- Le fichier vidéo .mp4
-- Un fichier Timestamp.txt qui stocke l'instant de chaque frame de la video
-- Un fichier CamParam.csv qui stocke des paramètres de la caméra pendant la prise de vue
-- Une fichier TemperaturePressionGPS.csv qui conserve les données T,P et position pendant la prise de vue. 
-A noter qu'il peut y avoir un nombre devant les trois premiesr fichiers. Typiquement 00_ puis 01_ etc. Il correspond au numéro de séquence vidéo lorsque de très longues captures sont demandées. En effet dans ce cas là, les vidéos sont découpées pour éviter la perte éventuelle de données.
+Toutes les vidéos et métadata associées seront enregistrées dans ce dossier. Concrètement, à chaque activation du kosmos (passage de l'état STANDBY à WORKING) un dossier dont le nom sera `zone+annee+codestation` sera créé. Le codestation s'incrémente à chaque nouvelle vidéo. Ce dossier contiendra cinq fichiers : 
+- Le fichier vidéo `zone+annee+codestation.mp4`
+- Un fichier `zone+annee+codestation.txt` qui stocke l'instant de chaque frame de la video.
+- Un fichier `zone+annee+codestation.csv` qui stocke des paramètres de la caméra ainsi que les données T,P et position pendant la prise de vue.
+- Un fichier `zone+annee+codestation.json` qui stocke les métadonnées de la prise de vue.
+- Un fichier `Events.csv` qui stocke les évènements du sytème comme la rotation du moteur ou la mise à jour des gains AWB
+
+A noter qu'un fichier `infoStation.csv` existe aussi dans le dossier de campagne journalière. Il rassemble les métadonnées de chaque vidéo prise durant la journée.
 
 ## Mode d'emploi
 
@@ -165,7 +174,7 @@ A noter qu'il peut y avoir un nombre devant les trois premiesr fichiers. Typique
 - Une fois l'écran branché, on allumera le système et on attendra que le système KOSMOS soit en STAND BY.
 - Dans l'interface WEB, modifier le paramètre `05_SYSTEM_shutdown` pour le mettre à 0 et effectuer un `Reboot`. Aller ensuite dans l'onglet `Camera` et éteindre arrêter le système KOSMOS en appuyant sur `Shutdown`. (Cette manipulation permet d'arrêter le script KOSMOS sans éteindre la Rpi. La caméra peut ainsi être utilisée.)
 - Dans le terminal, taper ```rpicam-hello --timeout 0 ``` Cette instruction permet d'afficher le preview. Pour le quitter il suffira de taper ```Ctrl + C ```
-- Placer une mire à cinq mètres de l'objectif. Ouvrir à fond l'objectif (le petit point blanc devant 1.8) pour avoir une profondeur de champ minimale. Réaliser le focus sur la mire avec la bague puis la bloquer solidement. Fermer enfin l'objectif à fond (le petit point blanc sur 11) pour récupérer une profondeur de champ maximale. Bloquer la bague d'ouverture dans cette position. Vérifier que le focus est toujours bon (le fait de serrer les bagues peut parfois les faire bouger.)
+- Viser un objet à l'infini (par exemple le feuillage d'arbres au loin). Ouvrir à fond l'objectif (le petit point blanc devant 1.8) pour avoir une profondeur de champ minimale. Réaliser le focus sur l'objet avec la bague puis la bloquer solidement. Fermer enfin l'objectif à moitié (le petit point blanc sur 2.8) pour récupérer une meilleure profondeur de champ. Bloquer la bague d'ouverture dans cette position. Vérifier que le focus est toujours bon (le fait de serrer les bagues peut parfois les faire bouger.)
 - Sortir du preview puis redémarrer la Raspberry Pi. Le soft kosmos va se remettre en route. Dans l'interface web, remettre le paramètre  `05_SYSTEM_shutdown` sur 1. Effectuer un `Reboot` puis éteindre le système avec un `Shutdown`.
 
 ### Processus de mise à l'eau
@@ -216,7 +225,7 @@ Affiche l'état dans lequel se trouve la caméra
 Affiche le nom, la taille et l'heure de fin d'enregistrement des derniers fichiers vidéos.
 <br>
 
-##### Configuration
+##### Configuration, à mettre à jour....
 Permet de modifier des paramètres du système  
 Un fichier javascript vient lire le fichier kosmos_config.ini.  
 Puis il va créer une liste avec les différents noms des paramètres écrits dans le fichier kosmos_config.ini. Les noms des paramètres seront associés à un label et les valeurs des paramètres seront associées à un input. Par défaut l'input est en "readonly" c'est à dire qu'il n'est pas modifiable. Pour pouvoir le modifier il faut appuyer sur le bouton `Modify` entrer la nouvelle valeur puis la sauvegarder avec `Save`. Une fois la valeur sauvegardée le fichier kosmos_config.ini se mettra à jour.  
