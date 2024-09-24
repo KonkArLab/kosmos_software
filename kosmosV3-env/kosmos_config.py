@@ -41,6 +41,9 @@ INCREMENT_SECTION = "KOSMOS-increment"
 headerInfoStation = ['codeStation','zone','system','latitude','longitude','date']
 INFOSTATION_FILE = 'infoStation.csv'
 
+# Nom du fichier des évènements système
+EVENT_FILE="systemEvent.csv"
+
 class KosmosConfig:
     """
     Gestion des paramètres et leur lecture depuis le fichier .ini
@@ -189,5 +192,5 @@ class KosmosConfig:
             bool_header = True
         else:
             bool_header = False
-        pd.DataFrame(infoStationDict, index = [0]).to_csv(self.CAMPAGNE_PATH + INFOSTATION_FILE, sep =';', mode='a',index= False,header = bool_header, columns = headerInfoStation)
+        pd.DataFrame(infoStationDict, index = [0]).to_csv(self.CAMPAGNE_PATH + INFOSTATION_FILE, sep =';', mode='a',index= False,header = bool_header)#, columns = headerInfoStation)
         

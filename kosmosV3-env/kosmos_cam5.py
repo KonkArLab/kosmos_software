@@ -175,7 +175,7 @@ class KosmosCam(Thread):
                 
                 # Bloc d'enregistrement/encodage à proprement parler
                 event_line = self._Conf.get_date_HMS()  + ";START ENCODER;" + self._output
-                self._Conf.add_line("Events.csv",event_line)
+                self._Conf.add_line(EVENT_FILE,event_line)
                 self._camera.start_encoder(self._encoder,self._output,pts = self._file_name+'.txt')
                 
                 #Création CSV
@@ -232,7 +232,7 @@ class KosmosCam(Thread):
                 # Fin de l'encodage
                 self._camera.stop_encoder()
                 event_line = self._Conf.get_date_HMS() + ";END ENCODER;" + self._output
-                self._Conf.add_line("Events.csv",event_line)
+                self._Conf.add_line(EVENT_FILE,event_line)
                                
                 # ecriture json
                 self.writeJSON(self._file_name)
@@ -246,10 +246,10 @@ class KosmosCam(Thread):
                 
                 # Conversion mp4 si demandée
                 event_line =  self._Conf.get_date_HMS()  + ";START CONVERSION;" + self._output
-                self._Conf.add_line("Events.csv",event_line)
+                self._Conf.add_line(EVENT_FILE,event_line)
                 self.convert_to_mp4(self._output)
                 event_line =  self._Conf.get_date_HMS()  + ";END CONVERSION;" + self._file_name +'.mp4'
-                self._Conf.add_line("Events.csv",event_line)
+                self._Conf.add_line(EVENT_FILE,event_line)
                 
                 i=i+1
             self._start_again.wait()
@@ -318,7 +318,7 @@ class KosmosCam(Thread):
        
     def adjust_awb(self,rh,bh,tolerance):
         event_line =  self._Conf.get_date_HMS()  + ";START AWB ALGO; "
-        self._Conf.add_line("Events.csv",event_line)
+        self._Conf.add_line(EVENT_FILE,event_line)
         
         # Capture des gains AWB
         ColourGains = self._camera.capture_metadata()['ColourGains']
@@ -353,11 +353,11 @@ class KosmosCam(Thread):
                 self._camera.set_controls({'AwbEnable': False})
                 
         event_line =  self._Conf.get_date_HMS()  + ";END AWB ALGO; "
-        self._Conf.add_line("Events.csv",event_line)
+        self._Conf.add_line(EVENT_FILE,event_line)
     
     def adjust_brightness(self,br,tolerance):
         event_line =  self._Conf.get_date_HMS()  + ";START BRIGHT ALGO; "
-        self._Conf.add_line("Events.csv",event_line)
+        self._Conf.add_line(EVENT_FILE,event_line)
         
         # Capture de la brigthness
         brightness = self._camera.camera_controls['Brightness'][2]               
@@ -387,7 +387,7 @@ class KosmosCam(Thread):
                 
                 
         event_line =  self._Conf.get_date_HMS()  + ";END BRIGHT ALGO; "
-        self._Conf.add_line("Events.csv",event_line) 
+        self._Conf.add_line(EVENT_FILE,event_line) 
         
     def stopCam(self):
         """  Demande la fin de l'enregistrement et ferme l'objet caméra."""

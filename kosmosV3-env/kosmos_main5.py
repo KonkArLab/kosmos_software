@@ -114,7 +114,7 @@ class kosmos_main():
 
         # Initialisation de fichier Event
         event_line = "Heure;Event;Fichier"        
-        self._conf.add_line("Events.csv",event_line)
+        self._conf.add_line(EVENT_FILE,event_line)
       
         self._ledB.off()
         
@@ -160,11 +160,11 @@ class kosmos_main():
             # On s'est arrêté via un bouton, on retourne donc en stand by
             self.state = KState.STANDBY
             event_line = self._conf.get_date_HMS()  + "; SORTIE BOUTON"
-            self._conf.add_line("Events.csv",event_line)
+            self._conf.add_line(EVENT_FILE,event_line)
             
         elif self._extinction == True:
             event_line = self._conf.get_date_HMS()  + "; SORTIE DUREE LIMITE"
-            self._conf.add_line("Events.csv",event_line)
+            self._conf.add_line(EVENT_FILE,event_line)
             # On s'est arrêté car arrivé au bout du temps_total de fonctionnement du système
             time.sleep(5) #tempo pour gérer la boucle while d'enregistrement
             self.state = KState.SHUTDOWN
