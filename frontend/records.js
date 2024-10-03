@@ -4,16 +4,19 @@ let serverUrl = "http://10.42.0.1:5000";
 // let serverUrl = "http://10.29.225.198:5000";
 
 // Function to fetch records data from the server
-async function fetchData() {
-  try {
-    const response = await fetch(serverUrl + "/getRecords");
-    const data = await response.json();
-    return data.data;
-  } catch (error) {
-    console.error("Error fetching data:", error);
-    return [];
+  async function fetchData() {
+    try {
+      const response = await fetch(serverUrl + "/getRecords");
+      const data = await response.json();
+      return data.data;
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      return [];
+    }
   }
-}
+
+
+
 
 // Function to populate the table with records data
 async function populateTable() {

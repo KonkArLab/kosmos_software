@@ -1,0 +1,47 @@
+{
+     "codeStation": "K5_BR240024",
+     "heureDict":
+          {
+               "heure": 11,
+               "minute": 26,
+               "seconde": 37
+          },
+     "gpsDict":
+          {
+               "site": "Brentec'h",
+               "latitude": 47.85762,
+               "longitude": -3.97411
+          }, 
+     "ctdDict":
+          {
+               "profondeur": 9.5,
+               "temperature": 15.9,
+               "salinite": ""
+          },
+     "astroDict":
+          {
+               "lune": "PQ",
+               "maree": "BM+1",
+               "coefficient": 74
+          },
+     "meteoAirDict":
+          {
+               "ciel": "soleil",
+               "vent": 2,
+               "direction": "NE",
+               "atmPress": 1013.0,
+               "tempAir": 15.6
+          }, 
+     "meteoMerDict":
+          {
+               "etatMer": "belle",
+               "houle": 1
+          },
+     "analyseDict":
+          {
+               "exploitabilite": "",
+               "habitat": "laminaires, sable",
+               "faune": "Mullidae, Gobidae",
+               "visibilite":  ""
+          }
+} 

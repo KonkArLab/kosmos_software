@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" type="text/css" href="styles.css">
-  <title>Kosmos</title>
+  <title>Kosmos - Metadata</title>
 </head>
 
 <body>
@@ -16,22 +16,22 @@
         <li><a href="./records.html">Records</a></li>
         <li><a href="./config.html">Configuration</a></li>
         <li><a href="./checklist.html">Checklist</a></li>
-
-
+        <li><a href="./metadata.html">Metadata</a></li>
+      </ul>
     </nav>
   </header>
 
   <div class="container">
-    <h1>State</h1>
-    <p>Etat : <span id="etat">Unknown</span></p>
+    <h1>Metadata</h1>
+    <table border="1" id="metadataTable">
+      <tr>
+        <th>Field</th>
+        <th>Value</th>
+      </tr>
+    </table>
   </div>
 
-  <div>
-    <form id="container" class="container">
-      <h1>Configuration Parameters</h1>
-  </div>
-  <script src="client.js"></script>
-  <script src="state.js"></script>
+  <script src="metadata.js"></script>
 </body>
 
 </html>

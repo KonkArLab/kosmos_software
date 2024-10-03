@@ -15,9 +15,12 @@ async function start() {
 
 // Function to send a stop request to the server
 async function stop() {
+  // Redirect to the Metadata page after the stop request is successful
+  window.location.href = "./metadata.html";
   const response = await fetch(serverUrl + "/stop");
   const body = await response.json();
   console.log(body);
+  
 }
 
 // Function to send a shutdown request to the server
