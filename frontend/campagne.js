@@ -1,6 +1,9 @@
 //JSON file location where default metadata is stored
 const testUrl = "./test.json"; 
 
+//Import Icons
+const icons = ['', 'icons/reset.png'];
+
 // Function to fetch metadata from the local JSON file
 async function fetchMetadata() {
   try {
@@ -40,16 +43,15 @@ async function populateMetadataTable() {
           <!-- Conteneur pour les boutons -->
           <div>
             <button class="modify" >
-              <i class="feather-icon" data-feather="edit"></i>
+              <img src="icons/modify.png" alt="modify" width="30" height="30" />
             </button> 
             <button class="reset" >
-              <i class="feather-icon" data-feather="refresh-cw"></i>
+              <img src="icons/reset.png" alt="reset" width="30" height="30" />
             </button>
           </div>
         </div>
       `;
     };
-    feather.replace(); // Remplacer les balises avec les icônes Feather correspondantes
     addModifyListener(metadata);
     addResetListener(metadata);
   } 
