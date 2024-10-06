@@ -43,5 +43,20 @@
                "habitat": "laminaires, sable",
                "faune": "Mullidae, Gobidae",
                "visibilite":  ""
-          }
+          },
+
+     "campagne":
+         {
+               "campagne": "ATL",
+               "zone": "BR",
+               "lieudit": "Illien",
+               "protection": "N2000",
+               "bateau": "Beneteau-Capelan",
+               "pilote": "Olivier F.",
+               "equipage": "J. C., C. H.",
+               "partenaires": [
+                    "Ifremer RDT", 
+                    "Halgo"
+               ]
+         }
 } 

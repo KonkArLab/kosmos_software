@@ -16,6 +16,7 @@
 				<li><a href="./records.html">Records</a></li>
 				<li><a href="./config.html">Configuration</a></li>
 				<li><a href="./checklist.html">Checklist</a></li>
+				<li><a href="./campagne.html">Campagne</a></li>
 			</ul>
 		</nav>
 	</header>
@@ -38,6 +39,12 @@
 	</div>
 	<script src="cameraScript.js"></script>
 	<script src="state.js"></script>
+
+	<script>
+		// Récupération des données du Local Storage
+		const data = JSON.parse(localStorage.getItem('metadata'));
+		console.log(data)
+	</script>
 
 	<div class="container">
 		<h1>Shutdown KOSMOS</h1>

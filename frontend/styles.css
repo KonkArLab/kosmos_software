@@ -290,3 +290,43 @@ button:hover {
     margin-top: 5px;
   }
 }
+
+button {
+  position: relative; /* Nécessaire pour positionner le tooltip */
+}
+
+/* Style du tooltip */
+button.modify::after {
+  content: "Click to modify this value"; 
+  position: absolute;
+  bottom: -50%; 
+  background-color: #434242; 
+  color: #fff; 
+  padding: 5px 10px;
+  border-radius: 4px;
+  white-space: nowrap; /* Empêche le texte de se casser */
+  opacity: 0; /* Le rendre invisible par défaut */
+  pointer-events: none; /* Empêcher l'interaction avec le tooltip */
+  transition: opacity 0.2s ease-in-out; /* Transition de l'opacité */
+}
+
+button.modify:hover::after {
+  opacity: 1; /* Le rendre visible */
+}
+button.reset::after {
+  content: "Click to reset the default value"; 
+  position: absolute;
+  bottom: -50%; 
+  background-color: #434242; 
+  color: #fff; 
+  padding: 5px 10px;
+  border-radius: 4px;
+  white-space: nowrap; /* Empêche le texte de se casser */
+  opacity: 0; /* Le rendre invisible par défaut */
+  pointer-events: none; /* Empêcher l'interaction avec le tooltip */
+  transition: opacity 0.2s ease-in-out; /* Transition de l'opacité */
+}
+
+button.reset:hover::after {
+  opacity: 1; /* Le rendre visible */
+}
