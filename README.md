@@ -3,7 +3,7 @@
 <details open>
  <summary> Sommaire </summary>
  
-  * [Installationn](https://github.com/KonkArLab/kosmos_software/blob/dev_stereo2/README.md#installation)
+  * [Installation](https://github.com/KonkArLab/kosmos_software/blob/dev_stereo2/README.md#installation)
   * [Mode d'emploi](https://github.com/KonkArLab/kosmos_software/blob/dev_stereo2/README.md#mode-demploi)
     
 </details>
