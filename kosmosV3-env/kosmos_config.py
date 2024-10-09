@@ -66,9 +66,12 @@ class KosmosConfig:
         self.system = configparser.ConfigParser()
         self.system.read(self._system_path)
         logging.info("kosmos_system.ini lu dans home")
-               
+    
+        self.systemName = self.system.get(SYSTEM_SECTION,"system")
+        self.systemVersion = self.system.get(SYSTEM_SECTION,"version")
+    
         # Création Dossier Campagne si non existant               
-        campagneFile = self.get_date_YMD() + '_' + self.system.get(SYSTEM_SECTION,"system") + '_' + self.config.get(CAMPAGNE_SECTION,"campagne") + '_' + self.config.get(CAMPAGNE_SECTION,"zone") 
+        campagneFile = self.get_date_YMD() + '_' + self.systemName + '_' + self.config.get(CAMPAGNE_SECTION,"campagne") + '_' + self.config.get(CAMPAGNE_SECTION,"zone") 
         os.chdir(USB_INSIDE_PATH)            
         if not os.path.exists(campagneFile):
             os.mkdir(campagneFile)
@@ -194,3 +197,9 @@ class KosmosConfig:
             bool_header = False
         pd.DataFrame(infoStationDict, index = [0]).to_csv(self.CAMPAGNE_PATH + INFOSTATION_FILE, sep =';', mode='a',index= False,header = bool_header)#, columns = headerInfoStation)
         
+        
+    def get_RPi_model(self):
+        with open('/proc/device-tree/model') as f:
+            model = f.read()
+            model2 = model.split('\u0000')
+        return model2[0]

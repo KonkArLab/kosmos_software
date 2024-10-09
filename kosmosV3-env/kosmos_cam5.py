@@ -80,7 +80,7 @@ class KosmosCam(Thread):
         self._video_config['main']['size']=(self._X_RESOLUTION,self._Y_RESOLUTION)
         self._video_config['controls']['FrameDurationLimits']=(self._FRAMEDURATION,self._FRAMEDURATION)
         self._camera.set_controls({'AeExposureMode': 'Short'}) # on privilégie une adaptation par gain analogique que par augmentation du tps d'expo, et ce, pour limiter le flou de bougé
-
+        print(self._video_config)
         self._camera.configure(self._video_config)
         self._camera.start() #A noter que le Preview.NULL démarre également 
         logging.info("Caméra démarrée")
@@ -260,10 +260,11 @@ class KosmosCam(Thread):
         # Creation du json contenant les infostations
         with open(GIT_PATH+'infoStationTemplate.json') as f:
             infoStationDict = json.load(f)
-            infoStationDict["system"]["system"] = self._Conf.system.get(SYSTEM_SECTION,"system")
-            infoStationDict["system"]["version"] = self._Conf.system.get(SYSTEM_SECTION,"version")
-            infoStationDict["system"]["camera"] = self._Conf.system.get(SYSTEM_SECTION,"camera")
-            infoStationDict["system"]["moteur"] = self._Conf.system.get(SYSTEM_SECTION,"moteur")
+            infoStationDict["system"]["system"] = self._Conf.systemName
+            infoStationDict["system"]["version"] = self._Conf.systemVersion
+            infoStationDict["system"]["model"]=self._Conf.get_RPi_model()
+            infoStationDict["system"]["camera"] = "picam"
+            infoStationDict["system"]["moteur"] = "brushless"
             infoStationDict["campagne"]["zoneDict"]["campagne"] = self._Conf.config.get(CAMPAGNE_SECTION,"campagne")
             infoStationDict["campagne"]["zoneDict"]["zone"] = self._Conf.config.get(CAMPAGNE_SECTION,"zone")
             infoStationDict["campagne"]["zoneDict"]["lieudit"] = self._Conf.config.get(CAMPAGNE_SECTION,"lieudit")
