@@ -62,11 +62,12 @@ class KosmosConfig:
         logging.debug("Lecture kosmos_system.ini")        
         subprocess.run(["sudo", "cp", "-n", GIT_PATH+SYSTEM_FILE_TEMPLATE,ROOT_PATH+SYSTEM_FILE])
         subprocess.run(["sudo", "chown", os.listdir("/home")[0]+":"+os.listdir("/home")[0] , ROOT_PATH+SYSTEM_FILE])
+        
+        # Lecture du fichier system
         self._system_path=ROOT_PATH+SYSTEM_FILE
         self.system = configparser.ConfigParser()
         self.system.read(self._system_path)
         logging.info("kosmos_system.ini lu dans home")
-    
         self.systemName = self.system.get(SYSTEM_SECTION,"system")
         self.systemVersion = self.system.get(SYSTEM_SECTION,"version")
     
