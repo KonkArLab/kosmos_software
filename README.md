@@ -274,4 +274,4 @@ Il est également possible de modifier les paramètres directement dans le fichi
  - `37_PICAM_awb = 0` permet de définir le mode de fonctionnement de l'Automatic White Balance (seul le mode 0 fonctionne pour le moment)
  - `38_PICAM_timestamp = 0` incruste ou non une horloge dans l'image
     * si `0` pas d'incrustation
-    * si `1` incrustation
+    * si `1` incrustation 
