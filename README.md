@@ -146,7 +146,7 @@ Dans la section `[KOSMOS-system]` renseigner les champs suivants :
 - `system` pour le nom du système, typiquement `K5` ou `KIMT`, etc.
 - `version` pour la version du système, typiquement `3.0` ou `4.0`
 - `model` pour la version de la RPi, typiquement  `Raspberry Pi 4 Model B Rev 1.5`. On aura cette information en tapant `cat /proc/cpuinfo` dans la console.
-- `camera` pour la camera utilisée, typiquement 'Picam HQ'
+- `camera` pour la camera utilisée, typiquement `Picam HQ`
 - `moteur` pour le moteur utilisé, typiquement `brushless` ou `pas a pas`.
 
 Si besoin, mettre également à jour l'`increment`.  Si c'est le premier usage du système, il doit être à 1. Si le système a déjà été utilisé remettre l'incrément + 1 de la dernière vidéo. A noter que cet incrément doit être remis à 1 à chaque nouvelle année.  
