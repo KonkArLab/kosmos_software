@@ -80,7 +80,6 @@ class KosmosCam(Thread):
         self._video_config['main']['size']=(self._X_RESOLUTION,self._Y_RESOLUTION)
         self._video_config['controls']['FrameDurationLimits']=(self._FRAMEDURATION,self._FRAMEDURATION)
         self._camera.set_controls({'AeExposureMode': 'Short'}) # on privilégie une adaptation par gain analogique que par augmentation du tps d'expo, et ce, pour limiter le flou de bougé
-        print(self._video_config)
         self._camera.configure(self._video_config)
         self._camera.start() #A noter que le Preview.NULL démarre également 
         logging.info("Caméra démarrée")

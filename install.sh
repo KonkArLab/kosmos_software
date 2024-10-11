@@ -27,8 +27,8 @@ cd /home/$USER/kosmos_software/frontend
 sudo python3 -m http.server 80 &
 
 #Lance kosmos_main.py 
-cd /home/$USER/kosmos_software/kosmosV3-env
-sudo python3 kosmos_main5.py" >> lancement_kosmos.sh
+cd /home/$USER/kosmos_software/kosmos-env
+sudo python3 kosmos_main.py" >> lancement_kosmos.sh
 
 #Rendre le lancement.sh executable
 sudo chmod 755 lancement_kosmos.sh

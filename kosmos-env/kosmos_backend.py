@@ -135,7 +135,7 @@ class Server:
             self.myMain._ledB.close()
             self.myMain.Button_Stop.close() 
             self.myMain.Button_Record.close()
-            if self.myMain.PRESENCE_MOTEUR==1:
+            if self.myMain.PRESENCE_MOTEUR==1 and self.myMain._conf.systemVersion == "3.0":        
                 self.myMain.motorThread.Relai_GPIO.close()
                 self.myMain.motorThread.PWM_GPIO.close()
                 self.myMain.motorThread.Button_motor.close()

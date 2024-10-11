@@ -4,7 +4,7 @@ import logging
 import time
 from threading import Event
 import threading
-from gpiozero import LED, Button
+from gpiozero import LED, Button, TonalBuzzer
 import os
 import json
 
@@ -13,6 +13,7 @@ from threading import Thread
 
 #Tous les methodes de l'API sont dans le fichier kosmos_backend.py
 import kosmos_backend as KBackend
+import kosmos_melody as KMelody
 
 #Isolation du class KState dans le fichier kosmos_state.py
 from kosmos_state import KState
@@ -20,7 +21,9 @@ from kosmos_state import KState
 from kosmos_config import *
 import kosmos_config as KConf
 import kosmos_cam as KCam
-import kosmos_motor_V3 as KMotor
+import kosmos_motor_V3 as KMotor3
+import kosmos_motor_V4 as KMotor4
+
 import sys
 
 logging.basicConfig(level=logging.INFO,
@@ -53,6 +56,12 @@ class kosmos_main():
         self._ledB.on()
         self._ledR.off()        
 
+        # Buzzer
+        if self._conf.systemVersion == "4.0":
+            self.BUZZER_ENABLED = self._conf.config.getint(CONFIG_SECTION, "16_SYSTEM_buzzer_mode")
+            if self.BUZZER_ENABLED == 1:
+                    self._buzzer = TonalBuzzer(self._conf.config.getint(CONFIG_SECTION, "08_SYSTEM_buzzer"), octaves = 4)
+            
         # Boutons
         self.Button_Stop = Button(self._conf.config.getint(DEBUG_SECTION,"02_SYSTEM_stop_button_gpio"))
         self.Button_Record = Button(self._conf.config.getint(DEBUG_SECTION,"01_SYSTEM_record_button_gpio"))
@@ -69,8 +78,13 @@ class kosmos_main():
         # Definition Thread Moteur
         self.PRESENCE_MOTEUR = self._conf.config.getint(CONFIG_SECTION,"06_SYSTEM_moteur") # Fonctionnement moteur si 1
         if self.PRESENCE_MOTEUR==1:
-            self.motorThread = KMotor.kosmosEscMotor(self._conf)
- 
+            if self._conf.systemVersion == "3.0":
+                self.motorThread = KMotor3.kosmosEscMotor(self._conf)
+            elif self._conf.systemVersion == "4.0":
+                self.motorThread = KMotor4.kosmosMotor(self._conf)
+            else:
+                logging.info("Configuration moteur non effectuée.")
+                
     def clear_events(self):
         """Mise à 0 des evenements attachés aux boutons"""
         self.record_event.clear()
@@ -81,6 +95,13 @@ class kosmos_main():
         logging.info("STARTING : Kosmos en train de démarrer")
         
         self._ledB.blink()
+        
+        # Buzzer si version 4
+        if self._conf.systemVersion == "4.0":
+            if self.BUZZER_ENABLED == 1:
+                KMelody.playMelody(self._buzzer, KMelody.STARTING_MELODY)
+            time.sleep(0.5)   
+        
         
         self.thread_camera.initialisation_awb()
         
@@ -95,6 +116,11 @@ class kosmos_main():
         self._ledR.off()
         self._ledB.on()
         
+        # Buzzer si version 4
+        if self._conf.systemVersion == "4.0" :
+            if self.BUZZER_ENABLED == 1:
+                KMelody.playMelody(self._buzzer, KMelody.STANDBY_MELODY)
+        
         self.button_event.wait()
         if myMain.stop_event.is_set():
             self.state = KState.SHUTDOWN
@@ -108,7 +134,10 @@ class kosmos_main():
         # Création du dossier enregistrement dans le dossier Campagne
         os.chdir(self._conf.CAMPAGNE_PATH)
         video_file = self._conf.config.get(CAMPAGNE_SECTION,"zone") + f'{self._conf.get_date_Y()}' + f'{increment:04}'     
-        os.mkdir(video_file)
+        if os.path.exists(video_file):
+            pass
+        else:
+            os.mkdir(video_file)
         VID_PATH = self._conf.CAMPAGNE_PATH+video_file
         os.chdir(VID_PATH) # Ligne très importante pour bonne destination des fichiers !!!
 
@@ -117,6 +146,11 @@ class kosmos_main():
         self._conf.add_line(EVENT_FILE,event_line)
       
         self._ledB.off()
+        
+        # Buzzer si version 4
+        if self._conf.systemVersion == "4.0" :
+            if self.BUZZER_ENABLED == 1:
+                KMelody.playMelody(self._buzzer, KMelody.WORKING_MELODY)   
         
         if self.PRESENCE_MOTEUR == 1:
             # Run thread moteur
@@ -149,6 +183,11 @@ class kosmos_main():
         self._ledB.off()
         self._ledR.blink()
         
+        # Buzzer si version 4
+        if self._conf.systemVersion == "4.0" :
+            if self.BUZZER_ENABLED == 1:
+                KMelody.playMelody(self._buzzer, KMelody.STOPPING_MELODY)   
+        
         # Demander la fin de l'enregistrement
         self.thread_camera.stopCam()
         
@@ -180,7 +219,7 @@ class kosmos_main():
             self.thread_camera.join()   # Caméra stoppée
         
         # Arrêt du moteur
-        if self.PRESENCE_MOTEUR==1:  
+        if self.PRESENCE_MOTEUR == 1:  
             self.motorThread.stop_thread() 
             if self.motorThread.is_alive(): 
                 self.motorThread.join() 
@@ -190,6 +229,10 @@ class kosmos_main():
         self._ledR.off()
         self._ledB.off()
         
+        # Buzzer si version 4
+        if self._conf.systemVersion == "4.0" :
+            if self.BUZZER_ENABLED == 1:
+                KMelody.playMelody(self._buzzer, KMelody.SHUTDOWN_MELODY)
         
         logging.info("EXTINCTION")
         #Arrêt du logging

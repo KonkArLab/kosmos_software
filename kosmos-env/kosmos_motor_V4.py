@@ -43,6 +43,8 @@ class kosmosMotor(Thread):
         self._state = 1
         self._sleep_mode = 0
         
+        self._Conf = aConf
+        
         # Paramètres Moteur
         self.motor_revolutions = aConf.config.getint(CONFIG_SECTION, "10_MOTOR_revolutions")
         # 10 revolutions : 60°
@@ -95,6 +97,9 @@ class kosmosMotor(Thread):
                     self._state = True
                     self.send_data()
                     rotation_done = False
+                    #écriture dans évènement
+                    event_line = self._Conf.get_date_HMS()  + ";START MOTEUR; " 
+                    self._Conf.add_line(EVENT_FILE,event_line)
                     
                     while not self._pause_event.isSet() and not rotation_done :
                             try :
@@ -111,6 +116,9 @@ class kosmosMotor(Thread):
             else:
                 self._state = 0
                 self.send_data()
+                event_line =  self._Conf.get_date_HMS()  + ";END MOTEUR; " 
+                self._Conf.add_line(EVENT_FILE,event_line)
+                
                 self._continue_event.wait()  
         # End While        
         logging.info("Thread moteur terminé")

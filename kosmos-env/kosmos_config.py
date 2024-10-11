@@ -70,8 +70,10 @@ class KosmosConfig:
         logging.debug("Lecture kosmos_config.ini")
         if self.systemVersion == "3.0":
             subprocess.run(["sudo", "cp", "-n", GIT_PATH+CONF_FILE_TEMPLATE_V3,USB_INSIDE_PATH+CONF_FILE])
+            logging.info("Version de 3.0")
         elif self.systemVersion == "4.0":
             subprocess.run(["sudo", "cp", "-n", GIT_PATH+CONF_FILE_TEMPLATE_V4,USB_INSIDE_PATH+CONF_FILE])
+            logging.info("Version de 4.0")
         else:
             logging.error("Version de Kosmos non spécifiée (3.0 ou 4.0), arrêt du programme")
             os._exit(0)
@@ -81,8 +83,6 @@ class KosmosConfig:
         logging.info("kosmos_config.ini lu sur clé usb")
         
         
-        
-    
         # Création Dossier Campagne si non existant               
         campagneFile = self.get_date_YMD() + '_' + self.systemName + '_' + self.config.get(CAMPAGNE_SECTION,"campagne") + '_' + self.config.get(CAMPAGNE_SECTION,"zone") 
         os.chdir(USB_INSIDE_PATH)            
