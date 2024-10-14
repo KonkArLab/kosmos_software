@@ -73,20 +73,44 @@ class KosmosCam(Thread):
         self._end = False
         self._boucle = True
         self._start_again = Event()
+        
+        # Booléen pour la Stéréo
+        if aConf.config.getint(CONFIG_SECTION,"39_PICAM_stereo") == 1:
+            self.STEREO = True
+            logging.info("Mode STEREO demandé")
+        else:
+            self.STEREO = False
      
         # Instanciation Camera
-        self._camera=Picamera2()
-        self._video_config=self._camera.create_video_configuration()
-        self._video_config['main']['size']=(self._X_RESOLUTION,self._Y_RESOLUTION)
-        self._video_config['controls']['FrameDurationLimits']=(self._FRAMEDURATION,self._FRAMEDURATION)
+        self._camera = Picamera2(0)
+        self._video_config = self._camera.create_video_configuration()
+        self._video_config['main']['size'] = (self._X_RESOLUTION,self._Y_RESOLUTION)
+        self._video_config['controls']['FrameDurationLimits'] = (self._FRAMEDURATION,self._FRAMEDURATION)
         self._camera.set_controls({'AeExposureMode': 'Short'}) # on privilégie une adaptation par gain analogique que par augmentation du tps d'expo, et ce, pour limiter le flou de bougé
         self._camera.configure(self._video_config)
         self._camera.start() #A noter que le Preview.NULL démarre également 
         logging.info("Caméra démarrée")
-        
+              
         # Instanciation Encoder
         self._encoder=H264Encoder(framerate=self._FRAMERATE, bitrate=10000000)
-             
+        
+        if self.STEREO:
+            self._camera2 = Picamera2(1)
+            self._video_config2 = self._camera2.create_video_configuration()
+            self._video_config2['main']['size'] = (self._X_RESOLUTION,self._Y_RESOLUTION)
+            self._video_config2['controls']['FrameDurationLimits'] = (self._FRAMEDURATION,self._FRAMEDURATION)
+            self._camera2.set_controls({'AeExposureMode': 'Short'}) # on privilégie une adaptation par gain analogique que par augmentation du tps d'expo, et ce, pour limiter le flou de bougé
+            self._camera2.configure(self._video_config2)
+            try:
+                self._camera2.start() #A noter que le Preview.NULL démarre également 
+                logging.info("Caméra stéréo démarrée")
+            except:
+                self.STEREO = False
+                logging.error("Camera stéréo non détectée")
+            self._encoder2=H264Encoder(framerate=self._FRAMERATE, bitrate=10000000)
+            
+        
+        
         # Appel heure pour affichage sur la frame
         if aConf.config.getint(CONFIG_SECTION,"38_PICAM_timestamp") == 1:
             self._camera.pre_callback = self.apply_timestamp
@@ -143,16 +167,26 @@ class KosmosCam(Thread):
         if self._AWB == 0:
             logging.info('Gains AWB ajustés par Rpi')
             self._camera.controls.AwbMode=0
+            if self.STEREO:
+                self._camera2.controls.AwbMode=0
         elif self._AWB == 1:
             logging.info('Gains AWB fixes')
+            if self.STEREO:
+                self._camera2.controls.AwbMode=0
             self._camera.controls.AwbMode=0
             time.sleep(0.5)
             self._camera.set_controls({'AwbEnable': False})
+            if self.STEREO:
+                self._camera2.set_controls({'AwbEnable': False})
         elif self._AWB == 2:
             logging.info('Gains AWB ajustés par Algo Maison')
             self._camera.controls.AwbMode=0
+            if self.STEREO:
+                self._camera2.controls.AwbMode=0
             time.sleep(0.5)
             self._camera.set_controls({'AwbEnable': False})
+            if self.STEREO:
+                self._camera2.set_controls({'AwbEnable': False})
          
     def run(self):       
         while not self._end:
@@ -163,20 +197,27 @@ class KosmosCam(Thread):
                 if i == 0:
                     self._file_name = video_file
                 else:
-                    self._file_name = video_file + '{:02.0f}'.format(i)+'_' 
+                    self._file_name = video_file + '_' + '{:02.0f}'.format(i)+'_' 
                 logging.info(f"Debut de l'enregistrement video {self._file_name}")
                 
                 self._output = self._file_name + '.h264'
-                
+                if self.STEREO:
+                    self._output2 = self._file_name + '_2' + '.h264'
+
                 if self._PREVIEW == 1:
                     self._camera.stop_preview() #éteint le Preview.NULL
-                    self._camera.start_preview(Preview.QTGL,width=800,height=600)
+                    self._camera.start_preview(Preview.QTGL,x=100,y=300,width=400,height=300)
+                    if self. STEREO:
+                        self._camera2.stop_preview() #éteint le Preview.NULL
+                        self._camera2.start_preview(Preview.QTGL, x=500,y=300,width=400,height=300)    
                 
                 # Bloc d'enregistrement/encodage à proprement parler
                 event_line = self._Conf.get_date_HMS()  + ";START ENCODER;" + self._output
                 self._Conf.add_line(EVENT_FILE,event_line)
                 self._camera.start_encoder(self._encoder,self._output,pts = self._file_name+'.txt')
-                
+                if self.STEREO:
+                    self._camera2.start_encoder(self._encoder2,self._output2,pts = self._file_name+'_2.txt')
+
                 #Création CSV
                 ligne = "HMS;Lat;Long;Pression;TempC;Delta(s);TStamp;ExpTime;AnG;DiG;Lux;RedG;BlueG;Bright"
                 self._Conf.add_line(self._file_name + '.csv',ligne)
@@ -230,6 +271,8 @@ class KosmosCam(Thread):
                                         
                 # Fin de l'encodage
                 self._camera.stop_encoder()
+                if self.STEREO:
+                    self._camera2.stop_encoder()
                 event_line = self._Conf.get_date_HMS() + ";END ENCODER;" + self._output
                 self._Conf.add_line(EVENT_FILE,event_line)
                                
@@ -240,6 +283,9 @@ class KosmosCam(Thread):
                 if self._PREVIEW == 1:
                     self._camera.stop_preview() #stop .QTGL
                     self._camera.start_preview(Preview.NULL) #redemarrage .NULL
+                    if self.STEREO:
+                        self._camera2.stop_preview() #éteint le Preview.NULL
+                        self._camera2.start_preview(Preview.NULL)
                     
                 logging.info(f"Fin de l'enregistrement video {self._file_name}")
                 
@@ -247,6 +293,7 @@ class KosmosCam(Thread):
                 event_line =  self._Conf.get_date_HMS()  + ";START CONVERSION;" + self._output
                 self._Conf.add_line(EVENT_FILE,event_line)
                 self.convert_to_mp4(self._output)
+                self.convert_to_mp4(self._output2)
                 event_line =  self._Conf.get_date_HMS()  + ";END CONVERSION;" + self._file_name +'.mp4'
                 self._Conf.add_line(EVENT_FILE,event_line)
                 
@@ -340,6 +387,8 @@ class KosmosCam(Thread):
             blue=max(0.5,b)
             #MàJ
             self._camera.set_controls({'ColourGains': (red, blue)})
+            if self.STEREO:
+                self._camera2.set_controls({'ColourGains': (red, blue)})
             time.sleep(10*self._FRAMEDURATION*0.000001) # 10 frames de décalage entre modif des gain awb et calcul des nouveaux R/G etB/G
             ratioR,ratioB = self.RatiosRBsurG()[0:2]
             i=i+1
@@ -347,14 +396,19 @@ class KosmosCam(Thread):
             if i < imax:
                 logging.info('Coefficients AWB trouvés')
             else:
-                logging.info('Coefficients AWB non trouvés, retour en mode awb_auto')
+                logging.error('Coefficients AWB non trouvés, retour en mode awb_auto')
                 self._camera.controls.AwbMode=0
+                if self.STEREO:
+                    self._camera2.controls.AwbMode=0
                 time.sleep(0.5) 
                 self._camera.set_controls({'AwbEnable': False})
-                
+                if self.STEREO:
+                    self._camera2.set_controls({'AwbEnable': False})
+
         event_line =  self._Conf.get_date_HMS()  + ";END AWB ALGO; "
         self._Conf.add_line(EVENT_FILE,event_line)
     
+    """
     def adjust_brightness(self,br,tolerance):
         event_line =  self._Conf.get_date_HMS()  + ";START BRIGHT ALGO; "
         self._Conf.add_line(EVENT_FILE,event_line)
@@ -388,7 +442,10 @@ class KosmosCam(Thread):
                 
         event_line =  self._Conf.get_date_HMS()  + ";END BRIGHT ALGO; "
         self._Conf.add_line(EVENT_FILE,event_line) 
-        
+    """
+    
+    
+    
     def stopCam(self):
         """  Demande la fin de l'enregistrement et ferme l'objet caméra."""
         # permet d'arrêter l'enregistrement si on passe par le bouton stop"
@@ -401,10 +458,15 @@ class KosmosCam(Thread):
         """Arrêt définitif de la caméra"""
         self._end = True
         self._start_again.set()
-        self._camera.stop()
+        self._camera.stop()    
         logging.info("Caméra arrêtée")
         self._camera.close()
         logging.info("Caméra éteinte")
+        if self.STEREO:
+            self._camera2.stop()    
+            logging.info("Caméra stéréo arrêtée")
+            self._camera2.close()
+            logging.info("Caméra stéréo éteinte")
         
             
     def restart(self):
