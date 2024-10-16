@@ -32,6 +32,8 @@ class Server:
         self.app.add_url_rule("/changeCampagne", view_func=self.changeCampagne,methods=['POST'])
         self.app.add_url_rule("/getCampagne", view_func=self.getCampagne)
         self.app.add_url_rule("/frame", view_func=self.image)
+        self.app.add_url_rule("/gps", view_func=self.position)
+
 
     def run(self) :
         logging.info("Server is running !")
@@ -41,6 +43,19 @@ class Server:
         return {
             "status" : "ok",
             "state" : str(self.myMain.state)
+        }
+    
+    def position(self):
+        try:
+            LAT = str(self.myMain.thread_camera.gps.get_latitude())
+            LONG = str(self.myMain.thread_camera.gps.get_longitude())
+        except:
+            LAT = "azrb"
+            LONG = "strnage"
+        return{
+            "status" : "ok",
+            "latitude" : LAT,
+            "longitude" : LONG
         }
         
     def start(self):

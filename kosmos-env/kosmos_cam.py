@@ -101,10 +101,10 @@ class KosmosCam(Thread):
             
         #Initialisation deuxième CAMéRA pour stéréo    
         if self.STEREO:
-            self._camera2 = Picamera2(1)
-            self._camera2.set_controls({'AeExposureMode': 'Short'}) # on privilégie une adaptation par gain analogique que par augmentation du tps d'expo, et ce, pour limiter le flou de bougé
-            self._camera2.configure(self._video_config) # même config pour les deux caméras
             try:
+                self._camera2 = Picamera2(1)
+                self._camera2.set_controls({'AeExposureMode': 'Short'}) # on privilégie une adaptation par gain analogique que par augmentation du tps d'expo, et ce, pour limiter le flou de bougé
+                self._camera2.configure(self._video_config) # même config pour les deux caméras            
                 self._camera2.start() #A noter que le Preview.NULL démarre également 
                 logging.info("Caméra stéréo démarrée")
             except:
@@ -387,7 +387,6 @@ class KosmosCam(Thread):
             blue=max(0.5,b)
             #MàJ
             self._camera.set_controls({'ColourGains': (red, blue)})
-            print(red,blue)
             if self.STEREO:
                 self._camera2.set_controls({'ColourGains': (red, blue)})
             time.sleep(10*self._FRAMEDURATION*0.000001) # 10 frames de décalage entre modif des gain awb et calcul des nouveaux R/G etB/G
