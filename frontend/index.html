@@ -3,7 +3,7 @@
 
 <head>
 	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width initial-scale=1.0">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" type="text/css" href="styles.css">
 	<title>Kosmos</title>
 </head>
@@ -16,19 +16,20 @@
 				<li><a href="./records.html">Records</a></li>
 				<li><a href="./config.html">Configuration</a></li>
 				<li><a href="./checklist.html">Checklist</a></li>
+				<li><a href="./campagne.html">Campagne</a></li>
 		</nav>
 	</header>
 	<div class="container">
-		<h1>State</h1>
+		<h3>State</h3>
 		<p>Etat : <span id="etat">Unknown</span></p>
 	</div>
 	<div class="container">
-		<h1>Buttons</h1>
+		<h3>Buttons</h3>
 		<button onClick="start()">Start</button>
 		<button onClick="stop()">Stop</button>
 	</div>
 	<div class="container">
-		<h1>Live video</h1>
+		<h3>Live video</h3>
 		<button onClick="setLive(true)">Start Live</button>
 		<button onClick="setLive(false)">Stop Live</button>
 		<br>
@@ -37,7 +38,7 @@
 	<script src="cameraScript.js"></script>
 	<script src="state.js"></script>
 	<div class="container">
-		<h1>Shutdown KOSMOS</h1>
+		<h3>Shutdown KOSMOS</h3>
 		<button onClick="shutdown()">Shutdown</button>
 	</div>
 </body>
