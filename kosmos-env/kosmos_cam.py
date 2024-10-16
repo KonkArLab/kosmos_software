@@ -41,6 +41,7 @@ class KosmosCam(Thread):
              36_PICAM_conversion_mp4 : 1 si on souhaite effectuer la conversion juste après l'acquisition
              37_PICAM_AWB : Règle l'ajustemetn de paramètres awb pour controle couleur : 0 picam classique, 1 awb fixé, 2 awb ajusté
              38_PICAM_timestamp : présence d'une incrustation avec le temps en haut à gauche
+             39_PICAM_stereo : 1 si on souhaite capturer en stéréo, 0 sinon. A noter que si c'est à 1 alors qu'il n'y a qu'une caméra, le soft ne s'arrêtera pas. 
         """
         
         # On restreint les messages 
@@ -73,13 +74,6 @@ class KosmosCam(Thread):
         self._end = False
         self._boucle = True
         self._start_again = Event()
-        
-        # Booléen pour la Stéréo
-        if aConf.config.getint(CONFIG_SECTION,"39_PICAM_stereo") == 1:
-            self.STEREO = True
-            logging.info("Mode STEREO demandé")
-        else:
-            self.STEREO = False
      
         # Instanciation Camera
         self._camera = Picamera2(0)
@@ -89,32 +83,36 @@ class KosmosCam(Thread):
         self._camera.set_controls({'AeExposureMode': 'Short'}) # on privilégie une adaptation par gain analogique que par augmentation du tps d'expo, et ce, pour limiter le flou de bougé
         self._camera.configure(self._video_config)
         self._camera.start() #A noter que le Preview.NULL démarre également 
-        logging.info("Caméra démarrée")
-              
+        logging.info("Caméra démarrée")      
         # Instanciation Encoder
         self._encoder=H264Encoder(framerate=self._FRAMERATE, bitrate=10000000)
         
+        # Appel heure pour affichage sur la frame
+        if aConf.config.getint(CONFIG_SECTION,"38_PICAM_timestamp") == 1:
+            self._camera.pre_callback = self.apply_timestamp
+        
+        # Booléen pour la Stéréo
+        if aConf.config.getint(CONFIG_SECTION,"39_PICAM_stereo") == 1:
+            self.STEREO = True
+            logging.info("Mode STEREO demandé")
+        else:
+            self.STEREO = False
+            logging.info("Mode STEREO non demandé")
+            
+        #Initialisation deuxième CAMéRA pour stéréo    
         if self.STEREO:
             self._camera2 = Picamera2(1)
-            self._video_config2 = self._camera2.create_video_configuration()
-            self._video_config2['main']['size'] = (self._X_RESOLUTION,self._Y_RESOLUTION)
-            self._video_config2['controls']['FrameDurationLimits'] = (self._FRAMEDURATION,self._FRAMEDURATION)
             self._camera2.set_controls({'AeExposureMode': 'Short'}) # on privilégie une adaptation par gain analogique que par augmentation du tps d'expo, et ce, pour limiter le flou de bougé
-            self._camera2.configure(self._video_config2)
+            self._camera2.configure(self._video_config) # même config pour les deux caméras
             try:
                 self._camera2.start() #A noter que le Preview.NULL démarre également 
                 logging.info("Caméra stéréo démarrée")
             except:
                 self.STEREO = False
                 logging.error("Camera stéréo non détectée")
+            # Instanciation Encoder    
             self._encoder2=H264Encoder(framerate=self._FRAMERATE, bitrate=10000000)
             
-        
-        
-        # Appel heure pour affichage sur la frame
-        if aConf.config.getint(CONFIG_SECTION,"38_PICAM_timestamp") == 1:
-            self._camera.pre_callback = self.apply_timestamp
-        
         #Initialisation GPS
         self._gps_ok = False
         try:
@@ -169,45 +167,40 @@ class KosmosCam(Thread):
             self._camera.controls.AwbMode=0
             if self.STEREO:
                 self._camera2.controls.AwbMode=0
-        elif self._AWB == 1:
-            logging.info('Gains AWB fixes')
-            if self.STEREO:
-                self._camera2.controls.AwbMode=0
+        else:
+            if self._AWB == 1:
+                logging.info('Gains AWB fixes')
+            if self._AWB == 2:
+                logging.info('Gains AWB ajustés par Algo Maison')
             self._camera.controls.AwbMode=0
             time.sleep(0.5)
             self._camera.set_controls({'AwbEnable': False})
             if self.STEREO:
                 self._camera2.set_controls({'AwbEnable': False})
-        elif self._AWB == 2:
-            logging.info('Gains AWB ajustés par Algo Maison')
-            self._camera.controls.AwbMode=0
-            if self.STEREO:
-                self._camera2.controls.AwbMode=0
-            time.sleep(0.5)
-            self._camera.set_controls({'AwbEnable': False})
-            if self.STEREO:
-                self._camera2.set_controls({'AwbEnable': False})
-         
+                self._camera2.set_controls({'ColourGains': self._camera.capture_metadata()['ColourGains']})
+       
     def run(self):       
         while not self._end:
             i=0            
             while self._boucle == True:
+                # Création des codes stations
                 increment = self._Conf.system.getint(INCREMENT_SECTION,"increment") 
                 video_file = self._Conf.config.get(CAMPAGNE_SECTION,"zone") + f'{self._Conf.get_date_Y()}' + f'{increment:04}'
-                if i == 0:
+                if i == 0: # Mode STAVIRO, une seule vidéo de longue durée
                     self._file_name = video_file
-                else:
-                    self._file_name = video_file + '_' + '{:02.0f}'.format(i)+'_' 
+                else: # Mode MICADO, découpage de la vidéo en morceau de XX minutes
+                    self._file_name = video_file + '_' + '{:02.0f}'.format(i) 
                 logging.info(f"Debut de l'enregistrement video {self._file_name}")
                 
                 self._output = self._file_name + '.h264'
                 if self.STEREO:
-                    self._output2 = self._file_name + '_2' + '.h264'
+                    self._output2 = self._file_name + '_stereo' + '.h264'
 
+                # Affichage du preview
                 if self._PREVIEW == 1:
                     self._camera.stop_preview() #éteint le Preview.NULL
                     self._camera.start_preview(Preview.QTGL,x=100,y=300,width=400,height=300)
-                    if self. STEREO:
+                    if self.STEREO:
                         self._camera2.stop_preview() #éteint le Preview.NULL
                         self._camera2.start_preview(Preview.QTGL, x=500,y=300,width=400,height=300)    
                 
@@ -216,10 +209,12 @@ class KosmosCam(Thread):
                 self._Conf.add_line(EVENT_FILE,event_line)
                 self._camera.start_encoder(self._encoder,self._output,pts = self._file_name+'.txt')
                 if self.STEREO:
-                    self._camera2.start_encoder(self._encoder2,self._output2,pts = self._file_name+'_2.txt')
+                    self._camera2.start_encoder(self._encoder2,self._output2,pts = self._file_name+'_stereo.txt')
 
                 #Création CSV
                 ligne = "HMS;Lat;Long;Pression;TempC;Delta(s);TStamp;ExpTime;AnG;DiG;Lux;RedG;BlueG;Bright"
+                if self.STEREO:
+                    ligne="HMS;Lat;Long;Pression;TempC;Delta(s);TStamp;ExpTime;AnG;DiG;Lux;RedG;BlueG;Bright;TStamp2;ExpTime2;AnG2;DiG2;Lux2;RedG2;BlueG2;Bright2"
                 self._Conf.add_line(self._file_name + '.csv',ligne)
                 paas=1. # pas de la boucle while qui vérifie si le bouton stop a été activé ou que le temps de séquence n'est pas dépassé
                 k_sampling = int(self._time_step / paas)
@@ -253,8 +248,12 @@ class KosmosCam(Thread):
                         mtd = Metadata(self._camera.capture_metadata())
                         bright = self._camera.camera_controls['Brightness'][2]
                         brightStr = f'{bright:.1f}'
-                        # Ecriture des données dans le CSV
                         ligne = f'{self._Conf.get_date_HMS()};{LAT};{LONG};{pressStr};{tempStr};{delta_time:.1f};{mtd.SensorTimestamp};{mtd.ExposureTime};{mtd.AnalogueGain:.1f};{mtd.DigitalGain:.1f};{mtd.Lux:.1f};{mtd.ColourGains[0]:.1f};{mtd.ColourGains[1]:.1f};{brightStr}'
+                        if self.STEREO:
+                            mtd2 = Metadata(self._camera2.capture_metadata())
+                            bright2 = self._camera2.camera_controls['Brightness'][2]
+                            brightStr2 = f'{bright2:.1f}'
+                            ligne = f'{self._Conf.get_date_HMS()};{LAT};{LONG};{pressStr};{tempStr};{delta_time:.1f};{mtd.SensorTimestamp};{mtd.ExposureTime};{mtd.AnalogueGain:.1f};{mtd.DigitalGain:.1f};{mtd.Lux:.1f};{mtd.ColourGains[0]:.1f};{mtd.ColourGains[1]:.1f};{brightStr};{mtd2.SensorTimestamp};{mtd2.ExposureTime};{mtd2.AnalogueGain:.1f};{mtd2.DigitalGain:.1f};{mtd2.Lux:.1f};{mtd2.ColourGains[0]:.1f};{mtd2.ColourGains[1]:.1f};{brightStr2}'
                         self._Conf.add_line(self._file_name + '.csv',ligne)   
                     k = k+1
                     if self._AWB == 2: #Ajustement Maison des gains AWB 
@@ -276,7 +275,7 @@ class KosmosCam(Thread):
                 event_line = self._Conf.get_date_HMS() + ";END ENCODER;" + self._output
                 self._Conf.add_line(EVENT_FILE,event_line)
                                
-                # ecriture json
+                # Ecriture json
                 self.writeJSON(self._file_name)
                 self._Conf.addInfoStation(self._file_name+'.json')
                                
@@ -293,7 +292,8 @@ class KosmosCam(Thread):
                 event_line =  self._Conf.get_date_HMS()  + ";START CONVERSION;" + self._output
                 self._Conf.add_line(EVENT_FILE,event_line)
                 self.convert_to_mp4(self._output)
-                self.convert_to_mp4(self._output2)
+                if self.STEREO:
+                    self.convert_to_mp4(self._output2)
                 event_line =  self._Conf.get_date_HMS()  + ";END CONVERSION;" + self._file_name +'.mp4'
                 self._Conf.add_line(EVENT_FILE,event_line)
                 
@@ -367,7 +367,7 @@ class KosmosCam(Thread):
         event_line =  self._Conf.get_date_HMS()  + ";START AWB ALGO; "
         self._Conf.add_line(EVENT_FILE,event_line)
         
-        # Capture des gains AWB
+        # Capture des gains AWB sur la caméra principale seulement
         ColourGains = self._camera.capture_metadata()['ColourGains']
         red=ColourGains[0]
         blue=ColourGains[1]               
@@ -387,6 +387,7 @@ class KosmosCam(Thread):
             blue=max(0.5,b)
             #MàJ
             self._camera.set_controls({'ColourGains': (red, blue)})
+            print(red,blue)
             if self.STEREO:
                 self._camera2.set_controls({'ColourGains': (red, blue)})
             time.sleep(10*self._FRAMEDURATION*0.000001) # 10 frames de décalage entre modif des gain awb et calcul des nouveaux R/G etB/G
