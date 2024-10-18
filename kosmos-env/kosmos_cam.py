@@ -350,7 +350,8 @@ class KosmosCam(Thread):
             infoStationDict["video"]["analyseDict"]["visibilite"] = ""
 
             with open(cam_file + '.json',mode = 'w', encoding = "utf-8") as ff:
-                json.dump(infoStationDict,ff)
+                #json.dump(infoStationDict,ff)
+                ff.write(json.dumps(infoStationDict, indent = 4))
     
     def RatiosRBsurG(self):
         """Capture puis calcul des ratios R/G et B/G"""        
