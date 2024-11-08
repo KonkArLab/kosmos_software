@@ -315,9 +315,9 @@ class KosmosCam(Thread):
             infoStationDict["campagne"]["zoneDict"]["zone"] = self._Conf.config.get(CAMPAGNE_SECTION,"zone")
             infoStationDict["campagne"]["zoneDict"]["lieudit"] = self._Conf.config.get(CAMPAGNE_SECTION,"lieudit")
             infoStationDict["campagne"]["zoneDict"]["protection"] = self._Conf.config.get(CAMPAGNE_SECTION,"protection")
-            infoStationDict["campagne"]["dateDict"]["year"] = self._Conf.get_date_Y()
-            infoStationDict["campagne"]["dateDict"]["month"] = self._Conf.get_date_m()
-            infoStationDict["campagne"]["dateDict"]["day"] = self._Conf.get_date_d()
+            infoStationDict["campagne"]["dateDict"]["year"] = int(self._Conf.get_date_Y())
+            infoStationDict["campagne"]["dateDict"]["month"] = int(self._Conf.get_date_m())
+            infoStationDict["campagne"]["dateDict"]["day"] = int(self._Conf.get_date_d())
             infoStationDict["campagne"]["dateDict"]["date"] = self._Conf.get_date_d()+"/"+self._Conf.get_date_m()+"/"+self._Conf.get_date_Y()
             infoStationDict["campagne"]["deploiementDict"]["bateau"] = self._Conf.config.get(CAMPAGNE_SECTION,"bateau")
             infoStationDict["campagne"]["deploiementDict"]["pilote"] = self._Conf.config.get(CAMPAGNE_SECTION,"pilote")
@@ -325,9 +325,9 @@ class KosmosCam(Thread):
             infoStationDict["campagne"]["deploiementDict"]["partenaires"] = self._Conf.config.get(CAMPAGNE_SECTION,"partenaires")
             infoStationDict["video"]["codeStation"] = self._Conf.config.get(CAMPAGNE_SECTION,"zone") + f'{self._Conf.get_date_Y()}' + f'{self._Conf.system.getint(INCREMENT_SECTION,"increment"):04}'
             # Pour hms, on va utiliser la clock de la Rpi et le temps sera pris à cet endroit dans la boucle, càd à la fin de l'enregistrement
-            infoStationDict["video"]["heureDict"]["heure"] = self._Conf.get_date_H()
-            infoStationDict["video"]["heureDict"]["minute"] = self._Conf.get_date_M()
-            infoStationDict["video"]["heureDict"]["seconde"] = self._Conf.get_date_S()
+            infoStationDict["video"]["heureDict"]["heure"] = int(self._Conf.get_date_H())
+            infoStationDict["video"]["heureDict"]["minute"] = int(self._Conf.get_date_M())
+            infoStationDict["video"]["heureDict"]["seconde"] = int(self._Conf.get_date_S())
             infoStationDict["video"]["gpsDict"]["site"] = ""
             infoStationDict["video"]["gpsDict"]["latitude"] = ""
             infoStationDict["video"]["gpsDict"]["longitude"] = ""
