@@ -14,7 +14,7 @@ async function fetchConfig() {
 
     // Assuming the response structure is { data: { ... }, status: "ok" }
     if (data.status === "ok") {
-      const configContainer = document.getElementById("container");
+      const configContainer = document.getElementById("configForm");
       configsData = data.data;
 
       // Loop through each configuration parameter and create corresponding form elements
@@ -54,7 +54,6 @@ async function fetchConfig() {
       rebootButton.setAttribute("id", "rebootButton");
       rebootButton.setAttribute("type", "button");
       rebootButton.textContent = "Reboot";
-      rebootButton.classList.add("reboot");
       configContainer.appendChild(rebootButton);
     } else {
       console.error("Failed to fetch configuration:", data.status);

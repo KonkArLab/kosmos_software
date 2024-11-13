@@ -1,0 +1,24 @@
+@import url('../styles.css');
+
+#checkList li {
+  font-weight: lighter;
+  display: flex;
+  gap: var(--margin-space-small);
+  margin: var(--margin-space-xsmall) 0;
+}
+
+input {
+  transform: scale(1.2);
+}
+
+.materialTitle {
+  margin-top: var(--margin-space-normal);
+}
+
+.container {
+  width: 90%;
+}
+
+#resetButton {
+  margin-top: var(--margin-space-small);
+}

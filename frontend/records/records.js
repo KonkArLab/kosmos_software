@@ -22,8 +22,16 @@ async function populateTable() {
   // Fetch records data from the API
   const records = await fetchData();
 
-  // Iterate over records and create table rows
-  records.forEach((record) => {
+  // Clear existing rows in the table (excluding the header)
+  while (fileTable.rows.length > 1) {
+    fileTable.deleteRow(1);
+  }
+
+  // Reverse the records array before adding rows
+  const reversedRecords = records.reverse();
+
+  // Iterate over reversed records and create table rows
+  reversedRecords.forEach((record) => {
     const row = fileTable.insertRow();
     row.insertCell().textContent = record.fileName;
     row.insertCell().textContent = record.size;
@@ -31,22 +39,6 @@ async function populateTable() {
     // Merge Time, Day, and Month into a single column
     const timeCell = row.insertCell();
     timeCell.textContent = `${record.time} h - ${record.day} ${record.month}`;
-  });
-
-  // Get all rows, excluding the header
-  const rows = Array.from(fileTable.getElementsByTagName("tr")).slice(1);
-
-  // Reverse the order of rows
-  rows.reverse();
-
-  // Clear existing rows in the table
-  while (fileTable.rows.length > 1) {
-    fileTable.deleteRow(1);
-  }
-
-  // Reinsert rows in reverse order
-  rows.forEach((row) => {
-    fileTable.appendChild(row);
   });
 }
 

@@ -1,0 +1,66 @@
+@import url('../styles.css');
+
+.container {
+  width: 90%;
+}
+ 
+#metadataTable {
+  width: 100%;
+  margin-top: var(--margin-space-normal);
+  margin-bottom: var(--margin-space-normal);
+  border-collapse: collapse;
+ }
+
+#metadataTable,
+th,
+td {
+  border: var(--border-thin) solid var(--color-light);
+  padding: var(--padding-space-normal);
+  text-align: left;
+}
+
+th {
+  background-color: var(--color-complementary);
+}
+
+tr:nth-child(even) {
+  background-color: var(--color-secondary);
+}
+
+tr:hover {
+  background-color: var(--color-hover);
+}
+
+.section-title {
+  font-size: var(--font-size-normal);
+  font-weight: bold;
+  cursor: pointer;
+  color: #333;
+  background-color: #f0f0f0;
+  padding: 10px;
+  border: 1px solid #ccc;
+  position: relative;
+}
+
+.section-title::after {
+  content: "▼";
+  position: absolute;
+  right: var(--margin-space-small);
+  font-size: var(--font-size-normal);
+  transition: transform 0.3s;
+}
+
+.section-title.collapsed::after {
+  content: "▲";
+}
+
+.section-content.collapsed {
+  display: none;
+}
+
+input, select {
+  width: 100%;
+  padding: var(--padding-space-small) !important;
+  border-width: var(--border-thin) !important;
+  border-radius: var(--border-thick) !important;
+}

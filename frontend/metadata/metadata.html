@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width initial-scale=1.0">
+    <link rel="stylesheet" href="../libs/choices/choices.min.css">
+    <link rel="stylesheet" href="../libs/sweetAlert/sweetAlert.min.css">
+    <link rel="stylesheet" type="text/css" href="metadata.css">
+    <title>Kosmos</title>
+  </head>
+
+  <body>
+    <header>
+      <input type="checkbox" id="menuToggle" class="menu-toggle">
+
+      <label for="menuToggle" class="menu-icon">
+        <img src="../icons/menu.svg" class="svg-icon" alt="Menu Icon">
+      </label>
+      <nav>
+        <ul>
+          <li><a href="../campagne/campagne.html">Campagne</a></li>
+          <li><a href="../config/config.html">Configuration</a></li>
+          <li><a href="../index.html">Camera</a></li>
+          <li><a href="../records/records.html">Records</a></li>    
+          <li><a href="../checklist/checklist.html">Checklist</a></li>
+          <li><a href="metadata.html">Metadata</a></li>
+        </ul>
+      </nav>
+    </header>
+    <section>
+      <div class="container">
+        <h3> Captured metadata </h3>
+        <form id="formMetaData">
+          <table id="metadataTable"></table>
+          <button type="submit">Save</button>
+        </form>
+      </div>
+    </section>
+    
+    <script src="../libs/choices/choices.min.js"></script>
+    <script src="../libs/sweetAlert/sweetAlert.min.js"></script>
+    <script src="metadata.js"></script>
+
+  </body>
+
+</html>

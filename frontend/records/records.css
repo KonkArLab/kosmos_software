@@ -1,0 +1,36 @@
+@import url('../styles.css');
+
+.container {
+  width: 90%;
+}
+
+#fileTable {
+  width: 100%;
+  margin-top: var(--margin-space-normal);
+  margin-bottom: var(--margin-space-normal);
+  border-collapse: collapse;
+ }
+
+#fileTable,
+th,
+td {
+  border: var(--border-thin) solid;
+  padding: var(--padding-space-normal);
+  text-align: left;
+}
+
+thead {
+  font-weight: var(--font-weight-bold);
+}
+
+th {
+  background-color: var(--color-complementary);
+}
+
+tr:nth-child(even) {
+  background-color: var(--color-secondary);
+}
+
+tr:hover {
+  background-color: var(--color-hover);
+}

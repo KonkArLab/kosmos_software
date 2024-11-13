@@ -1,0 +1,19 @@
+@import url('../styles.css');
+
+#campaignForm label {
+  font-size: var(--font-size-small);
+  font-weight: bold;
+}
+
+#campaignResetButton {
+  margin-left: var(--margin-space-normal);
+}
+
+input {
+  width: 100%;
+  padding: var(--padding-space-small);
+  border-width: var(--border-thin);
+  border-radius: var(--border-thick);
+  margin-top: var(--margin-space-xsmall);
+  margin-bottom: var(--margin-space-xsmall);
+}
