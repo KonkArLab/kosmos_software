@@ -2,12 +2,12 @@ document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("campaignForm");
 
     const fields = [
-        { id: "campaign", placeholder: "Sélectionnez un campagne", type: "text", label: "Campaign", tabIndex: 1, tabIndex: 8, isCampaign: true },
+        { id: "campaign", placeholder: "Sélectionnez une campagne", type: "text", label: "Campaign", tabIndex: 1, tabIndex: 8, isCampaign: true },
         { id: "locality", placeholder: "Illien", type: "text", label: "Location", tabIndex: 2, maxlength: "100" },
         { id: "protection", placeholder: "Parc naturel marin d'iroise", type: "text", label: "Protection", tabIndex: 3, maxlength: "100" },
         { id: "boat", placeholder: "Beneteau Capelan", type: "text", label: "Boat", tabIndex: 4, maxlength: "100" },
         { id: "pilot", placeholder: "Olivier F.", type: "text", label: "Pilot", tabIndex: 5, maxlength: "100" },
-        { id: "equipment", placeholder: "C.H., J.C.", type: "text", label: "Equipment", tabIndex: 6, maxlength: "100" },
+        { id: "crew", placeholder: "C.H., J.C.", type: "text", label: "Crew", tabIndex: 6, maxlength: "100" },
         { id: "partners", placeholder: "Ifremer RDT, Ifremer Halgo", type: "text", label: "Partners", tabIndex: 7, maxlength: "200" },
         { id: "zone", placeholder: "Sélectionnez une zone", type: "text", label: "Zone", tabIndex: 8, isZone: true }
     ];
