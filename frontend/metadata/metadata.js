@@ -3,7 +3,7 @@ let serverUrl = "http://10.42.0.1:5000";
 const defaultMetaData = {
     video: {
         codeStation: "",
-        heureDict: { heure: 0, minute: 0, second: 0 },
+        hourDict: { hour: 0, minute: 0, second: 0 },
         gpsDict: { site: "", latitude: 0.0, longitude: 0.0 },
         ctdDict: { depth: 0.0, temperature: 0.0, salinity: "" },
         astroDict: { moon: "NL", tide: "BM", coefficient: 0 },
@@ -56,7 +56,7 @@ async function loadMetadataFromBackend()
 
 
 function validateMetaData(data) {
-  return data && data.video && data.video.heureDict && data.video.gpsDict;
+  return data && data.video && data.video.hourDict && data.video.gpsDict;
 }
 
 const sectionTitles = {
@@ -65,7 +65,7 @@ const sectionTitles = {
   meteoAirDict: "Meteorological Air Information",
   meteoMerDict: "Meteorological Sea Information",
   analyseDict: "Exploitability Information",
-  heureDict: "Hour",
+  hourDict: "Hour",
   ctdDict: "CTD Information",
   astroDict: "Astronomical Information",
 };
@@ -104,7 +104,7 @@ function generateTable() {
 
     if (key === "codeStation") {
       createFormRow(sectionContent, key, "Station Code", value);
-    } else if (key === "heureDict") {
+    } else if (key === "hourDict") {
       createTimeField(sectionContent, value);
     } else if (typeof value === "object" && !Array.isArray(value)) {
       Object.entries(value).forEach(([subKey, subValue]) => {
@@ -148,7 +148,7 @@ async function generateTable()
 
         if (key === "codeStation") {
             createFormRow(sectionContent, key, "Station Code", value);
-        } else if (key === "heureDict") {
+        } else if (key === "hourDict") {
             createTimeField(sectionContent, value);
         } else if (typeof value === "object" && !Array.isArray(value)) {
             Object.entries(value).forEach(([subKey, subValue]) => {
@@ -170,7 +170,7 @@ function createTimeField(container, timeValues) {
   const row = document.createElement("tr");
 
   const labelCell = document.createElement("td");
-  labelCell.textContent = sectionTitles.heureDict;
+  labelCell.textContent = sectionTitles.hourDict;
   row.appendChild(labelCell);
 
   const inputCell = document.createElement("td");
@@ -267,8 +267,8 @@ function determineInputType(value) {
 }
 
 function formatTime(timeDict) {
-  const { heure, minute, second } = timeDict;
-  return `${String(heure).padStart(2, '0')}:${String(minute).padStart(2, '0')}:${String(second).padStart(2, '0')}`;
+  const { hour, minute, second } = timeDict;
+  return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:${String(second).padStart(2, '0')}`;
 }
 
 async function submitForm(event) {
