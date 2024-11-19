@@ -33,11 +33,11 @@
      "video" :
           {
                "codeStation": "K5_BR240024",
-               "heureDict":
+               "hourDict":
                     {
-                         "heure": 11,
+                         "hour": 11,
                          "minute": 26,
-                         "seconde": 37
+                         "second": 37
                     },
                "gpsDict":
                     {
@@ -47,35 +47,35 @@
                     }, 
                "ctdDict":
                     {
-                         "profondeur": 9.5,
+                         "depth": 9.5,
                          "temperature": 15.9,
-                         "salinite": ""
+                         "salinity": ""
                     },
                "astroDict":
                     {
-                         "lune": "PQ",
-                         "maree": "BM+1",
+                         "moon": "PQ",
+                         "tide": "BM+1",
                          "coefficient": 74
                     },
                "meteoAirDict":
                     {
-                         "ciel": "soleil",
-                         "vent": 2,
+                         "sky": "soleil",
+                         "wind": 2,
                          "direction": "NE",
                          "atmPress": 1013.0,
                          "tempAir": 15.6
                     }, 
                "meteoMerDict":
                     {
-                         "etatMer": "belle",
-                         "houle": 1
+                         "seaState": "belle",
+                         "swell": 1
                     },
                "analyseDict":
                     {
-                         "exploitabilite": "",
+                         "exploitability": "",
                          "habitat": "laminaires, sable",
-                         "faune": "Mullidae, Gobidae",
-                         "visibilite":  ""    
+                         "fauna": "Mullidae, Gobidae",
+                         "visibility":  ""    
                     }
           }
 }
