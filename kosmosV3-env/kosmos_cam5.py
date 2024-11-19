@@ -160,7 +160,7 @@ class KosmosCam(Thread):
             i=0            
             while self._boucle == True:
                 increment = self._Conf.system.getint(INCREMENT_SECTION,"increment") 
-                video_file = self._Conf.config.get(CAMPAGNE_SECTION,"zone") + f'{self._Conf.get_date_Y()}' + f'{increment:04}'
+                video_file = self._Conf.config.get(CAMPAIGN_SECTION,"zone") + f'{self._Conf.get_date_Y()}' + f'{increment:04}'
                 if i == 0:
                     self._file_name = video_file
                 else:
@@ -263,44 +263,44 @@ class KosmosCam(Thread):
             infoStationDict["system"]["system"] = self._Conf.system.get(SYSTEM_SECTION,"system")
             infoStationDict["system"]["version"] = self._Conf.system.get(SYSTEM_SECTION,"version")
             infoStationDict["system"]["camera"] = self._Conf.system.get(SYSTEM_SECTION,"camera")
-            infoStationDict["system"]["moteur"] = self._Conf.system.get(SYSTEM_SECTION,"moteur")
-            infoStationDict["campagne"]["zoneDict"]["campagne"] = self._Conf.config.get(CAMPAGNE_SECTION,"campagne")
-            infoStationDict["campagne"]["zoneDict"]["zone"] = self._Conf.config.get(CAMPAGNE_SECTION,"zone")
-            infoStationDict["campagne"]["zoneDict"]["lieudit"] = self._Conf.config.get(CAMPAGNE_SECTION,"lieudit")
-            infoStationDict["campagne"]["zoneDict"]["protection"] = self._Conf.config.get(CAMPAGNE_SECTION,"protection")
-            infoStationDict["campagne"]["dateDict"]["year"] = self._Conf.get_date_Y()
-            infoStationDict["campagne"]["dateDict"]["month"] = self._Conf.get_date_m()
-            infoStationDict["campagne"]["dateDict"]["day"] = self._Conf.get_date_d()
-            infoStationDict["campagne"]["dateDict"]["date"] = self._Conf.get_date_d()+"/"+self._Conf.get_date_m()+"/"+self._Conf.get_date_Y()
-            infoStationDict["campagne"]["deploiementDict"]["bateau"] = self._Conf.config.get(CAMPAGNE_SECTION,"bateau")
-            infoStationDict["campagne"]["deploiementDict"]["pilote"] = self._Conf.config.get(CAMPAGNE_SECTION,"pilote")
-            infoStationDict["campagne"]["deploiementDict"]["equipage"] = self._Conf.config.get(CAMPAGNE_SECTION,"equipage")
-            infoStationDict["campagne"]["deploiementDict"]["partenaires"] = self._Conf.config.get(CAMPAGNE_SECTION,"partenaires")
-            infoStationDict["video"]["codeStation"] = self._Conf.config.get(CAMPAGNE_SECTION,"zone") + f'{self._Conf.get_date_Y()}' + f'{self._Conf.system.getint(INCREMENT_SECTION,"increment"):04}'
+            infoStationDict["system"]["motor"] = self._Conf.system.get(SYSTEM_SECTION,"motor")
+            infoStationDict["campaign"]["zoneDict"]["campaign"] = self._Conf.config.get(CAMPAIGN_SECTION,"campaign")
+            infoStationDict["campaign"]["zoneDict"]["zone"] = self._Conf.config.get(CAMPAIGN_SECTION,"zone")
+            infoStationDict["campaign"]["zoneDict"]["lieudit"] = self._Conf.config.get(CAMPAIGN_SECTION,"lieudit")
+            infoStationDict["campaign"]["zoneDict"]["protection"] = self._Conf.config.get(CAMPAIGN_SECTION,"protection")
+            infoStationDict["campaign"]["dateDict"]["year"] = self._Conf.get_date_Y()
+            infoStationDict["campaign"]["dateDict"]["month"] = self._Conf.get_date_m()
+            infoStationDict["campaign"]["dateDict"]["day"] = self._Conf.get_date_d()
+            infoStationDict["campaign"]["dateDict"]["date"] = self._Conf.get_date_d()+"/"+self._Conf.get_date_m()+"/"+self._Conf.get_date_Y()
+            infoStationDict["campaign"]["deploiementDict"]["boat"] = self._Conf.config.get(CAMPAIGN_SECTION,"boat")
+            infoStationDict["campaign"]["deploiementDict"]["pilot"] = self._Conf.config.get(CAMPAIGN_SECTION,"pilot")
+            infoStationDict["campaign"]["deploiementDict"]["crew"] = self._Conf.config.get(CAMPAIGN_SECTION,"crew")
+            infoStationDict["campaign"]["deploiementDict"]["partners"] = self._Conf.config.get(CAMPAIGN_SECTION,"partners")
+            infoStationDict["video"]["codeStation"] = self._Conf.config.get(CAMPAIGN_SECTION,"zone") + f'{self._Conf.get_date_Y()}' + f'{self._Conf.system.getint(INCREMENT_SECTION,"increment"):04}'
             # Pour hms, on va utiliser la clock de la Rpi et le temps sera pris à cet endroit dans la boucle, càd à la fin de l'enregistrement
-            infoStationDict["video"]["heureDict"]["heure"] = self._Conf.get_date_H()
-            infoStationDict["video"]["heureDict"]["minute"] = self._Conf.get_date_M()
-            infoStationDict["video"]["heureDict"]["seconde"] = self._Conf.get_date_S()
+            infoStationDict["video"]["hourDict"]["hour"] = self._Conf.get_date_H()
+            infoStationDict["video"]["hourDict"]["minute"] = self._Conf.get_date_M()
+            infoStationDict["video"]["hourDict"]["second"] = self._Conf.get_date_S()
             infoStationDict["video"]["gpsDict"]["site"] = ""
             infoStationDict["video"]["gpsDict"]["latitude"] = ""
             infoStationDict["video"]["gpsDict"]["longitude"] = ""
-            infoStationDict["video"]["ctdDict"]["profondeur"] = ""
+            infoStationDict["video"]["ctdDict"]["depth"] = ""
             infoStationDict["video"]["ctdDict"]["temperature"] = ""
-            infoStationDict["video"]["ctdDict"]["salinite"] = ""
-            infoStationDict["video"]["astroDict"]["lune"] = ""
-            infoStationDict["video"]["astroDict"]["maree"] = ""
+            infoStationDict["video"]["ctdDict"]["salinity"] = ""
+            infoStationDict["video"]["astroDict"]["moon"] = ""
+            infoStationDict["video"]["astroDict"]["tide"] = ""
             infoStationDict["video"]["astroDict"]["coefficient"] = ""
-            infoStationDict["video"]["meteoAirDict"]["ciel"] = ""
-            infoStationDict["video"]["meteoAirDict"]["vent"] = ""
+            infoStationDict["video"]["meteoAirDict"]["sky"] = ""
+            infoStationDict["video"]["meteoAirDict"]["wind"] = ""
             infoStationDict["video"]["meteoAirDict"]["direction"] = ""
             infoStationDict["video"]["meteoAirDict"]["atmPress"] = ""
             infoStationDict["video"]["meteoAirDict"]["tempAir"] = ""
-            infoStationDict["video"]["meteoMerDict"]["etatMer"] = ""
-            infoStationDict["video"]["meteoMerDict"]["houle"] = ""
-            infoStationDict["video"]["analyseDict"]["exploitabilite"] = ""
+            infoStationDict["video"]["meteoMerDict"]["seaState"] = ""
+            infoStationDict["video"]["meteoMerDict"]["swell"] = ""
+            infoStationDict["video"]["analyseDict"]["exploitability"] = ""
             infoStationDict["video"]["analyseDict"]["habitat"] = ""
-            infoStationDict["video"]["analyseDict"]["faune"] = ""
-            infoStationDict["video"]["analyseDict"]["visibilite"] = ""
+            infoStationDict["video"]["analyseDict"]["fauna"] = ""
+            infoStationDict["video"]["analyseDict"]["visibility"] = ""
 
             with open(cam_file + '.json',mode = 'w', encoding = "utf-8") as ff:
                 json.dump(infoStationDict,ff)
