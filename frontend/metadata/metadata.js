@@ -5,9 +5,9 @@ const defaultMetaData = {
         codeStation: "",
         hourDict: { hour: 0, minute: 0, second: 0 },
         gpsDict: { site: "", latitude: 0.0, longitude: 0.0 },
-        ctdDict: { depth: 0.0, temperature: 0.0, salinity: "" },
-        astroDict: { moon: "NL", tide: "BM", coefficient: 0 },
-        meteoAirDict: { sky: "", wind: 0, direction: "N", atmPressure: 0.0, airTemp: 0.0 },
+        ctdDict: { depth: 0.0, temperature: 0.0, salinity: 0 },
+        astroDict: { moon: "NL", tide: "BM", coefficient: 20 },
+        meteoAirDict: { sky: "", wind: 0, direction: "N", atmPressure: 1013.0, airTemp: 0.0 },
         meteoMerDict: { seaState: "", swell: 0 },
         analyseDict: { exploitability: "", habitat: "", fauna: "", visibility: "" },
     },
@@ -207,6 +207,10 @@ function createFormRow(container, sectionKey, label, value) {
     inputElement = document.createElement("input");
     inputElement.setAttribute("id", label);
     inputElement.type = determineInputType(value);
+    if(inputElement.type === "number"){
+      inputElement.setAttribute("step", "0.00001");
+      inputElement.setAttribute("oninput", "verifierFloat(this)");
+    }
     inputElement.value = value;
   }
 
@@ -266,27 +270,143 @@ function determineInputType(value) {
   return typeof value === "number" ? "number" : "text";
 }
 
+function verifierFloat(input) {
+  const maxDecimals = 5;
+  if (!input.checkValidity()) {
+    let valeurFloat = parseFloat(input.value);
+
+    if (!isNaN(valeurFloat)) {
+      input.value = valeurFloat.toFixed(maxDecimals);
+    }
+  } 
+}
+
 function formatTime(timeDict) {
   const { hour, minute, second } = timeDict;
   return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:${String(second).padStart(2, '0')}`;
 }
 
+const fieldsToFill = ["gpsDict", "ctdDict"];
+const limits = {
+  "latitude": {"min": -90, "max": 90},
+  "longitude": {"min": -180, "max": 180},
+  "coefficient": {"min": 20, "max": 120},
+  "wind": {"min": 0, "max": 12},
+  "depth": {"min": 0, "max": 4000},
+  "temperature": {"min": -10, "max": 40},
+  "salinity": {"min": 0, "max": 50},
+  "atmPressure": {"min": 900, "max": 1100},
+  "airTemp": {"min": -90, "max": 90} ,
+  "swell": {"min": 0, "max": 30} 
+}
+
+function validateField(type, key, subKey, value) {
+  if (!value && fieldsToFill.includes(key)) {
+    return [false, subKey, "Fill at least the four first sections"];
+  }
+  if (type === "number") {
+    if (limits[subKey] && (value < limits[subKey]["min"] || value > limits[subKey]["max"])) {
+      return [false, subKey, `The value for ${subKey} must be between ${limits[subKey]["min"]} and ${limits[subKey]["max"]}`];
+    }
+  }
+  return [true, "", ""];
+}
+
 async function submitForm(event) {
   event.preventDefault();
 
-  const response = await fetch("", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(),
-  });
+  const formData = {};
+  let validatedField = [true, "", ""];
 
-  if (response.ok) {
-    alert("Data sent successfully!");
-  } else {
-    alert("Error sending data.");
+  for (const [key, value] of Object.entries(defaultMetaData.video)) {
+    if (key === "codeStation") {
+      const stationCode = document.getElementById("Station Code").value;
+      formData[key] = stationCode;
+      if (!stationCode) {
+        validatedField = [false, "Station Code", "Fill at least the four first sections"];
+        break;
+      }
+    } else if (key === "heureDict") {
+      const time = document.getElementById("timeInformation").value;
+      if (time) {
+        const [heure, minute, second] = time.split(":").map(Number);
+        formData[key] = { heure, minute, second };
+      } else {
+        validatedField = [false, "timeInformation", "Fill at least the four first sections"];
+        break;
+      }
+    } else if (typeof value === "object" && !Array.isArray(value)) {
+      formData[key] = {};
+      for (const [subKey, subValue] of Object.entries(value)) {
+        const fieldValue = document.getElementById(subKey).value;
+        validatedField = validateField(document.getElementById(subKey).type, key, subKey, fieldValue);
+        if (!validatedField[0]) {
+          break;
+        }
+        formData[key][subKey] = fieldValue;
+      }
+      if (!validatedField[0]) {
+        break;
+      }
+    } else {
+      const fieldValue = document.getElementById(key).value;
+      validatedField = validateField(document.getElementById(key).type, key, key, fieldValue);
+      if (!validatedField[0]) {
+        break;
+      }
+      formData[key] = fieldValue;
+    }
   }
+  
+  if (!validatedField[0]) {
+    Swal.fire({
+      title: 'Error',
+      text: validatedField[2],
+      icon: 'error',
+      confirmButtonText: 'OK'
+    }).then(() => {
+      document.getElementById(validatedField[1]).focus();
+    });
+    return;
+  }
+
+  //formData["campagne"] = JSON.parse(localStorage.getItem("campagneData"));
+  try {
+    const response = await fetch("", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
+  
+    if (response.ok) {
+      Swal.fire({
+        title: 'Success',
+        text: 'Information saved',
+        icon: 'success',
+        confirmButtonText: 'OK'
+      });
+      window.location.href = "../index.html";
+    } else {
+      Swal.fire({
+        title: 'Error',
+        text: 'Error occuring while sending data. Retry',
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+      return;
+    }
+  } catch (e) {
+    Swal.fire({
+      title: 'Error',
+      text: 'Error occuring while sending data. Retry',
+      icon: 'error',
+      confirmButtonText: 'OK'
+    });
+    return;
+  }
+  
 }
 
 document.addEventListener("DOMContentLoaded", generateTable);
