@@ -286,7 +286,7 @@ function formatTime(timeDict) {
   return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:${String(second).padStart(2, '0')}`;
 }
 
-const fieldsToFill = ["gpsDict", "ctdDict"];
+const fieldsToFill = ["gpsDict"];
 const limits = {
   "latitude": {"min": -90, "max": 90},
   "longitude": {"min": -180, "max": 180},
@@ -323,10 +323,10 @@ async function submitForm(event) {
       const stationCode = document.getElementById("Station Code").value;
       formData[key] = stationCode;
       if (!stationCode) {
-        validatedField = [false, "Station Code", "Fill at least the four first sections"];
+        validatedField = [false, "Station Code", "Fill at least the Three first sections"];
         break;
       }
-    } else if (key === "heureDict") {
+    } else if (key === "hourDict") {
       const time = document.getElementById("timeInformation").value;
       if (time) {
         const [heure, minute, second] = time.split(":").map(Number);
@@ -338,6 +338,7 @@ async function submitForm(event) {
     } else if (typeof value === "object" && !Array.isArray(value)) {
       formData[key] = {};
       for (const [subKey, subValue] of Object.entries(value)) {
+        console.log("subKey: "+subKey)
         const fieldValue = document.getElementById(subKey).value;
         validatedField = validateField(document.getElementById(subKey).type, key, subKey, fieldValue);
         if (!validatedField[0]) {
