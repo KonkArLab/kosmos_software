@@ -105,14 +105,39 @@ document.addEventListener("DOMContentLoaded", function () {
         event.preventDefault();
 
         const formData = {};
+        let allFieldsFilled = true;
 
         fields.forEach(field => {
-            const input = document.getElementById(field.id);
-            formData[field.id] = input.value;
+            const value = document.getElementById(field.id).value;
+            formData[field.id] = value;
+            if (!value) {
+                allFieldsFilled = false;
+            }
         });
 
-        localStorage.setItem("campaignData", JSON.stringify(formData));
+        const storedDataParsed = storedData ? JSON.parse(storedData) : null;
+        
+        if (JSON.stringify(storedDataParsed) === JSON.stringify(formData)) {
+            Swal.fire({
+                title: 'Alert',
+                text: 'There is not new information to save',
+                icon: 'info',
+                confirmButtonText: 'OK'
+              });
+            return;
+        }
 
+        if (!allFieldsFilled) {
+            Swal.fire({
+                title: 'Error',
+                text: 'Fill all inputs',
+                icon: 'error',
+                confirmButtonText: 'OK'
+              });
+            return;
+        }
+
+        localStorage.setItem("campaignData", JSON.stringify(formData));
         Swal.fire({
             title: 'Success',
             text: 'Information saved',
