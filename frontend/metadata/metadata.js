@@ -29,32 +29,6 @@ function loadMetaData() {
   return metaData;
 }
 
-
-/*
-async function loadMetadataFromBackend()
-{
-    try {
-        const response = await fetch("http://0.0.0.0:5000/get_metadata");
-        const result = await response.json();
-        
-        if (result.status === "success") {
-            const metadata = result.data;
-            localStorage.setItem("metaData", JSON.stringify(metadata));
-            console.log("Metadata loaded from backend:", metadata);
-            return metadata;
-        } else {
-            console.warn("Using default metadata due to backend error.");
-            return defaultMetaData;
-        }
-
-    } catch (error) {
-        console.error("Error loading metadata from backend:", error);
-        return defaultMetaData;
-    }
-}
-*/
-
-
 function validateMetaData(data) {
   return data && data.video && data.video.hourDict && data.video.gpsDict;
 }
@@ -119,52 +93,6 @@ function generateTable() {
     document.getElementById("formMetaData").addEventListener("submit", submitForm);
   });
 }
-
-/*
-async function generateTable()
-{
-    const metaData = await loadMetadataFromBackend();
-    const table = document.getElementById("metadataTable");
-
-    Object.entries(metaData.video).forEach(([key, value]) => {
-        const sectionTitle = sectionTitles[key] || key;
-
-        const titleRow = document.createElement("tr");
-        const titleCell = document.createElement("td");
-        titleCell.colSpan = 2;
-        titleCell.textContent = sectionTitle;
-        titleCell.classList.add("section-title");
-
-        titleCell.addEventListener("click", () => {
-            sectionContent.classList.toggle("collapsed");
-            titleCell.classList.toggle("collapsed");
-        });
-
-        titleRow.appendChild(titleCell);
-        table.appendChild(titleRow);
-
-        const sectionContent = document.createElement("tbody");
-        sectionContent.classList.add("section-content");
-
-        if (key === "codeStation") {
-            createFormRow(sectionContent, key, "Station Code", value);
-        } else if (key === "hourDict") {
-            createTimeField(sectionContent, value);
-        } else if (typeof value === "object" && !Array.isArray(value)) {
-            Object.entries(value).forEach(([subKey, subValue]) => {
-                createFormRow(sectionContent, key, subKey, subValue);
-            });
-        } else {
-            createFormRow(sectionContent, key, value);
-        }
-
-        table.appendChild(sectionContent);
-    });
-
-    document.getElementById("formMetaData").addEventListener("submit", submitForm);
-}
-*/
-
 
 function createTimeField(container, timeValues) {
   const row = document.createElement("tr");
@@ -315,49 +243,7 @@ function validateField(type, key, subKey, value) {
 async function submitForm(event) {
   event.preventDefault();
 
-  const formData = {};
-  let validatedField = [true, "", ""];
-
-  for (const [key, value] of Object.entries(defaultMetaData.video)) {
-    if (key === "codeStation") {
-      const stationCode = document.getElementById("Station Code").value;
-      formData[key] = stationCode;
-      if (!stationCode) {
-        validatedField = [false, "Station Code", "Fill at least the Three first sections"];
-        break;
-      }
-    } else if (key === "hourDict") {
-      const time = document.getElementById("timeInformation").value;
-      if (time) {
-        const [heure, minute, second] = time.split(":").map(Number);
-        formData[key] = { heure, minute, second };
-      } else {
-        validatedField = [false, "timeInformation", "Fill at least the four first sections"];
-        break;
-      }
-    } else if (typeof value === "object" && !Array.isArray(value)) {
-      formData[key] = {};
-      for (const [subKey, subValue] of Object.entries(value)) {
-        console.log("subKey: "+subKey)
-        const fieldValue = document.getElementById(subKey).value;
-        validatedField = validateField(document.getElementById(subKey).type, key, subKey, fieldValue);
-        if (!validatedField[0]) {
-          break;
-        }
-        formData[key][subKey] = fieldValue;
-      }
-      if (!validatedField[0]) {
-        break;
-      }
-    } else {
-      const fieldValue = document.getElementById(key).value;
-      validatedField = validateField(document.getElementById(key).type, key, key, fieldValue);
-      if (!validatedField[0]) {
-        break;
-      }
-      formData[key] = fieldValue;
-    }
-  }
+  
   
   if (!validatedField[0]) {
     Swal.fire({
@@ -371,7 +257,7 @@ async function submitForm(event) {
     return;
   }
 
-  //formData["campagne"] = JSON.parse(localStorage.getItem("campagneData"));
+  //formData["campaign"] = JSON.parse(localStorage.getItem("campaignData"));
   try {
     const response = await fetch("", {
       method: "POST",
@@ -411,53 +297,3 @@ async function submitForm(event) {
 }
 
 document.addEventListener("DOMContentLoaded", generateTable);
-
-/*
-async function submitForm(event) 
-{
-    event.preventDefault();
-
-    const metaData = {};
-    const tableRows = document.querySelectorAll("#metadataTable tr");
-
-    tableRows.forEach(row => {
-        const inputs = row.querySelectorAll("input, select");
-        inputs.forEach(input => {
-            if (input.id && input.value) {
-                const keys = input.id.split('.');
-                let current = metaData;
-                keys.forEach((key, index) => {
-                    if (index === keys.length - 1) {
-                        current[key] = input.value;
-                    } else {
-                        current[key] = current[key] || {};
-                        current = current[key];
-                    }
-                });
-            }
-        });
-    }); // pas très sur pour cete fonction
-
-    try {
-        const response = await fetch("http://0.0.0.0:5000/update_metadata", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(metaData),
-        });
-
-        if (response.ok) {
-            alert("Metadata saved successfully!");
-        } else {
-            alert("Error saving metadata.");
-        }
-
-    } catch (error) {
-        console.error("Failed to save metadata:", error);
-        alert("Failed to save metadata.");
-    }
-}
-
-
-*/
