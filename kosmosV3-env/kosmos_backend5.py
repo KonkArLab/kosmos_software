@@ -34,6 +34,7 @@ class Server:
         self.app.add_url_rule("/changeCampagne", view_func=self.changeCampagne,methods=['POST'])
         self.app.add_url_rule("/getCampagne", view_func=self.getCampagne)
         self.app.add_url_rule("/frame", view_func=self.image)
+        self.app.add_url_rule("/updateMetadata", view_func=self.update_metadata, methods=['POST'])
         
 
     def run(self) :
@@ -98,7 +99,7 @@ class Server:
             data = request.json
             for key in data:
                 #self.myMain._conf.set_val(key,data[key])
-                self.myMain._conf.config.set(CAMPAGNE_SECTION,key,data[key])
+                self.myMain._conf.config.set(CAMPAIGN_SECTION,key,data[key])
             self.myMain._conf.update_config()
             self.myMain.thread_camera.closeCam()
             
@@ -130,7 +131,7 @@ class Server:
         
     def getCampagne(self):
         response=dict()        
-        response["data"] = dict(self.myMain._conf.config[CAMPAGNE_SECTION])
+        response["data"] = dict(self.myMain._conf.config[CAMPAIGN_SECTION])
         response["status"]="ok"
         return response
     
@@ -180,7 +181,7 @@ class Server:
         response=dict()
         try:
             outputList=[]
-            strr="ls -l -R " + self.myMain._conf.CAMPAGNE_PATH 
+            strr="ls -l -R " + self.myMain._conf.CAMPAIGN_PATH 
             stream =os.popen(strr)       
             streamOutput = stream.read()
             strRef=streamOutput.split('\n/')
@@ -235,7 +236,10 @@ class Server:
 
     
     def update_metadata(self):
-        metadata_path = GIT_PATH + "infoStationTemplate.json"
+        increment = self.myMain._conf.system.getint(INCREMENT_SECTION,"increment") - 1
+        myfile = self.myMain._conf.config.get(CAMPAIGN_SECTION,"zone") + f'{self.myMain._conf.get_date_Y()}' + f'{increment:04}'+'/'
+                
+        metadata_path = self.myMain._conf.CAMPAIGN_PATH +myfile+ "infoStation.json"
         data = request.json 
         
         try:

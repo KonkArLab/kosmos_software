@@ -25,7 +25,7 @@ WORK_PATH = GIT_PATH+"kosmosV3-env/"
 CONF_FILE_TEMPLATE = "kosmos_config_template.ini"
 CONF_FILE = "kosmos_config.ini"
 CONFIG_SECTION = "KOSMOS-config"
-CAMPAGNE_SECTION = "KOSMOS-campagne"
+CAMPAIGN_SECTION = "KOSMOS-campagne"
 DEBUG_SECTION = "KOSMOS-debug"
 
 # Section video
@@ -68,11 +68,11 @@ class KosmosConfig:
         logging.info("kosmos_system.ini lu dans home")
                
         # Création Dossier Campagne si non existant               
-        campagneFile = self.get_date_YMD() + '_' + self.system.get(SYSTEM_SECTION,"system") + '_' + self.config.get(CAMPAGNE_SECTION,"campagne") + '_' + self.config.get(CAMPAGNE_SECTION,"zone") 
+        campagneFile = self.get_date_YMD() + '_' + self.system.get(SYSTEM_SECTION,"system") + '_' + self.config.get(CAMPAIGN_SECTION,"campagne") + '_' + self.config.get(CAMPAIGN_SECTION,"zone") 
         os.chdir(USB_INSIDE_PATH)            
         if not os.path.exists(campagneFile):
             os.mkdir(campagneFile)
-        self.CAMPAGNE_PATH = USB_INSIDE_PATH + campagneFile + "/"
+        self.CAMPAIGN_PATH = USB_INSIDE_PATH + campagneFile + "/"
         os.chdir(WORK_PATH)
 
     def get_date_Y(self) -> str:
@@ -188,9 +188,9 @@ class KosmosConfig:
     
     def addInfoStation(self,json_file):
         infoStationDict = self.json2dict(json_file)
-        if not os.path.exists(self.CAMPAGNE_PATH + INFOSTATION_FILE):
+        if not os.path.exists(self.CAMPAIGN_PATH + INFOSTATION_FILE):
             bool_header = True
         else:
             bool_header = False
-        pd.DataFrame(infoStationDict, index = [0]).to_csv(self.CAMPAGNE_PATH + INFOSTATION_FILE, sep =';', mode='a',index= False,header = bool_header)#, columns = headerInfoStation)
+        pd.DataFrame(infoStationDict, index = [0]).to_csv(self.CAMPAIGN_PATH + INFOSTATION_FILE, sep =';', mode='a',index= False,header = bool_header)#, columns = headerInfoStation)
         

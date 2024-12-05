@@ -7,7 +7,7 @@ const defaultMetaData = {
         gpsDict: { site: "", latitude: 0.0, longitude: 0.0 },
         ctdDict: { depth: 0.0, temperature: 0.0, salinity: 0 },
         astroDict: { moon: "NL", tide: "BM", coefficient: 20 },
-        meteoAirDict: { sky: "", wind: 0, direction: "N", atmPressure: 1013.0, airTemp: 0.0 },
+        meteoAirDict: { sky: "", wind: 0, direction: "N", atmPress: 1013.0, tempAir: 0.0 },
         meteoMerDict: { seaState: "", swell: 0 },
         analyseDict: { exploitability: "", habitat: "", fauna: "", visibility: "" },
     },
@@ -136,7 +136,7 @@ function createFormRow(container, sectionKey, label, value) {
     inputElement.setAttribute("id", label);
     inputElement.type = determineInputType(value);
     if(inputElement.type === "number"){
-      inputElement.setAttribute("step", "0.00001");
+      inputElement.setAttribute("step", "0.1");
       inputElement.setAttribute("oninput", "verifierFloat(this)");
     }
     inputElement.value = value;
@@ -221,10 +221,10 @@ const limits = {
   "coefficient": {"min": 20, "max": 120},
   "wind": {"min": 0, "max": 12},
   "depth": {"min": 0, "max": 4000},
-  "temperature": {"min": -10, "max": 40},
+  "temperature": {"min": -10, "max": 60},
   "salinity": {"min": 0, "max": 50},
-  "atmPressure": {"min": 900, "max": 1100},
-  "airTemp": {"min": -90, "max": 90} ,
+  "atmPress": {"min": 900, "max": 1100},
+  "tempAir": {"min": -90, "max": 90} ,
   "swell": {"min": 0, "max": 30} 
 }
 
@@ -242,29 +242,49 @@ function validateField(type, key, subKey, value) {
 
 async function submitForm(event) {
   event.preventDefault();
+  dataFinal = defaultMetaData;
+  const video = defaultMetaData.video;
+  dataFinal["campaign"] = JSON.parse(localStorage.getItem("campaignData"));
 
-  
-  
-  if (!validatedField[0]) {
-    Swal.fire({
-      title: 'Error',
-      text: validatedField[2],
-      icon: 'error',
-      confirmButtonText: 'OK'
-    }).then(() => {
-      document.getElementById(validatedField[1]).focus();
-    });
-    return;
-  }
+  video.codeStation = document.getElementById('codeStation')?.value || "";
 
-  //formData["campaign"] = JSON.parse(localStorage.getItem("campaignData"));
+  video.hourDict.hour = parseInt(document.getElementById('hour')?.value) || 0;
+  video.hourDict.minute = parseInt(document.getElementById('minute')?.value) || 0;
+  video.hourDict.second = parseInt(document.getElementById('second')?.value) || 0;
+
+  video.gpsDict.site = document.getElementById('site')?.value || "";
+  video.gpsDict.latitude = parseFloat(document.getElementById('latitude')?.value) || 0.0;
+  video.gpsDict.longitude = parseFloat(document.getElementById('longitude')?.value) || 0.0;
+
+  video.ctdDict.depth = parseFloat(document.getElementById('depth')?.value) || 0.0;
+  video.ctdDict.temperature = parseFloat(document.getElementById('temperature')?.value) || 0.0;
+  video.ctdDict.salinity = parseInt(document.getElementById('salinity')?.value) || 0;
+
+  video.astroDict.moon = document.getElementById('moon')?.value || "NL";
+  video.astroDict.tide = document.getElementById('tide')?.value || "BM";
+  video.astroDict.coefficient = parseInt(document.getElementById('coefficient')?.value) || 20;
+
+  video.meteoAirDict.sky = document.getElementById('sky')?.value || "";
+  video.meteoAirDict.wind = parseInt(document.getElementById('wind')?.value) || 0;
+  video.meteoAirDict.direction = document.getElementById('direction')?.value || "N";
+  video.meteoAirDict.atmPress = parseFloat(document.getElementById('atmPress')?.value) || 1013.0;
+  video.meteoAirDict.tempAir = parseFloat(document.getElementById('tempAir')?.value) || 0.0;
+
+  video.meteoMerDict.seaState = document.getElementById('seaState')?.value || "";
+  video.meteoMerDict.swell = parseInt(document.getElementById('swell')?.value) || 0;
+
+  video.analyseDict.exploitability = document.getElementById('exploitability')?.value || "";
+  video.analyseDict.habitat = document.getElementById('habitat')?.value || "";
+  video.analyseDict.fauna = document.getElementById('fauna')?.value || "";
+  video.analyseDict.visibility = document.getElementById('visibility')?.value || "";
+
   try {
-    const response = await fetch("", {
+    const response = await fetch(serverUrl + "/updateMetadata", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(formData),
+      body: JSON.stringify(dataFinal),
     });
   
     if (response.ok) {
