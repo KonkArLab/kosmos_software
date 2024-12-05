@@ -11,12 +11,14 @@ const defaultMetaData = {
         meteoMerDict: { seaState: "", swell: 0 },
         analyseDict: { exploitability: "", habitat: "", fauna: "", visibility: "" },
     },
+    system: {}
 };
 
 function loadMetaData() {
   let metaData;
   try {
     metaData = JSON.parse(localStorage.getItem("metaData"));
+    defaultMetaData.system = metaData.system;
   } catch {
     alert("Error reading metaData from localStorage.");
     return defaultMetaData;
@@ -246,37 +248,47 @@ async function submitForm(event) {
   const video = defaultMetaData.video;
   dataFinal["campaign"] = JSON.parse(localStorage.getItem("campaignData"));
 
-  video.codeStation = document.getElementById('codeStation')?.value || "";
+  video.codeStation = document.getElementById('codeStation')?.value;
 
-  video.hourDict.hour = parseInt(document.getElementById('hour')?.value) || 0;
-  video.hourDict.minute = parseInt(document.getElementById('minute')?.value) || 0;
-  video.hourDict.second = parseInt(document.getElementById('second')?.value) || 0;
+  video.hourDict.hour = parseInt(document.getElementById('hour')?.value);
+  video.hourDict.minute = parseInt(document.getElementById('minute')?.value);
+  video.hourDict.second = parseInt(document.getElementById('second')?.value);
 
-  video.gpsDict.site = document.getElementById('site')?.value || "";
-  video.gpsDict.latitude = parseFloat(document.getElementById('latitude')?.value) || 0.0;
-  video.gpsDict.longitude = parseFloat(document.getElementById('longitude')?.value) || 0.0;
+  video.gpsDict.site = document.getElementById('site')?.value;
+  video.gpsDict.latitude = parseFloat(document.getElementById('latitude')?.value);
+  video.gpsDict.longitude = parseFloat(document.getElementById('longitude')?.value);
 
-  video.ctdDict.depth = parseFloat(document.getElementById('depth')?.value) || 0.0;
-  video.ctdDict.temperature = parseFloat(document.getElementById('temperature')?.value) || 0.0;
-  video.ctdDict.salinity = parseInt(document.getElementById('salinity')?.value) || 0;
+  video.ctdDict.depth = parseFloat(document.getElementById('depth')?.value);
+  video.ctdDict.temperature = parseFloat(document.getElementById('temperature')?.value);
+  video.ctdDict.salinity = parseInt(document.getElementById('salinity')?.value);
 
-  video.astroDict.moon = document.getElementById('moon')?.value || "NL";
-  video.astroDict.tide = document.getElementById('tide')?.value || "BM";
-  video.astroDict.coefficient = parseInt(document.getElementById('coefficient')?.value) || 20;
+  video.astroDict.moon = document.getElementById('moon')?.value;
+  video.astroDict.tide = document.getElementById('tide')?.value;
+  video.astroDict.coefficient = parseInt(document.getElementById('coefficient')?.value);
 
-  video.meteoAirDict.sky = document.getElementById('sky')?.value || "";
-  video.meteoAirDict.wind = parseInt(document.getElementById('wind')?.value) || 0;
-  video.meteoAirDict.direction = document.getElementById('direction')?.value || "N";
-  video.meteoAirDict.atmPress = parseFloat(document.getElementById('atmPress')?.value) || 1013.0;
-  video.meteoAirDict.tempAir = parseFloat(document.getElementById('tempAir')?.value) || 0.0;
+  video.meteoAirDict.sky = document.getElementById('sky')?.value;
+  video.meteoAirDict.wind = parseInt(document.getElementById('wind')?.value);
+  video.meteoAirDict.direction = document.getElementById('direction')?.value;
+  video.meteoAirDict.atmPress = parseFloat(document.getElementById('atmPress')?.value);
+  video.meteoAirDict.tempAir = parseFloat(document.getElementById('tempAir')?.value);
 
-  video.meteoMerDict.seaState = document.getElementById('seaState')?.value || "";
-  video.meteoMerDict.swell = parseInt(document.getElementById('swell')?.value) || 0;
+  video.meteoMerDict.seaState = document.getElementById('seaState')?.value;
+  video.meteoMerDict.swell = parseInt(document.getElementById('swell')?.value);
 
-  video.analyseDict.exploitability = document.getElementById('exploitability')?.value || "";
-  video.analyseDict.habitat = document.getElementById('habitat')?.value || "";
-  video.analyseDict.fauna = document.getElementById('fauna')?.value || "";
-  video.analyseDict.visibility = document.getElementById('visibility')?.value || "";
+  video.analyseDict.exploitability = document.getElementById('exploitability')?.value;
+  video.analyseDict.habitat = document.getElementById('habitat')?.value;
+  video.analyseDict.fauna = document.getElementById('fauna')?.value;
+  video.analyseDict.visibility = document.getElementById('visibility')?.value;
+
+  if (!(video.gpsDict.latitude || video.gpsDict.longitude || video.hourDict.hour || video.hourDict.minute || video.hourDict.second)) {
+    Swal.fire({
+      title: 'Error',
+      text: 'Hour and GPS information are mandatory',
+      icon: 'error',
+      confirmButtonText: 'OK'
+    });
+    return;
+  }
 
   try {
     const response = await fetch(serverUrl + "/updateMetadata", {
@@ -313,7 +325,8 @@ async function submitForm(event) {
     });
     return;
   }
-  
 }
+
+
 
 document.addEventListener("DOMContentLoaded", generateTable);
