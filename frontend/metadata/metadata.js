@@ -3,22 +3,20 @@ let serverUrl = "http://10.42.0.1:5000";
 const defaultMetaData = {
     video: {
         codeStation: "",
-        hourDict: { hour: 0, minute: 0, second: 0 },
-        gpsDict: { site: "", latitude: 0.0, longitude: 0.0 },
-        ctdDict: { depth: 0.0, temperature: 0.0, salinity: 0 },
-        astroDict: { moon: "NL", tide: "BM", coefficient: 20 },
-        meteoAirDict: { sky: "", wind: 0, direction: "N", atmPress: 1013.0, tempAir: 0.0 },
-        meteoMerDict: { seaState: "", swell: 0 },
+        hourDict: { hour: "", minute: "" },
+        gpsDict: { site: "", latitude: "", longitude: "" },
+        ctdDict: { depth: "", temperature: "", salinity: "" },
+        astroDict: { moon: "", tide: "", coefficient: "" },
+        meteoAirDict: { sky: "", wind: "", direction: "", atmPress: "", tempAir: "" },
+        meteoMerDict: { seaState: "", swell: "" },
         analyseDict: { exploitability: "", habitat: "", fauna: "", visibility: "" },
-    },
-    system: {}
+    }
 };
 
 function loadMetaData() {
   let metaData;
   try {
     metaData = JSON.parse(localStorage.getItem("metaData"));
-    defaultMetaData.system = metaData.system;
   } catch {
     alert("Error reading metaData from localStorage.");
     return defaultMetaData;
@@ -137,11 +135,10 @@ function createFormRow(container, sectionKey, label, value) {
     inputElement = document.createElement("input");
     inputElement.setAttribute("id", label);
     inputElement.type = determineInputType(value);
-    if(inputElement.type === "number"){
-      inputElement.setAttribute("step", "0.1");
-      inputElement.setAttribute("oninput", "verifierFloat(this)");
-    }
     inputElement.value = value;
+    if(inputElement.type === "number"){
+      inputElement.setAttribute("step", "0.0000001");
+    }
   }
 
   inputElement.classList.add("form-input");
@@ -200,17 +197,6 @@ function determineInputType(value) {
   return typeof value === "number" ? "number" : "text";
 }
 
-function verifierFloat(input) {
-  const maxDecimals = 5;
-  if (!input.checkValidity()) {
-    let valeurFloat = parseFloat(input.value);
-
-    if (!isNaN(valeurFloat)) {
-      input.value = valeurFloat.toFixed(maxDecimals);
-    }
-  } 
-}
-
 function formatTime(timeDict) {
   const { hour, minute, second } = timeDict;
   return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:${String(second).padStart(2, '0')}`;
@@ -230,19 +216,7 @@ const limits = {
   "swell": {"min": 0, "max": 30} 
 }
 
-function validateField(type, key, subKey, value) {
-  if (!value && fieldsToFill.includes(key)) {
-    return [false, subKey, "Fill at least the four first sections"];
-  }
-  if (type === "number") {
-    if (limits[subKey] && (value < limits[subKey]["min"] || value > limits[subKey]["max"])) {
-      return [false, subKey, `The value for ${subKey} must be between ${limits[subKey]["min"]} and ${limits[subKey]["max"]}`];
-    }
-  }
-  return [true, "", ""];
-}
-
-async function submitForm(event) {
+function submitForm(event) {
   event.preventDefault();
   dataFinal = defaultMetaData;
   const video = defaultMetaData.video;
@@ -250,9 +224,13 @@ async function submitForm(event) {
 
   video.codeStation = document.getElementById('codeStation')?.value;
 
-  video.hourDict.hour = parseInt(document.getElementById('hour')?.value);
-  video.hourDict.minute = parseInt(document.getElementById('minute')?.value);
-  video.hourDict.second = parseInt(document.getElementById('second')?.value);
+  let time = document.getElementById('timeInformation')?.value;
+
+  console.log(time);
+
+  video.hourDict.hour = parseInt(time.substr(0,2));
+  video.hourDict.minute =  parseInt(time.substr(3,2));
+  video.hourDict.second =  parseInt(time.substr(6,2));
 
   video.gpsDict.site = document.getElementById('site')?.value;
   video.gpsDict.latitude = parseFloat(document.getElementById('latitude')?.value);
@@ -280,7 +258,9 @@ async function submitForm(event) {
   video.analyseDict.fauna = document.getElementById('fauna')?.value;
   video.analyseDict.visibility = document.getElementById('visibility')?.value;
 
-  if (!(video.gpsDict.latitude || video.gpsDict.longitude || video.hourDict.hour || video.hourDict.minute || video.hourDict.second)) {
+  dataFinal.video = video;
+
+  if ((isNaN(video.gpsDict.latitude) || isNaN(video.gpsDict.longitude)) || isNaN(video.hourDict.hour)) {
     Swal.fire({
       title: 'Error',
       text: 'Hour and GPS information are mandatory',
@@ -288,15 +268,20 @@ async function submitForm(event) {
       confirmButtonText: 'OK'
     });
     return;
+  } else {
+    sendToBack(dataFinal);
   }
 
+}
+
+async function sendToBack(data) {
   try {
     const response = await fetch(serverUrl + "/updateMetadata", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(dataFinal),
+      body: JSON.stringify(data),
     });
   
     if (response.ok) {
