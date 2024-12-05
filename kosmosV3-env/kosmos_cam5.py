@@ -259,7 +259,7 @@ class KosmosCam(Thread):
     def writeJSON(self,cam_file):
         # Creation du json contenant les infostations
         with open(GIT_PATH+'infoStationTemplate.json') as f:
-            # infoStationDict = json.load(f)
+            infoStationDict = json.load(f)
             # infoStationDict["system"]["system"] = self._Conf.system.get(SYSTEM_SECTION,"system")
             # infoStationDict["system"]["version"] = self._Conf.system.get(SYSTEM_SECTION,"version")
             # infoStationDict["system"]["camera"] = self._Conf.system.get(SYSTEM_SECTION,"camera")
