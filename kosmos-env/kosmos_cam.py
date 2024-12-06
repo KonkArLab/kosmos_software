@@ -50,9 +50,13 @@ class KosmosCam(Thread):
         Thread.__init__(self)
         self._Conf = aConf    
         # Résolutions horizontale
-        self._X_RESOLUTION = aConf.config.getint(CONFIG_SECTION,"31_PICAM_resolution_x")
-        self._Y_RESOLUTION = aConf.config.getint(CONFIG_SECTION,"32_PICAM_resolution_y")
-        
+        if aConf.systemCamera == "IMX296":
+            self._X_RESOLUTION = 1456#aConf.config.getint(CONFIG_SECTION,"31_PICAM_resolution_x")
+            self._Y_RESOLUTION = 1088#aConf.config.getint(CONFIG_SECTION,"32_PICAM_resolution_y")
+        elif aConf.systemCamera == "IMX477":
+            self._X_RESOLUTION = 2028#aConf.config.getint(CONFIG_SECTION,"31_PICAM_resolution_x")
+            self._Y_RESOLUTION = 1520#aConf.config.getint(CONFIG_SECTION,"32_PICAM_resolution_y")
+                       
         # Framerate et frameduration camera
         self._FRAMERATE=aConf.config.getint(CONFIG_SECTION,"34_PICAM_framerate")
         self._FRAMEDURATION = int(1/self._FRAMERATE*1000000)
@@ -199,10 +203,12 @@ class KosmosCam(Thread):
                 # Affichage du preview
                 if self._PREVIEW == 1:
                     self._camera.stop_preview() #éteint le Preview.NULL
-                    self._camera.start_preview(Preview.QTGL,x=100,y=300,width=400,height=300)
+                    X_preview = int(self._X_RESOLUTION/2)
+                    Y_preview = int(self._X_RESOLUTION/2)
+                    self._camera.start_preview(Preview.QTGL,x=100,y=300,width=X_preview,height=Y_preview)
                     if self.STEREO:
                         self._camera2.stop_preview() #éteint le Preview.NULL
-                        self._camera2.start_preview(Preview.QTGL, x=500,y=300,width=400,height=300)    
+                        self._camera2.start_preview(Preview.QTGL, x=100+X_preview,y=300,width=X_preview,height=Y_preview)    
                 
                 # Bloc d'enregistrement/encodage à proprement parler
                 event_line = self._Conf.get_date_HMS()  + ";START ENCODER;" + self._output
