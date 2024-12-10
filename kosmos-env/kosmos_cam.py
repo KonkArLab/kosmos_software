@@ -21,6 +21,7 @@ import json
 #import GPS & capteur TP
 from GPS import *
 import ms5837
+import kosmos_hydrophone as KHydro
 
 
 class KosmosCam(Thread):
@@ -140,6 +141,17 @@ class KosmosCam(Thread):
         except:
             logging.error("Erreur d'initialisation du capteur de pression")
     
+    
+        # Definition Thread Hydrophone
+        self.PRESENCE_HYDRO = self._Conf.config.getint(CONFIG_SECTION,"40_HYDROPHONE_bool") # Fonctionnement moteur si 1
+        if self.PRESENCE_HYDRO==1:
+            self.thread_hydrophone = KHydro.KosmosHydro(self._Conf)
+            logging.info("Hydrophone démarré")
+        else:
+            logging.info("Hydrophone non démarré")
+            
+            
+            
     def apply_timestamp(self,request):
         #Time stamp en haut à gauche de la video
         timestamp = time.strftime("%Y-%m-%d %X")
@@ -154,9 +166,13 @@ class KosmosCam(Thread):
     def convert_to_mp4(self, input_file):
         if self._CONVERSION == 1:
             #Conversion h264 vers mp4 puis effacement du .h264
-            output_file = os.path.splitext(input_file)[0] + '.mp4'              
+            wav_file = os.path.splitext(input_file)[0] + '.wav'
+            output_file = os.path.splitext(input_file)[0] + '.mp4'       
             try:
-                subprocess.run(['sudo', 'ffmpeg', '-probesize','2G','-r', str(self._FRAMERATE), '-i', input_file, '-c', 'copy', output_file, '-loglevel', 'warning'])
+                if self.PRESENCE_HYDRO == 1:
+                    subprocess.run(['sudo', 'ffmpeg', '-probesize','2G','-r', str(self._FRAMERATE), '-i', input_file, '-i', wav_file, '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k', output_file, '-loglevel', 'warning'])
+                else:
+                    subprocess.run(['sudo', 'ffmpeg', '-probesize','2G','-r', str(self._FRAMERATE), '-i', input_file, '-c', 'copy', output_file, '-loglevel', 'warning'])
                 logging.info("Conversion successful !")
                 os.remove(input_file)
                 logging.debug(f"Deleted input H.264 file: {input_file}")                
@@ -216,7 +232,10 @@ class KosmosCam(Thread):
                 self._camera.start_encoder(self._encoder,self._output,pts = self._file_name+'.txt')
                 if self.STEREO:
                     self._camera2.start_encoder(self._encoder2,self._output2,pts = self._file_name+'_stereo.txt')
-
+                
+                if self.PRESENCE_HYDRO == 1:
+                    self.thread_hydrophone.restart()
+                
                 #Création CSV
                 ligne = "HMS;Lat;Long;Pression;TempC;Delta(s);TStamp;ExpTime;AnG;DiG;Lux;RedG;BlueG;Bright"
                 if self.STEREO:
@@ -278,6 +297,11 @@ class KosmosCam(Thread):
                 self._camera.stop_encoder()
                 if self.STEREO:
                     self._camera2.stop_encoder()
+                if self.PRESENCE_HYDRO == 1:
+                    self.thread_hydrophone.pause()
+                    self.thread_hydrophone.save_audio(self._file_name + '.wav')
+                
+                
                 event_line = self._Conf.get_date_HMS() + ";END ENCODER;" + self._output
                 self._Conf.add_line(EVENT_FILE,event_line)
                                
@@ -474,7 +498,10 @@ class KosmosCam(Thread):
             logging.info("Caméra stéréo arrêtée")
             self._camera2.close()
             logging.info("Caméra stéréo éteinte")
-        
+        if self.PRESENCE_HYDRO == 1:
+            self.thread_hydrophone.stop_thread()   
+            if self.thread_hydrophone.is_alive():
+                self.thread_hydrophone.join() 
             
     def restart(self):
         """démarre ou redémarre le thread"""

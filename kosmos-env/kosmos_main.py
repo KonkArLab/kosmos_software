@@ -23,6 +23,7 @@ import kosmos_config as KConf
 import kosmos_cam as KCam
 import kosmos_motor_V3 as KMotor3
 import kosmos_motor_V4 as KMotor4
+#import kosmos_hydrophone as KHydro
 
 import sys
 
@@ -84,6 +85,14 @@ class kosmos_main():
                 self.motorThread = KMotor4.kosmosMotor(self._conf)
             else:
                 logging.info("Configuration moteur non effectuée.")
+        '''
+        # Definition Thread Hydrophone
+        self.PRESENCE_HYDRO = self._conf.config.getint(CONFIG_SECTION,"40_HYDROPHONE_bool") # Fonctionnement moteur si 1
+        if self.PRESENCE_HYDRO==1:
+            self.thread_hydrophone = KHydro.KosmosHydro(self._conf) 
+        else:
+            logging.info("Configuration moteur non effectuée.")        
+        '''
                 
     def clear_events(self):
         """Mise à 0 des evenements attachés aux boutons"""
@@ -159,6 +168,13 @@ class kosmos_main():
         # Run thread camera
         self.thread_camera.restart()
         
+        '''
+        # Run thread hydro 
+        if self.PRESENCE_HYDRO == 1:
+            # Run thread moteur
+            self.thread_hydrophone.restart()
+        '''
+        
         # Attente d'un Event ou que le temps total soit dépassé
         while True:
             self.clear_events()
@@ -194,7 +210,13 @@ class kosmos_main():
         if self.PRESENCE_MOTEUR==1:
             # Pause Moteur
             self.motorThread.pause()
-       
+        '''    
+        # Arrêt de l'hydrophone 
+        if self.PRESENCE_HYDRO == 1:
+            # Run thread moteur
+            self.thread_hydrophone.pause()
+        '''
+        
         if self._extinction == False:
             # On s'est arrêté via un bouton, on retourne donc en stand by
             self.state = KState.STANDBY
@@ -224,7 +246,13 @@ class kosmos_main():
             if self.motorThread.is_alive(): 
                 self.motorThread.join() 
             self.motorThread.power_off()
-        
+        '''    
+        # Arrêt de l'hydrophone
+        if self.PRESENCE_HYDRO == 1:
+            self.thread_hydrophone.stop_thread()   
+            if self.thread_hydrophone.is_alive():
+                self.thread_hydrophone.join()   
+        '''
         # Extinction des LEDs
         self._ledR.off()
         self._ledB.off()

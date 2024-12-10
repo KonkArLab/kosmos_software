@@ -158,8 +158,10 @@ class Server:
             # Arrêt des Thread en cours
             if self.myMain.PRESENCE_MOTEUR==1:
                 del self.myMain.motorThread
+            if self.myMain.thread_camera.PRESENCE_HYDRO==1:
+                del self.myMain.thread_camera.thread_hydrophone    
             del self.myMain.thread_camera
-            
+    
             # Réinitialisation
             self.myMain.init()
             self.myMain.button_event.set()

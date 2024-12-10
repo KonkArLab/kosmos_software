@@ -56,8 +56,7 @@ class GPS(Thread):
                     if LONGGPS[0] != b'':    
                         self.longitude = (self.card2sign(LONGGPS[1])*(int(float(LONGGPS[0])/100) + ((float(LONGGPS[0])/100) % 1)*100/60))
                     else:
-                        self.longitude = 0.   
-        
+                        self.longitude = 0.          
                 time.sleep(0.01)
             else:
                 self._continue_event.wait()
