@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 import wave
 from threading import Event, Thread
@@ -6,7 +7,6 @@ from threading import Event, Thread
 import pyaudio
 # Importation des fichiers
 from kosmos_config import *
-
 
 class KosmosHydro(Thread):
     """
@@ -25,21 +25,32 @@ class KosmosHydro(Thread):
         self._pause_event = Event()
         self._continue_event = Event()
         
-        # Initialisation de PyAudio
+        # Booléens
+        self.stop_recording = False # enregistrement
+        
+        # Initialisation de PyAudio et du stream
         self._FORMAT = pyaudio.paInt16
         self._CHANNELS = 1
         self._RATE = 44100
-        self._CHUNK = 4096 
-        self._audio = pyaudio.PyAudio()
+        self._CHUNK = 4096
         
-        self.stop_recording = False        
-        self._stream = self._audio.open(format=self._FORMAT,
+        self._audio = pyaudio.PyAudio()
+
+        self.stream = self._audio.open(format=self._FORMAT,
         channels=self._CHANNELS,
         rate=self._RATE,
         input=True,
         frames_per_buffer=self._CHUNK)
         
-        
+    # Exemple d'utilisation
+    def fonction_bavarde(self):
+        print("Un message stdout")
+        logging.warning("Un message de log")
+        warnings.warn("Un warning")
+        raise ValueError("Une erreur sur stderr")
+
+
+            
     def save_audio(self,outputfile):
         with wave.open(outputfile, 'wb') as wf:
             wf.setnchannels(self._CHANNELS)
@@ -47,27 +58,26 @@ class KosmosHydro(Thread):
             wf.setframerate(self._RATE)
             wf.writeframes(b''.join(self._frames))
             wf.close()
-            
-                  
-    def run(self): 
-            while not self.stop_recording:
-                
-                
-                self._frames = []
                               
-                while not self._pause_event.isSet():
-                    data = self._stream.read(self._CHUNK, exception_on_overflow = False) # la perte de quelques frames n'altère pas la qualité de l'enregistrement
-                    self._frames.append(data)
-                else:
-                    self._continue_event.wait()
-            logging.info("Thread Audio terminé")
-            self._stream.stop_stream()
-            self._stream.close()
-            self._audio.terminate()
-
-    
+    def run(self):
+        while not self.stop_recording:  
+            self._frames = []              
+            while not self._pause_event.isSet():
+                data = self.stream.read(self._CHUNK, exception_on_overflow = False) # la perte de quelques frames n'altère pas la qualité de l'enregistrement
+                self._frames.append(data)
+            else:
+                self._continue_event.wait()
+        logging.info("Thread Audio terminé")
+        
+        
+    def arret_complet(self):
+        self.stream.stop_stream()
+        self.stream.close()
+        self._audio.terminate()
+  
     def stop_thread(self):
         self.stop_recording = True
+        self.arret_complet()
         self._continue_event.set()
         self._pause_event.set()
 
