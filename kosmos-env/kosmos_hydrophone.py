@@ -29,7 +29,7 @@ class KosmosHydro(Thread):
         self._FORMAT = pyaudio.paInt16
         self._CHANNELS = 1
         self._RATE = 44100
-        self._CHUNK = 1024 
+        self._CHUNK = 4096 
         self._audio = pyaudio.PyAudio()
         
         self.stop_recording = False        
