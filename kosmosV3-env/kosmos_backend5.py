@@ -15,7 +15,6 @@ log.setLevel(logging.ERROR)
 from kosmos_state import KState
 from kosmos_config import *
 
-
 class Server:
     
     app = Flask(__name__)
@@ -46,7 +45,7 @@ class Server:
             "status" : "ok",
             "state" : str(self.myMain.state)
         }
-        
+        _file_name
     def start(self):
         if(self.myMain.state==KState.STANDBY):   
             self.myMain.record_event.set() 
@@ -63,8 +62,10 @@ class Server:
         if(self.myMain.state==KState.WORKING):
             self.myMain.record_event.set()
             self.myMain.button_event.set()
+            increment = self.myMain._conf.system.getint(INCREMENT_SECTION,"increment") - 1
+            my_file = self.myMain._conf.config.get(CAMPAIGN_SECTION,"zone") + f'{self.myMain._conf.get_date_Y()}' + f'{increment:04}'
             try:
-                metadata_path = GIT_PATH + "infoStationTemplate.json"
+                metadata_path = self.myMain._conf.CAMPAIGN_PATH + my_file +"/" + my_file + ".json"
                 with open(metadata_path, 'r', encoding='utf-8') as f:
                     data = json.load(f)
                     return {
@@ -73,7 +74,7 @@ class Server:
                     }
             except :
                 return {
-                "status" : "error"
+                    "status" : "error"
             }
 
         else :
@@ -237,9 +238,9 @@ class Server:
     
     def update_metadata(self):
         increment = self.myMain._conf.system.getint(INCREMENT_SECTION,"increment") - 1
-        myfile = self.myMain._conf.config.get(CAMPAIGN_SECTION,"zone") + f'{self.myMain._conf.get_date_Y()}' + f'{increment:04}'+'/'
+        my_file = self.myMain._conf.config.get(CAMPAIGN_SECTION,"zone") + f'{self.myMain._conf.get_date_Y()}' + f'{increment:04}'
                 
-        metadata_path = self.myMain._conf.CAMPAIGN_PATH +myfile+ "infoStation.json"
+        metadata_path = self.myMain._conf.CAMPAIGN_PATH +my_file+"/"+my_file +".json"
         data = request.json 
         
         try:
