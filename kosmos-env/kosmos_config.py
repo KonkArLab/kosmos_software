@@ -65,7 +65,6 @@ class KosmosConfig:
         logging.info("kosmos_system.ini lu dans home")
         self.systemName = self.system.get(SYSTEM_SECTION,"system")
         self.systemVersion = self.system.get(SYSTEM_SECTION,"version")
-        self.systemCamera = self.system.get(SYSTEM_SECTION,"camera")
 
         
         logging.debug("Lecture kosmos_config.ini")

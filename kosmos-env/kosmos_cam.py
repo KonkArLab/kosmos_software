@@ -34,8 +34,6 @@ class KosmosCam(Thread):
                 Conf (KosmosConfig) : gestionaire de la config
                 aDate date : utilistée juste pour fixer le nom du fichier vidéo
         Dans le fichier de configuration :
-             31_PICAM_resolution_x : la résolution horizontale
-             32_PICAM_resolution_y : la résolution verticale
              34_PICAM_framerate  : framerate
              33_PICAM_preview : si 1 : Lance la fenêtre de preview (utile en debug)
              35_PICAM_record_time : le temps d'enregistrement en secondes.
@@ -47,16 +45,35 @@ class KosmosCam(Thread):
         
         # On restreint les messages 
         Picamera2.set_logging(Picamera2.ERROR)
-       
+        
+        # Dénombrement des caméras disponibles
+        self._CAM_NUMBER = len(Picamera2.global_camera_info())
+        self._CAM1_SENSOR = Picamera2.global_camera_info()[0]['Model']
+        if self._CAM_NUMBER == 2:
+            self._CAM2_SENSOR = Picamera2.global_camera_info()[1]['Model']
+            if self._CAM1_SENSOR == self._CAM2_SENSOR:
+                if aConf.config.getint(CONFIG_SECTION,"39_PICAM_stereo") == 1:
+                    logging.info(f"Deux caméras indentiques détectées {self._CAM1_SENSOR}-> MODE STEREO")
+                    self.STEREO = True
+                else:
+                    logging.info(f"Deux caméras indentiques détectées mais MODE MONO demandé")
+                    self.STEREO = False
+            else:
+                logging.error(f"Deux caméras détectées mais différentes -> MODE MONO")
+                self.STEREO = False
+        else:
+            logging.info(f"Une caméra détectées {self._CAM1_SENSOR} -> MODE MONO")
+            self.STEREO = False
+
         Thread.__init__(self)
         self._Conf = aConf    
         # Résolutions horizontale
-        if aConf.systemCamera == "IMX296":
-            self._X_RESOLUTION = 1456#aConf.config.getint(CONFIG_SECTION,"31_PICAM_resolution_x")
-            self._Y_RESOLUTION = 1088#aConf.config.getint(CONFIG_SECTION,"32_PICAM_resolution_y")
-        elif aConf.systemCamera == "IMX477":
-            self._X_RESOLUTION = 2028#aConf.config.getint(CONFIG_SECTION,"31_PICAM_resolution_x")
-            self._Y_RESOLUTION = 1520#aConf.config.getint(CONFIG_SECTION,"32_PICAM_resolution_y")
+        if self._CAM1_SENSOR == 'imx296':
+            self._X_RESOLUTION = 1456
+            self._Y_RESOLUTION = 1088
+        elif self._CAM1_SENSOR == 'imx477':
+            self._X_RESOLUTION = 2028
+            self._Y_RESOLUTION = 1520
                        
         # Framerate et frameduration camera
         self._FRAMERATE=aConf.config.getint(CONFIG_SECTION,"34_PICAM_framerate")
@@ -96,25 +113,14 @@ class KosmosCam(Thread):
         if aConf.config.getint(CONFIG_SECTION,"38_PICAM_timestamp") == 1:
             self._camera.pre_callback = self.apply_timestamp
         
-        # Booléen pour la Stéréo
-        if aConf.config.getint(CONFIG_SECTION,"39_PICAM_stereo") == 1:
-            self.STEREO = True
-            logging.info("Mode STEREO demandé")
-        else:
-            self.STEREO = False
-            logging.info("Mode STEREO non demandé")
-            
+        
         #Initialisation deuxième CAMéRA pour stéréo    
-        if self.STEREO:
-            try:
-                self._camera2 = Picamera2(1)
-                self._camera2.set_controls({'AeExposureMode': 'Short'}) # on privilégie une adaptation par gain analogique que par augmentation du tps d'expo, et ce, pour limiter le flou de bougé
-                self._camera2.configure(self._video_config) # même config pour les deux caméras            
-                self._camera2.start() #A noter que le Preview.NULL démarre également 
-                logging.info("Caméra stéréo démarrée")
-            except:
-                self.STEREO = False
-                logging.error("Camera stéréo non détectée")
+        if self.STEREO:      
+            self._camera2 = Picamera2(1)
+            self._camera2.set_controls({'AeExposureMode': 'Short'}) # on privilégie une adaptation par gain analogique que par augmentation du tps d'expo, et ce, pour limiter le flou de bougé
+            self._camera2.configure(self._video_config) # même config pour les deux caméras            
+            self._camera2.start() #A noter que le Preview.NULL démarre également 
+            logging.info("Caméra stéréo démarrée") 
             # Instanciation Encoder    
             self._encoder2=H264Encoder(framerate=self._FRAMERATE, bitrate=10000000)
             
@@ -140,8 +146,7 @@ class KosmosCam(Thread):
             logging.info("Capteur de pression OK")
         except:
             logging.error("Erreur d'initialisation du capteur de pression")
-    
-    
+       
         # Definition Thread Hydrophone
         self.PRESENCE_HYDRO = self._Conf.config.getint(CONFIG_SECTION,"40_HYDROPHONE_bool") # Fonctionnement moteur si 1
         if self.PRESENCE_HYDRO==1:
@@ -167,15 +172,24 @@ class KosmosCam(Thread):
         if self._CONVERSION == 1:
             #Conversion h264 vers mp4 puis effacement du .h264
             wav_file = os.path.splitext(input_file)[0] + '.wav'
-            output_file = os.path.splitext(input_file)[0] + '.mp4'       
+            output_file = os.path.splitext(input_file)[0] + '.mp4'
+            
             try:
                 if self.PRESENCE_HYDRO == 1:
                     subprocess.run(['sudo', 'ffmpeg', '-probesize','2G','-r', str(self._FRAMERATE), '-i', input_file, '-i', wav_file, '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k', output_file, '-loglevel', 'warning'])
                 else:
                     subprocess.run(['sudo', 'ffmpeg', '-probesize','2G','-r', str(self._FRAMERATE), '-i', input_file, '-c', 'copy', output_file, '-loglevel', 'warning'])
-                logging.info("Conversion successful !")
+                logging.info("Conversion video 1 successful !")
                 os.remove(input_file)
                 logging.debug(f"Deleted input H.264 file: {input_file}")                
+
+                if self.STEREO == 1:
+                    input_file2 = os.path.splitext(input_file)[0]+'_STEREO.h264'
+                    output_file2 = os.path.splitext(input_file)[0] +'_STEREO.mp4'
+                    subprocess.run(['sudo', 'ffmpeg', '-probesize','2G','-r', str(self._FRAMERATE), '-i', input_file2, '-c', 'copy', output_file2, '-loglevel', 'warning'])
+                    logging.info("Conversion video 2 successful !")
+                    logging.debug(f"Deleted input H.264 file: {input_file2}")
+                    
             except subprocess.CalledProcessError as e:
                 logging.error("Error during conversion:", e, " !!!")       
         else:
@@ -322,8 +336,6 @@ class KosmosCam(Thread):
                 event_line =  self._Conf.get_date_HMS()  + ";START CONVERSION;" + self._output
                 self._Conf.add_line(EVENT_FILE,event_line)
                 self.convert_to_mp4(self._output)
-                if self.STEREO:
-                    self.convert_to_mp4(self._output2)
                 event_line =  self._Conf.get_date_HMS()  + ";END CONVERSION;" + self._file_name +'.mp4'
                 self._Conf.add_line(EVENT_FILE,event_line)
                 
@@ -339,7 +351,7 @@ class KosmosCam(Thread):
             infoStationDict["system"]["system"] = self._Conf.systemName
             infoStationDict["system"]["version"] = self._Conf.systemVersion
             infoStationDict["system"]["model"]=self._Conf.get_RPi_model()
-            infoStationDict["system"]["camera"] = "picam"
+            infoStationDict["system"]["camera"] = self._CAM1_SENSOR
             infoStationDict["system"]["moteur"] = "brushless"
             infoStationDict["campagne"]["zoneDict"]["campagne"] = self._Conf.config.get(CAMPAGNE_SECTION,"campagne")
             infoStationDict["campagne"]["zoneDict"]["zone"] = self._Conf.config.get(CAMPAGNE_SECTION,"zone")
