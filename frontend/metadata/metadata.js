@@ -3,7 +3,7 @@ let serverUrl = "http://10.42.0.1:5000";
 const defaultMetaData = {
     video: {
         codeStation: "",
-        hourDict: { hour: "", minute: "" },
+        hourDict: { hour: "", minute: "", second: ""},
         gpsDict: { site: "", latitude: "", longitude: "" },
         ctdDict: { depth: "", temperature: "", salinity: "" },
         astroDict: { moon: "", tide: "", coefficient: "" },
@@ -53,7 +53,8 @@ function initializeChoices(selectElement, choicesArray) {
 }
 
 function generateTable() {
-  const metaData = loadMetaData();
+  const metaData = defaultMetaData;
+  const metaDataValues = loadMetaData().video;
   const table = document.getElementById("metadataTable");
 
   Object.entries(metaData.video).forEach(([key, value]) => {
@@ -77,20 +78,30 @@ function generateTable() {
     sectionContent.classList.add("section-content");
 
     if (key === "codeStation") {
-      createFormRow(sectionContent, key, "Station Code", value);
+      createFormRow(sectionContent, key, "Station Code", metaDataValues[key]);
     } else if (key === "hourDict") {
-      createTimeField(sectionContent, value);
+      createTimeField(sectionContent, metaDataValues[key]);
     } else if (typeof value === "object" && !Array.isArray(value)) {
       Object.entries(value).forEach(([subKey, subValue]) => {
-        createFormRow(sectionContent, key, subKey, subValue);
+        createFormRow(sectionContent, key, subKey, metaDataValues[key][subKey]);
       });
     } else {
-      createFormRow(sectionContent, key, value);
+      createFormRow(sectionContent, key, metaDataValues.key);
     }
 
     table.appendChild(sectionContent);
-
     document.getElementById("formMetaData").addEventListener("submit", submitForm);
+  });
+  const inputs = document.querySelectorAll('input[type="number"]');
+  const maxDecimals = 7;
+  inputs.forEach(inputElement => {
+    inputElement.addEventListener('input', function() {
+      const value = inputElement.value;
+      const decimalPart = value.split('.')[1];
+      if(decimalPart && decimalPart.length > maxDecimals) {
+        inputElement.value = value.slice(0, value.indexOf('.') + maxDecimals + 1);
+      }
+    });
   });
 }
 
@@ -221,12 +232,11 @@ function submitForm(event) {
   dataFinal = defaultMetaData;
   const video = defaultMetaData.video;
   dataFinal["campaign"] = JSON.parse(localStorage.getItem("campaignData"));
-
-  video.codeStation = document.getElementById('codeStation')?.value;
+  
+  dataFinal["system"] = loadMetaData().system;
+  video.codeStation = document.getElementById('Station Code')?.value;
 
   let time = document.getElementById('timeInformation')?.value;
-
-  console.log(time);
 
   video.hourDict.hour = parseInt(time.substr(0,2));
   video.hourDict.minute =  parseInt(time.substr(3,2));
@@ -234,24 +244,64 @@ function submitForm(event) {
 
   video.gpsDict.site = document.getElementById('site')?.value;
   video.gpsDict.latitude = parseFloat(document.getElementById('latitude')?.value);
+  if(video.gpsDict.latitude < limits["latitude"]["min"] || video.gpsDict.latitude > limits["latitude"]["max"]) {
+    limitError("latitude", limits["latitude"]["min"], limits["latitude"]["max"]);
+    return;
+  }
   video.gpsDict.longitude = parseFloat(document.getElementById('longitude')?.value);
+  if(video.gpsDict.longitude < limits["longitude"]["min"] || video.gpsDict.longitude > limits["longitude"]["max"]) {
+    limitError("longitude", limits["longitude"]["min"], limits["longitude"]["max"]);
+    return;
+  }
 
   video.ctdDict.depth = parseFloat(document.getElementById('depth')?.value);
+  if(video.gpsDict.depth < limits["depth"]["min"] || video.gpsDict.depth > limits["depth"]["max"]) {
+    limitError("depth", limits["depth"]["min"], limits["depth"]["max"]);
+    return;
+  }
   video.ctdDict.temperature = parseFloat(document.getElementById('temperature')?.value);
+  if(video.gpsDict.temperature < limits["temperature"]["min"] || video.gpsDict.temperature > limits["temperature"]["max"]) {
+    limitError("temperature", limits["temperature"]["min"], limits["temperature"]["max"]);
+    return;
+  }
   video.ctdDict.salinity = parseInt(document.getElementById('salinity')?.value);
+  if(video.gpsDict.salinity < limits["salinity"]["min"] || video.gpsDict.salinity > limits["salinity"]["max"]) {
+    limitError("salinity", limits["salinity"]["min"], limits["salinity"]["max"]);
+    return;
+  }
 
   video.astroDict.moon = document.getElementById('moon')?.value;
   video.astroDict.tide = document.getElementById('tide')?.value;
   video.astroDict.coefficient = parseInt(document.getElementById('coefficient')?.value);
+  if(video.gpsDict.coefficient < limits["coefficient"]["min"] || video.gpsDict.coefficient > limits["coefficient"]["max"]) {
+    limitError("coefficient", limits["coefficient"]["min"], limits["coefficient"]["max"]);
+    return;
+  }
 
   video.meteoAirDict.sky = document.getElementById('sky')?.value;
   video.meteoAirDict.wind = parseInt(document.getElementById('wind')?.value);
+  if(video.gpsDict.wind < limits["wind"]["min"] || video.gpsDict.wind > limits["wind"]["max"]) {
+    limitError("wind", limits["wind"]["min"], limits["wind"]["max"]);
+    return;
+  }
   video.meteoAirDict.direction = document.getElementById('direction')?.value;
   video.meteoAirDict.atmPress = parseFloat(document.getElementById('atmPress')?.value);
+  if(video.gpsDict.atmPress < limits["atmPress"]["min"] || video.gpsDict.atmPress > limits["atmPress"]["max"]) {
+    limitError("atmPress", limits["atmPress"]["min"], limits["atmPress"]["max"]);
+    return;
+  }
   video.meteoAirDict.tempAir = parseFloat(document.getElementById('tempAir')?.value);
+  if(video.gpsDict.tempAir < limits["tempAir"]["min"] || video.gpsDict.tempAir > limits["tempAir"]["max"]) {
+    limitError("tempAir", limits["tempAir"]["min"], limits["tempAir"]["max"]);
+    return;
+  }
 
   video.meteoMerDict.seaState = document.getElementById('seaState')?.value;
   video.meteoMerDict.swell = parseInt(document.getElementById('swell')?.value);
+  if(video.gpsDict.swell < limits["swell"]["min"] || video.gpsDict.swell > limits["swell"]["max"]) {
+    limitError("swell", limits["swell"]["min"], limits["swell"]["max"]);
+    return;
+  }
 
   video.analyseDict.exploitability = document.getElementById('exploitability')?.value;
   video.analyseDict.habitat = document.getElementById('habitat')?.value;
@@ -274,6 +324,15 @@ function submitForm(event) {
 
 }
 
+function limitError(key, min, max) {
+  Swal.fire({
+      title: 'Error',
+      text: key + ' has to be between ' + min + ' and ' + max + '.',
+      icon: 'error',
+      confirmButtonText: 'OK'
+    });
+}
+
 async function sendToBack(data) {
   try {
     const response = await fetch(serverUrl + "/updateMetadata", {
@@ -283,7 +342,6 @@ async function sendToBack(data) {
       },
       body: JSON.stringify(data),
     });
-  
     if (response.ok) {
       Swal.fire({
         title: 'Success',
