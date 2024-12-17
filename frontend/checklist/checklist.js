@@ -6,6 +6,8 @@ let serverUrl = "http://10.42.0.1:5000";
 // Variable to store configuration data fetched from the server
 let listData;
 
+
+// List of equipment required for a campaign
 const materials = [
 	"Batterie chargée",
 	"Batterie de rechange",
@@ -45,23 +47,28 @@ const materials = [
 document.addEventListener("DOMContentLoaded", function () {
   const list = document.getElementById("checkList");
 
+  // Initialize ocal storage for selected materials
   function initLocalStorage() {
     if (!localStorage.getItem("materials")) {
       localStorage.setItem("materials", JSON.stringify([]));
     }
   }
 
+  // Retrieve materials from local storage
   function getMaterialsFromLocalStorage() {
     return JSON.parse(localStorage.getItem("materials")) || [];
   }
 
+  // Save the selected materials to local storage
   function saveMaterialsToLocalStorage(materials) {
     localStorage.setItem("materials", JSON.stringify(materials));
   }
 
+  // Initialize local storage
   initLocalStorage();
   let materialsChose = getMaterialsFromLocalStorage();
 
+  // Create list elements for each material
   materials.forEach((element, index) => {
     let listItem = document.createElement("li");
 
@@ -79,6 +86,7 @@ document.addEventListener("DOMContentLoaded", function () {
     list.append(listItem);
   });
 
+  // Create a reset button
   const resetButton = document.createElement("button");
   resetButton.setAttribute("id", "resetButton");
   resetButton.setAttribute("type", "reset");
@@ -89,10 +97,12 @@ document.addEventListener("DOMContentLoaded", function () {
   });
   list.appendChild(resetButton);
 
+  // Select all input elements of type checkbox
   const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+  // For each checkbox, verify if it is selected (if it is in the list of chosen materials)
   checkboxes.forEach(checkbox => {
     if (materialsChose.includes(checkbox.value)) {
-      checkbox.checked = true;
+      checkbox.checked = true; // Check the box if the material is in the list of chosen materials
     }
   });
 

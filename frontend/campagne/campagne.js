@@ -1,6 +1,8 @@
 document.addEventListener("DOMContentLoaded", function () {
+     // Select the main form by its ID
     const form = document.getElementById("campaignForm");
 
+     // Define the form fields with their properties like ID, placeholder, type, etc.
     const fields = [
         { id: "campaign", placeholder: "Sélectionnez un campagne", type: "text", label: "Campaign", tabIndex: 1, tabIndex: 8, isCampaign: true },
         { id: "zone", placeholder: "Sélectionnez une zone", type: "text", label: "Zone", tabIndex: 2, isZone: true },
@@ -13,6 +15,7 @@ document.addEventListener("DOMContentLoaded", function () {
         { id: "partners", placeholder: "Ifremer RDT, Ifremer Halgo", type: "text", label: "Partners", tabIndex: 9, maxlength: "200" }
     ];
 
+    // Available options for campaigns
     const campaignOptions = [
         {code: "ANT", name: "Antarctique"},
         {code: "ARC", name: "Arctique"},
@@ -22,6 +25,7 @@ document.addEventListener("DOMContentLoaded", function () {
         {code: "PAC", name: "Pacifique"}
     ]
 
+    // Available options for zones
     const zoneOptions = [
         { code: "AC", name: "Arcachon" },
         { code: "AD", name: "Audierne" },
@@ -73,11 +77,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let choicesInstance = null;
 
+    // Dynamically create form fields
     fields.forEach(field => {
         const label = document.createElement("label");
         label.setAttribute("for", field.id);
         label.textContent = field.label + ": ";
 
+        // Create an input for text fields
         const input = document.createElement("input");
         input.id = field.id;
         input.placeholder = field.placeholder;
@@ -87,17 +93,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
         form.appendChild(label);
         
+        // Add specific fields for campaigns
         if (field.isCampaign) {
             const select = document.createElement("select");
             select.id = field.id;
             select.setAttribute("placeholder", field.placeholder);
             select.setAttribute("name", field.id);
         
+            // Default option
             const defaultOption = document.createElement("option");
             defaultOption.value = "";
             defaultOption.textContent = field.placeholder;
             select.appendChild(defaultOption);
         
+            // Add campaign options to the select
             campaignOptions.forEach(option => {
                 const optionElement = document.createElement("option");
                 optionElement.value = option.code;
@@ -105,6 +114,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 select.appendChild(optionElement);
             });
         
+            // Add standard fields to the form
             form.appendChild(label);
             form.appendChild(select);
         
@@ -115,17 +125,20 @@ document.addEventListener("DOMContentLoaded", function () {
             }); 
         }
 
+        // Add specific fields for zones
         if (field.isZone) {
             const select = document.createElement("select");
             select.id = field.id;
             select.setAttribute("placeholder", field.placeholder);
             select.setAttribute("name", field.id);
         
+            // Default option
             const defaultOption = document.createElement("option");
             defaultOption.value = "";
             defaultOption.textContent = field.placeholder;
             select.appendChild(defaultOption);
         
+            // Add zone options to the select
             zoneOptions.forEach(option => {
                 const optionElement = document.createElement("option");
                 optionElement.value = option.code;
@@ -133,9 +146,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 select.appendChild(optionElement);
             });
         
+            // Add standard fields to the form
             form.appendChild(label);
             form.appendChild(select);
         
+
+            // Initialize Choices.js to make the select interactive
             choicesInstance = new Choices(select, {
                 searchEnabled: true,
                 shouldSort: false,
@@ -145,7 +161,8 @@ document.addEventListener("DOMContentLoaded", function () {
             form.appendChild(input);
         }        
     });
-
+ 
+    // Add "Save" and "Reset" buttons to the form
     const saveButton = document.createElement("button");
     saveButton.type = "submit";
     saveButton.textContent = "Save";
@@ -158,6 +175,7 @@ document.addEventListener("DOMContentLoaded", function () {
     form.appendChild(saveButton);
     form.appendChild(resetButton);
 
+     // Load previously saved data from localStorage
     const storedData = localStorage.getItem("campagneData");
     if (storedData) {
         const formData = JSON.parse(storedData);
@@ -172,11 +190,12 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+     // Handle form submission event
     form.addEventListener("submit", function (event) {
-        event.preventDefault();
+        event.preventDefault(); // Prevent page reload
 
         const formData = {};
-        let allFieldsFilled = true;
+        let allFieldsFilled = true; // Check that all fields are filled
 
         fields.forEach(field => {
             const value = document.getElementById(field.id).value;
@@ -188,6 +207,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const storedDataParsed = storedData ? JSON.parse(storedData) : null;
         
+         // Alert if there is no new information to save
         if (JSON.stringify(storedDataParsed) === JSON.stringify(formData)) {
             Swal.fire({
                 title: 'Alert',
@@ -198,6 +218,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
+        // Alert if some fields are empty
         if (!allFieldsFilled) {
             Swal.fire({
                 title: 'Error',
@@ -208,6 +229,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
+        // Save the data to localStorage
         localStorage.setItem("campagneData", JSON.stringify(formData));
         Swal.fire({
             title: 'Success',

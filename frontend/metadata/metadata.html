@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <!-- Page metadata and external stylesheets -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width initial-scale=1.0">
     <link rel="stylesheet" href="../libs/choices/choices.min.css">
@@ -10,6 +11,7 @@
   </head>
 
   <body>
+    <!-- Header section with navigation menu -->
     <header>
       <input type="checkbox" id="menuToggle" class="menu-toggle">
 
@@ -27,9 +29,11 @@
         </ul>
       </nav>
     </header>
+     <!-- Main section to display metadata -->
     <section>
       <div class="container">
         <h3> Captured metadata </h3>
+        <!-- Form to display and submit metadata -->
         <form id="formMetaData">
           <table id="metadataTable"></table>
           <button type="submit">Save</button>
@@ -37,6 +41,7 @@
       </div>
     </section>
     
+    <!-- External libraries for dropdowns and alerts -->
     <script src="../libs/choices/choices.min.js"></script>
     <script src="../libs/sweetAlert/sweetAlert.min.js"></script>
     <script src="metadata.js"></script>

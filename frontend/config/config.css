@@ -1,5 +1,6 @@
 @import url('../styles.css');
 
+/* Style for each parameter container */
 .parameter {
   margin-bottom: var(--margin-space-normal);
   display: flex;

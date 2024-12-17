@@ -1,5 +1,6 @@
 let serverUrl = "http://10.42.0.1:5000";
 
+// Default metadata object in case no data is available
 const defaultMetaData = {
     video: {
         codeStation: "",
@@ -13,6 +14,7 @@ const defaultMetaData = {
     },
 };
 
+// Load metadata from localStorage, or return defaults if not available
 function loadMetaData() {
   let metaData;
   try {
@@ -22,6 +24,7 @@ function loadMetaData() {
     return defaultMetaData;
   }
   
+  // Validate metadata and load default if invalid
   if (!metaData || !validateMetaData(metaData)) {
     alert("Invalid or missing metaData. Loading default values.");
     return defaultMetaData;
@@ -54,7 +57,7 @@ async function loadMetadataFromBackend()
 }
 */
 
-
+// Function to validate metadata structure
 function validateMetaData(data) {
   return data && data.video && data.video.hourDict && data.video.gpsDict;
 }
@@ -78,6 +81,7 @@ function initializeChoices(selectElement, choicesArray) {
   });
 }
 
+// Generate the metadata table dynamically
 function generateTable() {
   const metaData = loadMetaData();
   const table = document.getElementById("metadataTable");
@@ -85,12 +89,14 @@ function generateTable() {
   Object.entries(metaData.video).forEach(([key, value]) => {
     const sectionTitle = sectionTitles[key] || key;
 
+    // Create a row for the section title
     const titleRow = document.createElement("tr");
     const titleCell = document.createElement("td");
     titleCell.colSpan = 2;
     titleCell.textContent = sectionTitle;
     titleCell.classList.add("section-title");
 
+    // Toggle collapse behavior
     titleCell.addEventListener("click", () => {
       sectionContent.classList.toggle("collapsed");
       titleCell.classList.toggle("collapsed");
@@ -102,6 +108,7 @@ function generateTable() {
     const sectionContent = document.createElement("tbody");
     sectionContent.classList.add("section-content");
 
+    // Handle different field types dynamically
     if (key === "codeStation") {
       createFormRow(sectionContent, key, "Station Code", value);
     } else if (key === "hourDict") {
@@ -165,7 +172,7 @@ async function generateTable()
 }
 */
 
-
+// Helper function to create a time input field
 function createTimeField(container, timeValues) {
   const row = document.createElement("tr");
 
@@ -185,6 +192,7 @@ function createTimeField(container, timeValues) {
   container.appendChild(row);
 }
 
+// Helper function to create form rows dynamically
 function createFormRow(container, sectionKey, label, value) {
   const row = document.createElement("tr");
 
@@ -221,6 +229,7 @@ function createFormRow(container, sectionKey, label, value) {
   container.appendChild(row);
 }
 
+// List of choices for some metadatas
 function getChoicesForField(field) {
   const choicesData = {
     direction: [
@@ -266,6 +275,7 @@ function getChoicesForField(field) {
   return choicesData[field] || [];
 }
 
+// assert a certain input type
 function determineInputType(value) {
   return typeof value === "number" ? "number" : "text";
 }
@@ -312,6 +322,7 @@ function validateField(type, key, subKey, value) {
   return [true, "", ""];
 }
 
+// Submit form handler
 async function submitForm(event) {
   event.preventDefault();
 
