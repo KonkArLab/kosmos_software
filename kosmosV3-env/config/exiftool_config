@@ -1,0 +1,6 @@
+%Image::ExifTool::UserDefined = (
+    'Image::ExifTool::XMP::xmp' => {
+        kosmos => { Writable => 'lang-alt' },
+    },
+);
+1;
