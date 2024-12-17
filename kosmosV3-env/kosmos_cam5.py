@@ -9,6 +9,7 @@ import logging
 from picamera2.encoders import H264Encoder
 from picamera2 import Picamera2,Preview,MappedArray,Metadata
 import cv2
+import hashlib
 
 import os
 from kosmos_config import *
@@ -137,7 +138,7 @@ class KosmosCam(Thread):
                 os.remove(input_file)
                 logging.debug(f"Deleted input H.264 file: {input_file}") 
                 # Ajouter la métadonnée personnalisée
-                custom_value = "KOSMOS_TEST"  # Remplace par une valeur dynamique si besoin
+                custom_value = "KOSMOS_TEST"  # Test 
                 self.add_metadata(output_file, custom_value)
 
             except subprocess.CalledProcessError as e:
@@ -153,20 +154,23 @@ class KosmosCam(Thread):
         try:
             # Chemin complet vers le fichier de configuration exiftool
             config_path = os.path.abspath('/home/kosmos/kosmos_software/kosmosV3-env/config/exiftool_config')
-            print("pass1")
-            command = ['exiftool', '-config', config_path, f'-kosmos={custom_value}', '-overwrite_original', video_file]
-            print("pass2")
+            hashed_value = self.hash_encoder(custom_value)
+            command = ['exiftool', '-config', config_path, f'-kosmos={hashed_value}', '-overwrite_original', video_file]
             
             # Afficher la commande pour débogage
             print("Commande appelée :", " ".join(command))
             
             # Exécuter la commande
             subprocess.run(command, check=True)
-            logging.info(f"Metadonnée '-kosmos={custom_value}' ajoutée à {video_file}")
+            logging.info(f"Metadonnée '-kosmos={hashed_value}' ajoutée à {video_file}")
 
         except subprocess.CalledProcessError as e:
             logging.error(f"Erreur lors de l'ajout des métadonnées : {e}")
 
+
+    def hash_encoder(self, p_text) :
+        return hashlib.sha256(p_text.encode()).hexdigest()
+    
       
     def initialisation_awb(self):
         if self._AWB == 0:
