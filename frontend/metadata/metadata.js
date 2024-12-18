@@ -4,14 +4,14 @@ let serverUrl = "http://10.42.0.1:5000";
 const defaultMetaData = {
     video: {
         codeStation: "",
-        hourDict: { hour: 0, minute: 0, second: 0 },
-        gpsDict: { site: "", latitude: 0.0, longitude: 0.0 },
-        ctdDict: { depth: 0.0, temperature: 0.0, salinity: 0 },
-        astroDict: { moon: "NL", tide: "BM", coefficient: 20 },
-        meteoAirDict: { sky: "", wind: 0, direction: "N", atmPressure: 1013.0, airTemp: 0.0 },
-        meteoMerDict: { seaState: "", swell: 0 },
+        hourDict: { hour: "", minute: "", second: ""},
+        gpsDict: { site: "", latitude: "", longitude: "" },
+        ctdDict: { depth: "", temperature: "", salinity: "" },
+        astroDict: { moon: "", tide: "", coefficient: "" },
+        meteoAirDict: { sky: "", wind: "", direction: "", atmPress: "", tempAir: "" },
+        meteoMerDict: { seaState: "", swell: "" },
         analyseDict: { exploitability: "", habitat: "", fauna: "", visibility: "" },
-    },
+    }
 };
 
 // Load metadata from localStorage, or return defaults if not available
@@ -83,7 +83,8 @@ function initializeChoices(selectElement, choicesArray) {
 
 // Generate the metadata table dynamically
 function generateTable() {
-  const metaData = loadMetaData();
+  const metaData = defaultMetaData;
+  const metaDataValues = loadMetaData().video;
   const table = document.getElementById("metadataTable");
 
   Object.entries(metaData.video).forEach(([key, value]) => {
@@ -110,67 +111,32 @@ function generateTable() {
 
     // Handle different field types dynamically
     if (key === "codeStation") {
-      createFormRow(sectionContent, key, "Station Code", value);
+      createFormRow(sectionContent, key, "Station Code", metaDataValues[key]);
     } else if (key === "hourDict") {
-      createTimeField(sectionContent, value);
+      createTimeField(sectionContent, metaDataValues[key]);
     } else if (typeof value === "object" && !Array.isArray(value)) {
       Object.entries(value).forEach(([subKey, subValue]) => {
-        createFormRow(sectionContent, key, subKey, subValue);
+        createFormRow(sectionContent, key, subKey, metaDataValues[key][subKey]);
       });
     } else {
-      createFormRow(sectionContent, key, value);
+      createFormRow(sectionContent, key, metaDataValues.key);
     }
 
     table.appendChild(sectionContent);
-
     document.getElementById("formMetaData").addEventListener("submit", submitForm);
   });
-}
-
-/*
-async function generateTable()
-{
-    const metaData = await loadMetadataFromBackend();
-    const table = document.getElementById("metadataTable");
-
-    Object.entries(metaData.video).forEach(([key, value]) => {
-        const sectionTitle = sectionTitles[key] || key;
-
-        const titleRow = document.createElement("tr");
-        const titleCell = document.createElement("td");
-        titleCell.colSpan = 2;
-        titleCell.textContent = sectionTitle;
-        titleCell.classList.add("section-title");
-
-        titleCell.addEventListener("click", () => {
-            sectionContent.classList.toggle("collapsed");
-            titleCell.classList.toggle("collapsed");
-        });
-
-        titleRow.appendChild(titleCell);
-        table.appendChild(titleRow);
-
-        const sectionContent = document.createElement("tbody");
-        sectionContent.classList.add("section-content");
-
-        if (key === "codeStation") {
-            createFormRow(sectionContent, key, "Station Code", value);
-        } else if (key === "hourDict") {
-            createTimeField(sectionContent, value);
-        } else if (typeof value === "object" && !Array.isArray(value)) {
-            Object.entries(value).forEach(([subKey, subValue]) => {
-                createFormRow(sectionContent, key, subKey, subValue);
-            });
-        } else {
-            createFormRow(sectionContent, key, value);
-        }
-
-        table.appendChild(sectionContent);
+  const inputs = document.querySelectorAll('input[type="number"]');
+  const maxDecimals = 7;
+  inputs.forEach(inputElement => {
+    inputElement.addEventListener('input', function() {
+      const value = inputElement.value;
+      const decimalPart = value.split('.')[1];
+      if(decimalPart && decimalPart.length > maxDecimals) {
+        inputElement.value = value.slice(0, value.indexOf('.') + maxDecimals + 1);
+      }
     });
-
-    document.getElementById("formMetaData").addEventListener("submit", submitForm);
+  });
 }
-*/
 
 // Helper function to create a time input field
 function createTimeField(container, timeValues) {
@@ -215,11 +181,10 @@ function createFormRow(container, sectionKey, label, value) {
     inputElement = document.createElement("input");
     inputElement.setAttribute("id", label);
     inputElement.type = determineInputType(value);
-    if(inputElement.type === "number"){
-      inputElement.setAttribute("step", "0.00001");
-      inputElement.setAttribute("oninput", "verifierFloat(this)");
-    }
     inputElement.value = value;
+    if(inputElement.type === "number"){
+      inputElement.setAttribute("step", "0.0000001");
+    }
   }
 
   inputElement.classList.add("form-input");
@@ -280,17 +245,6 @@ function determineInputType(value) {
   return typeof value === "number" ? "number" : "text";
 }
 
-function verifierFloat(input) {
-  const maxDecimals = 5;
-  if (!input.checkValidity()) {
-    let valeurFloat = parseFloat(input.value);
-
-    if (!isNaN(valeurFloat)) {
-      input.value = valeurFloat.toFixed(maxDecimals);
-    }
-  } 
-}
-
 function formatTime(timeDict) {
   const { hour, minute, second } = timeDict;
   return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:${String(second).padStart(2, '0')}`;
@@ -303,95 +257,128 @@ const limits = {
   "coefficient": {"min": 20, "max": 120},
   "wind": {"min": 0, "max": 12},
   "depth": {"min": 0, "max": 4000},
-  "temperature": {"min": -10, "max": 40},
+  "temperature": {"min": -10, "max": 60},
   "salinity": {"min": 0, "max": 50},
-  "atmPressure": {"min": 900, "max": 1100},
-  "airTemp": {"min": -90, "max": 90} ,
+  "atmPress": {"min": 900, "max": 1100},
+  "tempAir": {"min": -90, "max": 90} ,
   "swell": {"min": 0, "max": 30} 
 }
 
-function validateField(type, key, subKey, value) {
-  if (!value && fieldsToFill.includes(key)) {
-    return [false, subKey, "Fill at least the four first sections"];
-  }
-  if (type === "number") {
-    if (limits[subKey] && (value < limits[subKey]["min"] || value > limits[subKey]["max"])) {
-      return [false, subKey, `The value for ${subKey} must be between ${limits[subKey]["min"]} and ${limits[subKey]["max"]}`];
-    }
-  }
-  return [true, "", ""];
-}
-
-// Submit form handler
-async function submitForm(event) {
+function submitForm(event) {
   event.preventDefault();
-
-  const formData = {};
-  let validatedField = [true, "", ""];
-
-  for (const [key, value] of Object.entries(defaultMetaData.video)) {
-    if (key === "codeStation") {
-      const stationCode = document.getElementById("Station Code").value;
-      formData[key] = stationCode;
-      if (!stationCode) {
-        validatedField = [false, "Station Code", "Fill at least the Three first sections"];
-        break;
-      }
-    } else if (key === "hourDict") {
-      const time = document.getElementById("timeInformation").value;
-      if (time) {
-        const [heure, minute, second] = time.split(":").map(Number);
-        formData[key] = { heure, minute, second };
-      } else {
-        validatedField = [false, "timeInformation", "Fill at least the four first sections"];
-        break;
-      }
-    } else if (typeof value === "object" && !Array.isArray(value)) {
-      formData[key] = {};
-      for (const [subKey, subValue] of Object.entries(value)) {
-        console.log("subKey: "+subKey)
-        const fieldValue = document.getElementById(subKey).value;
-        validatedField = validateField(document.getElementById(subKey).type, key, subKey, fieldValue);
-        if (!validatedField[0]) {
-          break;
-        }
-        formData[key][subKey] = fieldValue;
-      }
-      if (!validatedField[0]) {
-        break;
-      }
-    } else {
-      const fieldValue = document.getElementById(key).value;
-      validatedField = validateField(document.getElementById(key).type, key, key, fieldValue);
-      if (!validatedField[0]) {
-        break;
-      }
-      formData[key] = fieldValue;
-    }
-  }
+  dataFinal = defaultMetaData;
+  const video = defaultMetaData.video;
+  dataFinal["campaign"] = JSON.parse(localStorage.getItem("campaignData"));
   
-  if (!validatedField[0]) {
-    Swal.fire({
-      title: 'Error',
-      text: validatedField[2],
-      icon: 'error',
-      confirmButtonText: 'OK'
-    }).then(() => {
-      document.getElementById(validatedField[1]).focus();
-    });
+  dataFinal["system"] = loadMetaData().system;
+  video.codeStation = document.getElementById('Station Code')?.value;
+
+  let time = document.getElementById('timeInformation')?.value;
+
+  video.hourDict.hour = parseInt(time.substr(0,2));
+  video.hourDict.minute =  parseInt(time.substr(3,2));
+  video.hourDict.second =  parseInt(time.substr(6,2));
+
+  video.gpsDict.site = document.getElementById('site')?.value;
+  video.gpsDict.latitude = parseFloat(document.getElementById('latitude')?.value);
+  if(video.gpsDict.latitude < limits["latitude"]["min"] || video.gpsDict.latitude > limits["latitude"]["max"]) {
+    limitError("latitude", limits["latitude"]["min"], limits["latitude"]["max"]);
+    return;
+  }
+  video.gpsDict.longitude = parseFloat(document.getElementById('longitude')?.value);
+  if(video.gpsDict.longitude < limits["longitude"]["min"] || video.gpsDict.longitude > limits["longitude"]["max"]) {
+    limitError("longitude", limits["longitude"]["min"], limits["longitude"]["max"]);
     return;
   }
 
-  //formData["campagne"] = JSON.parse(localStorage.getItem("campagneData"));
+  video.ctdDict.depth = parseFloat(document.getElementById('depth')?.value);
+  if(video.gpsDict.depth < limits["depth"]["min"] || video.gpsDict.depth > limits["depth"]["max"]) {
+    limitError("depth", limits["depth"]["min"], limits["depth"]["max"]);
+    return;
+  }
+  video.ctdDict.temperature = parseFloat(document.getElementById('temperature')?.value);
+  if(video.gpsDict.temperature < limits["temperature"]["min"] || video.gpsDict.temperature > limits["temperature"]["max"]) {
+    limitError("temperature", limits["temperature"]["min"], limits["temperature"]["max"]);
+    return;
+  }
+  video.ctdDict.salinity = parseInt(document.getElementById('salinity')?.value);
+  if(video.gpsDict.salinity < limits["salinity"]["min"] || video.gpsDict.salinity > limits["salinity"]["max"]) {
+    limitError("salinity", limits["salinity"]["min"], limits["salinity"]["max"]);
+    return;
+  }
+
+  video.astroDict.moon = document.getElementById('moon')?.value;
+  video.astroDict.tide = document.getElementById('tide')?.value;
+  video.astroDict.coefficient = parseInt(document.getElementById('coefficient')?.value);
+  if(video.gpsDict.coefficient < limits["coefficient"]["min"] || video.gpsDict.coefficient > limits["coefficient"]["max"]) {
+    limitError("coefficient", limits["coefficient"]["min"], limits["coefficient"]["max"]);
+    return;
+  }
+
+  video.meteoAirDict.sky = document.getElementById('sky')?.value;
+  video.meteoAirDict.wind = parseInt(document.getElementById('wind')?.value);
+  if(video.gpsDict.wind < limits["wind"]["min"] || video.gpsDict.wind > limits["wind"]["max"]) {
+    limitError("wind", limits["wind"]["min"], limits["wind"]["max"]);
+    return;
+  }
+  video.meteoAirDict.direction = document.getElementById('direction')?.value;
+  video.meteoAirDict.atmPress = parseFloat(document.getElementById('atmPress')?.value);
+  if(video.gpsDict.atmPress < limits["atmPress"]["min"] || video.gpsDict.atmPress > limits["atmPress"]["max"]) {
+    limitError("atmPress", limits["atmPress"]["min"], limits["atmPress"]["max"]);
+    return;
+  }
+  video.meteoAirDict.tempAir = parseFloat(document.getElementById('tempAir')?.value);
+  if(video.gpsDict.tempAir < limits["tempAir"]["min"] || video.gpsDict.tempAir > limits["tempAir"]["max"]) {
+    limitError("tempAir", limits["tempAir"]["min"], limits["tempAir"]["max"]);
+    return;
+  }
+
+  video.meteoMerDict.seaState = document.getElementById('seaState')?.value;
+  video.meteoMerDict.swell = parseInt(document.getElementById('swell')?.value);
+  if(video.gpsDict.swell < limits["swell"]["min"] || video.gpsDict.swell > limits["swell"]["max"]) {
+    limitError("swell", limits["swell"]["min"], limits["swell"]["max"]);
+    return;
+  }
+
+  video.analyseDict.exploitability = document.getElementById('exploitability')?.value;
+  video.analyseDict.habitat = document.getElementById('habitat')?.value;
+  video.analyseDict.fauna = document.getElementById('fauna')?.value;
+  video.analyseDict.visibility = document.getElementById('visibility')?.value;
+
+  dataFinal.video = video;
+
+  if ((isNaN(video.gpsDict.latitude) || isNaN(video.gpsDict.longitude)) || isNaN(video.hourDict.hour)) {
+    Swal.fire({
+      title: 'Error',
+      text: 'Hour and GPS information are mandatory',
+      icon: 'error',
+      confirmButtonText: 'OK'
+    });
+    return;
+  } else {
+    sendToBack(dataFinal);
+  }
+
+}
+
+function limitError(key, min, max) {
+  Swal.fire({
+      title: 'Error',
+      text: key + ' has to be between ' + min + ' and ' + max + '.',
+      icon: 'error',
+      confirmButtonText: 'OK'
+    });
+}
+
+async function sendToBack(data) {
   try {
-    const response = await fetch("", {
+    const response = await fetch(serverUrl + "/updateMetadata", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(formData),
+      body: JSON.stringify(data),
     });
-  
     if (response.ok) {
       Swal.fire({
         title: 'Success',
@@ -418,57 +405,8 @@ async function submitForm(event) {
     });
     return;
   }
-  
 }
+
+
 
 document.addEventListener("DOMContentLoaded", generateTable);
-
-/*
-async function submitForm(event) 
-{
-    event.preventDefault();
-
-    const metaData = {};
-    const tableRows = document.querySelectorAll("#metadataTable tr");
-
-    tableRows.forEach(row => {
-        const inputs = row.querySelectorAll("input, select");
-        inputs.forEach(input => {
-            if (input.id && input.value) {
-                const keys = input.id.split('.');
-                let current = metaData;
-                keys.forEach((key, index) => {
-                    if (index === keys.length - 1) {
-                        current[key] = input.value;
-                    } else {
-                        current[key] = current[key] || {};
-                        current = current[key];
-                    }
-                });
-            }
-        });
-    }); // pas très sur pour cete fonction
-
-    try {
-        const response = await fetch("http://0.0.0.0:5000/update_metadata", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(metaData),
-        });
-
-        if (response.ok) {
-            alert("Metadata saved successfully!");
-        } else {
-            alert("Error saving metadata.");
-        }
-
-    } catch (error) {
-        console.error("Failed to save metadata:", error);
-        alert("Failed to save metadata.");
-    }
-}
-
-
-*/

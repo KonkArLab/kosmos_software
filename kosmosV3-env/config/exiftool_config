@@ -1,0 +1,9 @@
+%Image::ExifTool::UserDefined = (
+    'Image::ExifTool::XMP::xmp' => {
+        kosmos => {
+            Writable => 'string',   # Permet d'ajouter une chaîne de texte
+            Description => 'Kosmos Tag',  # Description facultative
+        },
+    },
+);
+1; # Obligatoire pour que le fichier Perl soit valide

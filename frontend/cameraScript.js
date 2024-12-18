@@ -20,13 +20,23 @@ shutdownButton.disabled = false;
 
 // Function to send a start request to the server
 async function start() {
-  disableAllButtons();
   try {
-    const response = await fetch(serverUrl + "/start");
-    const body = await response.json();
-    console.log(body);
-    // Enable only the stop button for camera
-    stopButton.disabled = false;
+    const storedData = localStorage.getItem("campaignData");
+    if (storedData) {
+      disableAllButtons();
+      const response = await fetch(serverUrl + "/start");
+      const body = await response.json();
+      // Enable only the stop button for camera
+      stopButton.disabled = false;
+    } else {
+      Swal.fire({
+          title: 'Error',
+          text: 'Please fill campaign before starting',
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+      return;
+    }
   } catch (error) {
     console.error("Error starting the camera:", error);
   }

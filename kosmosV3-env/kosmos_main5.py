@@ -106,10 +106,10 @@ class kosmos_main():
         
         increment = self._conf.system.getint(INCREMENT_SECTION,"increment")        
         # Création du dossier enregistrement dans le dossier Campagne
-        os.chdir(self._conf.CAMPAGNE_PATH)
-        video_file = self._conf.config.get(CAMPAGNE_SECTION,"zone") + f'{self._conf.get_date_Y()}' + f'{increment:04}'     
+        os.chdir(self._conf.CAMPAIGN_PATH)
+        video_file = self._conf.config.get(CAMPAIGN_SECTION,"zone") + f'{self._conf.get_date_Y()}' + f'{increment:04}'     
         os.mkdir(video_file)
-        VID_PATH = self._conf.CAMPAGNE_PATH+video_file
+        VID_PATH = self._conf.CAMPAIGN_PATH+video_file
         os.chdir(VID_PATH) # Ligne très importante pour bonne destination des fichiers !!!
 
         # Initialisation de fichier Event
