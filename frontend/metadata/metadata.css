@@ -4,6 +4,7 @@
   width: 90%;
 }
  
+/* Styling for the metadata table */
 #metadataTable {
   width: 100%;
   margin-top: var(--margin-space-normal);
@@ -11,6 +12,7 @@
   border-collapse: collapse;
  }
 
+ /* Add borders and padding to table elements */
 #metadataTable,
 th,
 td {
@@ -19,6 +21,8 @@ td {
   text-align: left;
 }
 
+
+/* Alternate row colors for better readability */
 th {
   background-color: var(--color-complementary);
 }
@@ -42,6 +46,7 @@ tr:hover {
   position: relative;
 }
 
+/* Add a visual indicator for collapsible sections */
 .section-title::after {
   content: "▼";
   position: absolute;
@@ -50,14 +55,17 @@ tr:hover {
   transition: transform 0.3s;
 }
 
+/* Rotate arrow when section is collapsed */
 .section-title.collapsed::after {
   content: "▲";
 }
 
+/* Hide content for collapsed sections */
 .section-content.collapsed {
   display: none;
 }
 
+/* Input fields and dropdown styling */
 input, select {
   width: 100%;
   padding: var(--padding-space-small) !important;

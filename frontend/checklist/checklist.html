@@ -4,17 +4,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" type="text/css" href="checklist.css">
+<!-- Include the main CSS file to style this page -->  <link rel="stylesheet" type="text/css" href="checklist.css">
   <title>Kosmos</title>
 </head>
 
 <body>
   <header>
+    <!-- Create a toggle menu for navigation adapted to small screens -->   
     <input type="checkbox" id="menuToggle" class="menu-toggle">
-
     <label for="menuToggle" class="menu-icon">
       <img src="../icons/menu.svg" class="svg-icon" alt="Menu Icon">
     </label>
+    <!-- Navigation menu with links to other pages of the application -->
     <nav>
       <ul>
         <li><a href="../campaign/campaign.html">Campaign</a></li>
@@ -30,12 +31,14 @@
       <h3>State</h3>
       <p>Etat : <span id="etat">Unknown</span></p>
       <h3 class="materialTitle">Materiel</h3>
+      <!-- Form to collect data for the equipment list -->
       <form id="formCheckList">
         <ul id="checkList"></ul>
       </form>
     </div>
   </section>
   
+  <!-- Include the main JavaScript file for the dynamic management of this page -->
   <script src="checklist.js"></script>
   <script src="../config/state.js"></script>
 

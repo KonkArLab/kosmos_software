@@ -4,6 +4,8 @@
   width: 90%;
 }
 
+/* Table styling for records display */
+
 #fileTable {
   width: 100%;
   margin-top: var(--margin-space-normal);
@@ -11,6 +13,7 @@
   border-collapse: collapse;
  }
 
+/* Apply border and padding to table, header, and cell elements */
 #fileTable,
 th,
 td {
