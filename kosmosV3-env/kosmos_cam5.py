@@ -9,6 +9,7 @@ import logging
 from picamera2.encoders import H264Encoder
 from picamera2 import Picamera2,Preview,MappedArray,Metadata
 import cv2
+import hashlib
 
 import os
 from kosmos_config import *
@@ -127,18 +128,49 @@ class KosmosCam(Thread):
             cv2.putText(m.array, timestamp, origin, font, scale, colour, thickness)
       
     def convert_to_mp4(self, input_file):
+
         if self._CONVERSION == 1:
-            #Conversion h264 vers mp4 puis effacement du .h264
+            # Conversion h264 vers mp4 puis effacement du .h264
             output_file = os.path.splitext(input_file)[0] + '.mp4'              
             try:
-                subprocess.run(['sudo', 'ffmpeg', '-probesize','2G','-r', str(self._FRAMERATE), '-i', input_file, '-c', 'copy', output_file, '-loglevel', 'warning'])
+                subprocess.run(['sudo', 'ffmpeg', '-probesize', '2G', '-r', str(self._FRAMERATE), '-i', input_file, '-c', 'copy', output_file, '-loglevel', 'warning'])
                 logging.info("Conversion successful !")
                 os.remove(input_file)
-                logging.debug(f"Deleted input H.264 file: {input_file}")                
+                logging.debug(f"Deleted input H.264 file: {input_file}") 
+                # Ajouter la métadonnée personnalisée
+                custom_value = "KOSMOS_TEST"  # Test 
+                self.add_metadata(output_file, custom_value)
+
             except subprocess.CalledProcessError as e:
                 logging.error("Error during conversion:", e, " !!!")       
         else:
             logging.info("Pas de conversion mp4 demandée")
+
+
+    def add_metadata(self, video_file, custom_value):
+        """
+        Ajoute une métadonnée personnalisée à une vidéo MP4 avec exiftool.
+        """
+        try:
+            # Chemin complet vers le fichier de configuration exiftool
+            config_path = os.path.abspath('/home/kosmos/kosmos_software/kosmosV3-env/config/exiftool_config')
+            hashed_value = self.hash_encoder(custom_value)
+            command = ['exiftool', '-config', config_path, f'-kosmos={hashed_value}', '-overwrite_original', video_file]
+            
+            # Afficher la commande pour débogage
+            print("Commande appelée :", " ".join(command))
+            
+            # Exécuter la commande
+            subprocess.run(command, check=True)
+            logging.info(f"Metadonnée '-kosmos={hashed_value}' ajoutée à {video_file}")
+
+        except subprocess.CalledProcessError as e:
+            logging.error(f"Erreur lors de l'ajout des métadonnées : {e}")
+
+
+    def hash_encoder(self, p_text) :
+        return hashlib.sha256(p_text.encode()).hexdigest()
+    
       
     def initialisation_awb(self):
         if self._AWB == 0:
