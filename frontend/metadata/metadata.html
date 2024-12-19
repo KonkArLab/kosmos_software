@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Page metadata and external stylesheets -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width initial-scale=1.0">
+    <link rel="stylesheet" href="../libs/choices/choices.min.css">
+    <link rel="stylesheet" href="../libs/sweetAlert/sweetAlert.min.css">
+    <link rel="stylesheet" type="text/css" href="metadata.css">
+    <title>Kosmos</title>
+  </head>
+
+  <body>
+    <!-- Header section with navigation menu -->
+    <header>
+      <input type="checkbox" id="menuToggle" class="menu-toggle">
+
+      <label for="menuToggle" class="menu-icon">
+        <img src="../icons/menu.svg" class="svg-icon" alt="Menu Icon">
+      </label>
+      <nav>
+        <ul>
+          <li><a href="../campaign/campaign.html" onclick="submitForm(event)">Campaign</a></li>
+          <li><a href="../config/config.html" onclick="submitForm(event)">Configuration</a></li>
+          <li><a href="../index.html" onclick="submitForm(event)">Camera</a></li>
+          <li><a href="../records/records.html" onclick="submitForm(event)">Records</a></li>    
+          <li><a href="../checklist/checklist.html" onclick="submitForm(event)">Checklist</a></li>
+          <li>Metadata</li>
+        </ul>
+      </nav>
+    </header>
+     <!-- Main section to display metadata -->
+    <section>
+      <div class="container">
+        <h3> Captured metadata </h3>
+        <!-- Form to display and submit metadata -->
+        <form id="formMetaData">
+          <table id="metadataTable"></table>
+          <button type="submit">Save</button>
+        </form>
+      </div>
+    </section>
+    
+    <!-- External libraries for dropdowns and alerts -->
+    <script src="../libs/choices/choices.min.js"></script>
+    <script src="../libs/sweetAlert/sweetAlert.min.js"></script>
+    <script src="metadata.js"></script>
+
+  </body>
+
+</html>

@@ -1,0 +1,25 @@
+/* Page style definition for the campaign section */
+
+/* Importing an external CSS file */
+@import url('../styles.css');
+
+/* Defining a specific font style for campaign form labels */
+#campaignForm label {
+  font-size: var(--font-size-small); /* Use a predefined small font size */
+  font-weight: bold; /* Make the label text bold */
+}
+
+/* Adds left margin to the reset button for spacing */
+#campaignResetButton {
+  margin-left: var(--margin-space-normal); /* Apply normal margin space on the left */
+}
+
+/* Global input styling */
+input {
+  width: 100%; /* Inputs take full width of their container */
+  padding: var(--padding-space-small); /* Add small padding inside the input */
+  border-width: var(--border-thin); /* Thin border around the input */
+  border-radius: var(--border-thick); /* Rounded corners for inputs */
+  margin-top: var(--margin-space-xsmall); /* Small margin above the input */
+  margin-bottom: var(--margin-space-xsmall); /* Small margin below the input */
+}

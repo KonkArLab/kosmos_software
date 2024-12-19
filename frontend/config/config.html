@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="config.css">
+  <title>Kosmos</title>
+</head>
+
+<body>
+  <header>
+    <!-- Header with navigation menu -->
+    <input type="checkbox" id="menuToggle" class="menu-toggle">
+
+    <label for="menuToggle" class="menu-icon">
+      <img src="../icons/menu.svg" class="svg-icon" alt="Menu Icon">
+    </label>
+    <nav>
+      <ul>
+        <li><a href="../campaign/campaign.html">Campaign</a></li>
+        <li><a href="../config/config.html">Configuration</a></li>
+        <li><a href="../index.html">Camera</a></li>
+        <li><a href="../records/records.html">Records</a></li>    
+        <li><a href="../checklist/checklist.html">Checklist</a></li>
+    </nav>
+  </header>
+
+  <!-- Section to display configuration parameters -->
+  <section>
+    <div class="container">
+      <h3>State</h3>
+      <p>Etat : <span id="etat">Unknown</span></p>
+      <h3 id="configTitle">Configuration Parameters</h3>
+      <form id="configForm">
+
+      </form>
+    </div>    
+  </section>
+  <!-- JavaScript files to handle configuration and state -->
+  <script src="client.js"></script>
+  <script src="state.js"></script>
+</body>
+
+</html>

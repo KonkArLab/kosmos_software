@@ -1,9 +1,11 @@
 import numpy as np
 from flask_cors import CORS
-from flask import Flask,request,make_response
+from flask import Flask,request,make_response,jsonify
 from PIL import Image
 import io
 import os
+import json
+import time
 
 
 import logging
@@ -217,4 +219,44 @@ class Server:
         response.headers['Content-Type']='image/jpg'
         return response    
 
+    def get_metadata(self):
+        metadata_path = GIT_PATH + "infoStationTemplate.json"
         
+        try:
+            with open(metadata_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            return jsonify({
+                "status": "success",
+                "message": "ok",
+                "metadata": data})
+
+        except FileNotFoundError:
+    
+            return jsonify({
+                "status": "error",
+                "message": "Metadata file not found.",
+                "data": "" 
+            })
+
+    
+    def update_metadata(self):            
+        my_file = self.myMain._conf.config.get(CAMPAIGN_SECTION,"zone") + f'{self.myMain._conf.get_date_Y()}' + f'{self.incr:04}'
+                
+        metadata_path = self.myMain._conf.CAMPAIGN_PATH +my_file+"/"+my_file +".json"
+                
+        data = request.json 
+        
+        try:
+            with open(metadata_path, 'w', encoding='utf-8') as f:
+                json.dump(data, f, indent=4)
+            return jsonify({
+                "status": "success",
+                "message": "Metadata saved successfully."
+            })
+        
+        except Exception as e:
+            return jsonify({
+                "status": "error",
+                "message": f"Failed to save metadata: {str(e)}"
+            })
+       

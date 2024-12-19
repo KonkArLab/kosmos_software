@@ -9,6 +9,7 @@ import logging
 from picamera2.encoders import H264Encoder
 from picamera2 import Picamera2,Preview,MappedArray,Metadata
 import cv2
+import hashlib
 
 import os
 from kosmos_config import *
@@ -184,7 +185,10 @@ class KosmosCam(Thread):
                 logging.info("Conversion video 1 successful !")
                 os.remove(input_file)
                 logging.debug(f"Deleted input H.264 file: {input_file}")                
-
+                # Ajouter la métadonnée personnalisée
+                custom_value = "KOSMOS_TEST"  # Test 
+                self.add_metadata(output_file, custom_value)
+                
                 if self.STEREO == 1:
                     input_file2 = os.path.splitext(input_file)[0]+'_STEREO.h264'
                     output_file2 = os.path.splitext(input_file)[0] +'_STEREO.mp4'
@@ -197,7 +201,31 @@ class KosmosCam(Thread):
                 logging.error("Error during conversion:", e, " !!!")       
         else:
             logging.info("Pas de conversion mp4 demandée")
-      
+            
+    def add_metadata(self, video_file, custom_value):
+        """
+        Ajoute une métadonnée personnalisée à une vidéo MP4 avec exiftool.
+        """
+        try:
+            # Chemin complet vers le fichier de configuration exiftool
+            config_path = os.path.abspath(WORK_PATH+'config/exiftool_config')
+            hashed_value = self.hash_encoder(custom_value)
+            command = ['exiftool', '-config', config_path, f'-kosmos={hashed_value}', '-overwrite_original', video_file]
+            
+            # Afficher la commande pour débogage
+            print("Commande appelée :", " ".join(command))
+            
+            # Exécuter la commande
+            subprocess.run(command, check=True)
+            logging.info(f"Metadonnée '-kosmos={hashed_value}' ajoutée à {video_file}")
+
+        except subprocess.CalledProcessError as e:
+            logging.error(f"Erreur lors de l'ajout des métadonnées : {e}")
+
+
+    def hash_encoder(self, p_text) :
+        return hashlib.sha256(p_text.encode()).hexdigest()
+
     def initialisation_awb(self):
         if self._AWB == 0:
             logging.info('Gains AWB ajustés par Rpi')

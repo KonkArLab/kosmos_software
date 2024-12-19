@@ -2,52 +2,56 @@
 <html lang="fr">
 
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width initial-scale=1.0">
-	<link rel="stylesheet" type="text/css" href="styles.css">
-	<title>Kosmos</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./libs/sweetAlert/sweetAlert.min.css">
+  <link rel="stylesheet" type="text/css" href="styles.css">
+  <title>Kosmos</title>
 </head>
 
 <body>
-	<header>
-		<nav>
-			<ul>
-				<li><a href="./index.html">Camera</a></li>
-				<li><a href="./records.html">Records</a></li>
-				<li><a href="./config.html">Configuration</a></li>
-				<li><a href="./checklist.html">Checklist</a></li>
-		</nav>
-	</header>
-	<div class="container">
-		<h1>State</h1>
-		<p>Etat : <span id="etat">Unknown</span></p>
-	</div>
-	<div class="container">
-		<h1>Position</h1>
-		<p>Latitude : <span id="latitude"> </span></p>
-		<p>Longitude : <span id="longitude"> </span></p>
+  <header>
+    <input type="checkbox" id="menuToggle" class="menu-toggle">
 
-	</div>
-	<div class="container">
-		<h1>Buttons</h1>
-		<button onClick="start()">Start</button>
-		<button onClick="stop()">Stop</button>
-	</div>
-	<div class="container">
-		<h1>Live video</h1>
-		<button onClick="setLive(true)">Start Live</button>
-		<button onClick="setLive(false)">Stop Live</button>
-		<br>
-		<img id="frame">
-	</div>
-	<script src="cameraScript.js"></script>
-	<script src="state.js"></script>
-	<script src="gps.js"></script>
+    <label for="menuToggle" class="menu-icon">
+      <img src="./icons/menu.svg" class="svg-icon" alt="Menu Icon">
+    </label>
+    
+    <nav>
+      <ul>
+        <li><a href="./campaign/campaign.html">Campaign</a></li>
+        <li><a href="./config/config.html">Configuration</a></li>
+        <li><a href="index.html">Camera</a></li>
+        <li><a href="./records/records.html">Records</a></li>
+        <li><a href="./checklist/checklist.html">Checklist</a></li>
+      </ul>
+    </nav>
+  </header>
 
-	<div class="container">
-		<h1>Shutdown KOSMOS</h1>
-		<button onClick="shutdown()">Shutdown</button>
-	</div>
+  <section>
+    <div id="cameraContainer" class="container">
+      <h3>State</h3>
+      <p>Etat : <span id="etat">Unknown</span></p>
+
+      <h3 class="titleCamera">Buttons to record</h3>
+      <button id="startCamera" onClick="start()">Start</button>
+      <button id="stopCamera" onClick="stop()">Stop</button>
+
+      <h3 class="titleCamera">Live video</h3>
+      <button id="startLive" onClick="setLive(true)">Start Live</button>
+      <button id="stopLive" onClick="setLive(false)">Stop Live</button>
+      <br>
+
+      <img id="frame">
+
+      <h3 class="titleCamera">Shutdown KOSMOS</h3>
+      <button id="shutdown" onClick="shutdown()">Shutdown</button>
+    </div>
+  </section>
+
+  <script src="./libs/sweetAlert/sweetAlert.min.js"></script>
+  <script src="cameraScript.js"></script>
+  <script src="./config/state.js"></script>
 </body>
 
 </html>

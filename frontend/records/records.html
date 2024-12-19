@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fr"> <!-- French as the default language -->
+
+<head>
+  <!-- Meta information -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="records.css">
+  <title>Kosmos</title>
+</head>
+
+<body>
+  <!-- Header section with a navigation menu -->
+  <header>
+      <!-- Menu toggle for mobile view -->
+      <input type="checkbox" id="menuToggle" class="menu-toggle">
+
+      <label for="menuToggle" class="menu-icon">
+        <img src="../icons/menu.svg" class="svg-icon" alt="Menu Icon">
+      </label>
+    <nav>
+      <ul>
+        <li><a href="../campaign/campaign.html">Campaign</a></li>
+        <li><a href="../config/config.html">Configuration</a></li>
+        <li><a href="../index.html">Camera</a></li>
+        <li><a href="../records/records.html">Records</a></li>    
+        <li><a href="../checklist/checklist.html">Checklist</a></li>
+    </nav>
+  </header>
+
+  <!-- Main section to display records data -->
+  <section>
+    <div class="container">
+      <h3>State</h3>
+      <p>Etat : <span id="etat">Unknown</span></p>
+
+      <!-- Table for displaying records -->
+      <table id="fileTable">
+        <thead>
+          <tr>
+            <td>Filename</td>
+            <td>Size (MB)</td>
+            <td>End Time of Recording</td>
+          </tr>
+        </thead>
+      </table>
+    </div>
+  </section>
+
+  <!-- JavaScript files -->
+  <script src="records.js"></script>
+  <script src="../config/state.js"></script>
+</body>
+
+</html>
