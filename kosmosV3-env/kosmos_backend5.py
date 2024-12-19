@@ -47,7 +47,7 @@ class Server:
             "status" : "ok",
             "state" : str(self.myMain.state)
         }
-        _file_name
+
     def start(self):
         if(self.myMain.state==KState.STANDBY):   
             self.myMain.record_event.set() 

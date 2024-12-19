@@ -1,18 +1,53 @@
 let serverUrl = "http://10.42.0.1:5000";
 
+const fields = [
+  { id: "date", placeholder: "", type: "date", label: "Date", tabIndex: 1 },
+  { id: "hour", placeholder: "", type: "time", label: "Hour", tabIndex: 2 },
+  { id: "latitude", placeholder: "", type: "number", label: "Latitude", tabIndex: 3, min: "-90", max: "90" },
+  { id: "longitude", placeholder: "", type: "number", label: "Longitude", tabIndex: 4, min: "-180", max: "180" },
+  { id: "site", placeholder: "", type: "text", label: "Site", tabIndex: 5, maxlength: "200" },
+  { id: "codeStation", placeholder: "", type: "text", label: "Code Station", tabIndex: 6, maxlength: "200" },
+  { id: "depth", placeholder: "", type: "number", label: "Depth", tabIndex: 7, min: "0", max: "4000"},
+  { id: "temperature", placeholder: "", type: "number", label: "Temperature", tabIndex: 8, min: "-10", max: "60" },
+  { id: "salinity", placeholder: "", type: "text", label: "Salinity", tabIndex: 9, min: "0", max: "50" },
+  { id: "moon", placeholder: "", type: "text", label: "Moon", tabIndex: 10, maxlength: "200", choices : true },
+  { id: "tide", placeholder: "", type: "text", label: "Tide", tabIndex: 11, maxlength: "200", choices : true},
+  { id: "coefficient", placeholder: "", type: "number", label: "Coefficient", tabIndex: 12, min: "20", max: "120" },
+  { id: "sky", placeholder: "", type: "text", label: "Sky", tabIndex: 13, maxlength: "200" },
+  { id: "wind", placeholder: "", type: "number", label: "Wind", tabIndex: 14, min: "0", max: "12" },
+  { id: "direction", placeholder: "", type: "text", label: "Direction", tabIndex: 15, maxlength: "200", choices : true },
+  { id: "atmPress", placeholder: "", type: "number", label: "Atmospheric pressure", tabIndex: 16, min: "900", max: "1100" },
+  { id: "tempAir", placeholder: "", type: "number", label: "Air temperature", tabIndex: 17, min: "-90", max: "90" },
+  { id: "seaState", placeholder: "", type: "text", label: "Sea state", tabIndex: 18, maxlength: "200", choices : true },
+  { id: "swell", placeholder: "", type: "number", label: "Swell", tabIndex: 19, min: "0", max: "30"},
+  { id: "exploitability", placeholder: "", type: "text", label: "Exploitability", tabIndex: 20, maxlength: "200" },
+  { id: "habitat", placeholder: "", type: "text", label: "Habitat", tabIndex: 21, maxlength: "200" },
+  { id: "fauna", placeholder: "", type: "text", label: "Fauna", tabIndex: 22, maxlength: "200" },
+  { id: "visibility", placeholder: "", type: "text", label: "Visibility", tabIndex: 23, maxlength: "200" }
+];
+
 // Default metadata object in case no data is available
+
 const defaultMetaData = {
-    video: {
-        codeStation: "",
-        hourDict: { hour: "", minute: "", second: ""},
-        gpsDict: { site: "", latitude: "", longitude: "" },
-        ctdDict: { depth: "", temperature: "", salinity: "" },
-        astroDict: { moon: "", tide: "", coefficient: "" },
-        meteoAirDict: { sky: "", wind: "", direction: "", atmPress: "", tempAir: "" },
-        meteoMerDict: { seaState: "", swell: "" },
-        analyseDict: { exploitability: "", habitat: "", fauna: "", visibility: "" },
-    }
+  system: {},
+  campaign: {},
+  video: {
+    codeStation: String,
+    hourDict: { hour: Number, minute: Number, second: Number},
+    gpsDict: { site: String, latitude: Number, longitude: Number },
+    ctdDict: { depth: Number, temperature: Number, salinity: String },
+    astroDict: { moon: String, tide: String, coefficient: Number },
+    meteoAirDict: { sky: String, wind: Number, direction: String, atmPress: Number, tempAir: Number },
+    meteoMerDict: { seaState: String, swell: Number },
+    analyseDict: { exploitability: String, habitat: String, fauna: String, visibility: String },
+  }
 };
+
+const dataFinal = {
+  system: {},
+  campaign: {},
+  video: {}
+}
 
 // Load metadata from localStorage, or return defaults if not available
 function loadMetaData() {
@@ -23,7 +58,6 @@ function loadMetaData() {
     alert("Error reading metaData from localStorage.");
     return defaultMetaData;
   }
-  
   // Validate metadata and load default if invalid
   if (!metaData || !validateMetaData(metaData)) {
     alert("Invalid or missing metaData. Loading default values.");
@@ -32,34 +66,8 @@ function loadMetaData() {
   return metaData;
 }
 
-
-/*
-async function loadMetadataFromBackend()
-{
-    try {
-        const response = await fetch("http://0.0.0.0:5000/get_metadata");
-        const result = await response.json();
-        
-        if (result.status === "success") {
-            const metadata = result.data;
-            localStorage.setItem("metaData", JSON.stringify(metadata));
-            console.log("Metadata loaded from backend:", metadata);
-            return metadata;
-        } else {
-            console.warn("Using default metadata due to backend error.");
-            return defaultMetaData;
-        }
-
-    } catch (error) {
-        console.error("Error loading metadata from backend:", error);
-        return defaultMetaData;
-    }
-}
-*/
-
-// Function to validate metadata structure
 function validateMetaData(data) {
-  return data && data.video && data.video.hourDict && data.video.gpsDict;
+  return data && data.video;
 }
 
 const sectionTitles = {
@@ -68,131 +76,10 @@ const sectionTitles = {
   meteoAirDict: "Meteorological Air Information",
   meteoMerDict: "Meteorological Sea Information",
   analyseDict: "Exploitability Information",
-  hourDict: "Hour",
+  hourDict: "Date and hour",
   ctdDict: "CTD Information",
   astroDict: "Astronomical Information",
 };
-
-function initializeChoices(selectElement, choicesArray) {
-  new Choices(selectElement, {
-    searchEnabled: true,
-    shouldSort: false,
-    choices: choicesArray.map(choice => ({ value: choice.value, label: choice.label })),
-  });
-}
-
-// Generate the metadata table dynamically
-function generateTable() {
-  const metaData = defaultMetaData;
-  const metaDataValues = loadMetaData().video;
-  const table = document.getElementById("metadataTable");
-
-  Object.entries(metaData.video).forEach(([key, value]) => {
-    const sectionTitle = sectionTitles[key] || key;
-
-    // Create a row for the section title
-    const titleRow = document.createElement("tr");
-    const titleCell = document.createElement("td");
-    titleCell.colSpan = 2;
-    titleCell.textContent = sectionTitle;
-    titleCell.classList.add("section-title");
-
-    // Toggle collapse behavior
-    titleCell.addEventListener("click", () => {
-      sectionContent.classList.toggle("collapsed");
-      titleCell.classList.toggle("collapsed");
-    });
-
-    titleRow.appendChild(titleCell);
-    table.appendChild(titleRow);
-
-    const sectionContent = document.createElement("tbody");
-    sectionContent.classList.add("section-content");
-
-    // Handle different field types dynamically
-    if (key === "codeStation") {
-      createFormRow(sectionContent, key, "Station Code", metaDataValues[key]);
-    } else if (key === "hourDict") {
-      createTimeField(sectionContent, metaDataValues[key]);
-    } else if (typeof value === "object" && !Array.isArray(value)) {
-      Object.entries(value).forEach(([subKey, subValue]) => {
-        createFormRow(sectionContent, key, subKey, metaDataValues[key][subKey]);
-      });
-    } else {
-      createFormRow(sectionContent, key, metaDataValues.key);
-    }
-
-    table.appendChild(sectionContent);
-    document.getElementById("formMetaData").addEventListener("submit", submitForm);
-  });
-  const inputs = document.querySelectorAll('input[type="number"]');
-  const maxDecimals = 7;
-  inputs.forEach(inputElement => {
-    inputElement.addEventListener('input', function() {
-      const value = inputElement.value;
-      const decimalPart = value.split('.')[1];
-      if(decimalPart && decimalPart.length > maxDecimals) {
-        inputElement.value = value.slice(0, value.indexOf('.') + maxDecimals + 1);
-      }
-    });
-  });
-}
-
-// Helper function to create a time input field
-function createTimeField(container, timeValues) {
-  const row = document.createElement("tr");
-
-  const labelCell = document.createElement("td");
-  labelCell.textContent = sectionTitles.hourDict;
-  row.appendChild(labelCell);
-
-  const inputCell = document.createElement("td");
-  const timeInput = document.createElement("input");
-  timeInput.type = "time";
-  timeInput.step = 1;
-  timeInput.value = formatTime(timeValues);
-  timeInput.id = "timeInformation";
-  inputCell.appendChild(timeInput);
-  row.appendChild(inputCell);
-
-  container.appendChild(row);
-}
-
-// Helper function to create form rows dynamically
-function createFormRow(container, sectionKey, label, value) {
-  const row = document.createElement("tr");
-
-  const labelCell = document.createElement("label");
-  labelCell.setAttribute("for", label);
-  const tdCell = document.createElement("td");
-  labelCell.textContent = sectionTitles[label] || label.charAt(0).toUpperCase() + label.slice(1);
-  tdCell.appendChild(labelCell);
-  row.appendChild(tdCell);
-
-  const inputCell = document.createElement("td");
-  let inputElement;
-
-  if (label === "direction" || label === "tide" || label === "moon" || label === "seaState") {
-    inputElement = document.createElement("select");
-    inputElement.setAttribute("id", label);
-    initializeChoices(inputElement, getChoicesForField(label));
-    inputElement.value = value;
-  } else {
-    inputElement = document.createElement("input");
-    inputElement.setAttribute("id", label);
-    inputElement.type = determineInputType(value);
-    inputElement.value = value;
-    if(inputElement.type === "number"){
-      inputElement.setAttribute("step", "0.0000001");
-    }
-  }
-
-  inputElement.classList.add("form-input");
-  inputCell.appendChild(inputElement);
-  row.appendChild(inputCell);
-
-  container.appendChild(row);
-}
 
 // List of choices for some metadatas
 function getChoicesForField(field) {
@@ -240,114 +127,186 @@ function getChoicesForField(field) {
   return choicesData[field] || [];
 }
 
-// assert a certain input type
-function determineInputType(value) {
-  return typeof value === "number" ? "number" : "text";
+function initializeChoices(selectElement, choicesArray) {
+  new Choices(selectElement, {
+    searchEnabled: true,
+    shouldSort: false,
+    choices: choicesArray.map(choice => ({ value: choice.value, label: choice.label })),
+  });
 }
 
-function formatTime(timeDict) {
-  const { hour, minute, second } = timeDict;
-  return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:${String(second).padStart(2, '0')}`;
+function generateTable() {
+  const table = document.getElementById("metadataTable");
+  table.innerHTML = ""; // Limpia la tabla existente
+
+  const metaDataFromStorage = loadMetaData();
+  dataFinal["system"] = metaDataFromStorage.system;
+  dataFinal.campaign = JSON.parse(localStorage.getItem("campaignData"));
+
+  const metaDataValues = metaDataFromStorage.video || {};
+  
+  Object.entries(defaultMetaData.video).forEach(([sectionKey, sectionValue]) => {
+    // Crear la fila del título de la sección
+    const titleRow = document.createElement("tr");
+    const titleCell = document.createElement("td");
+    titleCell.colSpan = 2;
+    titleCell.textContent = sectionTitles[sectionKey];
+    titleCell.classList.add("section-title");
+
+    // Comportamiento de colapsar
+    titleCell.addEventListener("click", () => {
+      sectionContent.classList.toggle("collapsed");
+      titleCell.classList.toggle("collapsed");
+    });
+
+    titleRow.appendChild(titleCell);
+    table.appendChild(titleRow);
+
+    const sectionContent = document.createElement("tbody");
+    sectionContent.classList.add("section-content");
+
+    if (sectionKey === "hourDict") {
+      // Agregar los campos de fecha y hora en esta sección
+      ["date", "hour"].forEach(subKey => {
+        const field = fields.find(f => f.id === subKey);
+        if (field) createFormRowWithButton(sectionContent, field, metaDataValues[subKey]);
+      });
+    } else if (typeof sectionValue === "object" && !Array.isArray(sectionValue)) {
+      // Si es un objeto, iterar por sus claves
+      Object.keys(sectionValue).forEach(subKey => {
+        const field = fields.find(f => f.id === subKey);
+        if (field) createFormRow(sectionContent, field, metaDataValues[sectionKey][subKey]);
+      });
+    } else {
+      const field = fields.find(f => f.id === sectionKey);
+      if (field) createFormRow(sectionContent, field, metaDataValues[sectionKey]);
+    }
+
+    table.appendChild(sectionContent);
+    document.getElementById("formMetaData").addEventListener("submit", submitForm);
+  });
 }
 
-const fieldsToFill = ["gpsDict"];
-const limits = {
-  "latitude": {"min": -90, "max": 90},
-  "longitude": {"min": -180, "max": 180},
-  "coefficient": {"min": 20, "max": 120},
-  "wind": {"min": 0, "max": 12},
-  "depth": {"min": 0, "max": 4000},
-  "temperature": {"min": -10, "max": 60},
-  "salinity": {"min": 0, "max": 50},
-  "atmPress": {"min": 900, "max": 1100},
-  "tempAir": {"min": -90, "max": 90} ,
-  "swell": {"min": 0, "max": 30} 
+function createFormRowWithButton(container, field, value) {
+  const row = document.createElement("tr");
+
+  const labelCell = document.createElement("td");
+  const label = document.createElement("label");
+  label.textContent = field.label;
+  label.setAttribute("for", field.id);
+  labelCell.appendChild(label);
+  row.appendChild(labelCell);
+
+  const inputCell = document.createElement("td");
+  const inputElement = document.createElement("input");
+  inputElement.type = field.type;
+  inputElement.id = field.id;
+  inputElement.placeholder = field.placeholder || "";
+  inputElement.value = value || "";
+  inputElement.tabIndex = field.tabIndex;
+  inputElement.classList.add("form-input");
+
+  const button = document.createElement("button");
+  button.type = "button";
+  button.textContent = "Set Current";
+  button.addEventListener("click", () => {
+    if (field.type === "date") {
+      inputElement.value = new Date().toISOString().split("T")[0];
+    } else if (field.type === "time") {
+       const now = new Date().toTimeString().split(" ")[0];
+       inputElement.value = now.split(":").slice(0, 2).join(":"); 
+    }
+  });
+
+  inputCell.appendChild(inputElement);
+  inputCell.appendChild(button);
+  row.appendChild(inputCell);
+
+  container.appendChild(row);
+}
+
+function createFormRow(container, field, value) {
+  const row = document.createElement("tr");
+
+  const labelCell = document.createElement("td");
+  const label = document.createElement("label");
+  label.textContent = field.label;
+  label.setAttribute("for", field.id);
+  labelCell.appendChild(label);
+  row.appendChild(labelCell);
+
+  console.log("$$$$$$$$")
+  console.log(value)
+  const inputCell = document.createElement("td");
+  let inputElement;
+
+  if (field.choices) {
+    inputElement = document.createElement("select");
+    inputElement.id = field.id;
+    initializeChoices(inputElement, getChoicesForField(field.id));
+    if (value && typeof value !== 'function') inputElement.value = value;
+  } else {
+    inputElement = document.createElement("input");
+    inputElement.type = field.type;
+    inputElement.id = field.id;
+    inputElement.placeholder = field.placeholder || "";
+    if (field.type === "number") {
+      if (field.min) inputElement.min = field.min;
+      if (field.max) inputElement.max = field.max;
+      inputElement.step = "0.0000001";
+    }
+    if (field.maxlength) inputElement.maxLength = field.maxlength;
+    if (value && typeof value !== 'function') inputElement.value = value;
+  }
+
+  inputElement.tabIndex = field.tabIndex;
+  inputElement.classList.add("form-input");
+  inputCell.appendChild(inputElement);
+  row.appendChild(inputCell);
+
+  container.appendChild(row);
 }
 
 function submitForm(event) {
   event.preventDefault();
-  dataFinal = defaultMetaData;
-  const video = defaultMetaData.video;
-  dataFinal["campaign"] = JSON.parse(localStorage.getItem("campaignData"));
-  
-  dataFinal["system"] = loadMetaData().system;
-  video.codeStation = document.getElementById('Station Code')?.value;
+   
+  dataFinal.video = defaultMetaData.video;
 
-  let time = document.getElementById('timeInformation')?.value;
+  dataFinal.video.codeStation = document.getElementById('Station Code')?.value;
 
-  video.hourDict.hour = parseInt(time.substr(0,2));
-  video.hourDict.minute =  parseInt(time.substr(3,2));
-  video.hourDict.second =  parseInt(time.substr(6,2));
+  let time = document.getElementById('hour')?.value;
 
-  video.gpsDict.site = document.getElementById('site')?.value;
-  video.gpsDict.latitude = parseFloat(document.getElementById('latitude')?.value);
-  if(video.gpsDict.latitude < limits["latitude"]["min"] || video.gpsDict.latitude > limits["latitude"]["max"]) {
-    limitError("latitude", limits["latitude"]["min"], limits["latitude"]["max"]);
-    return;
-  }
-  video.gpsDict.longitude = parseFloat(document.getElementById('longitude')?.value);
-  if(video.gpsDict.longitude < limits["longitude"]["min"] || video.gpsDict.longitude > limits["longitude"]["max"]) {
-    limitError("longitude", limits["longitude"]["min"], limits["longitude"]["max"]);
-    return;
+  if (time) {
+    dataFinal.video.hourDict.hour = parseInt(time.substr(0,2));
+    dataFinal.video.hourDict.minute =  parseInt(time.substr(3,2));
+    dataFinal.video.hourDict.second =  0;
   }
 
-  video.ctdDict.depth = parseFloat(document.getElementById('depth')?.value);
-  if(video.gpsDict.depth < limits["depth"]["min"] || video.gpsDict.depth > limits["depth"]["max"]) {
-    limitError("depth", limits["depth"]["min"], limits["depth"]["max"]);
-    return;
-  }
-  video.ctdDict.temperature = parseFloat(document.getElementById('temperature')?.value);
-  if(video.gpsDict.temperature < limits["temperature"]["min"] || video.gpsDict.temperature > limits["temperature"]["max"]) {
-    limitError("temperature", limits["temperature"]["min"], limits["temperature"]["max"]);
-    return;
-  }
-  video.ctdDict.salinity = parseInt(document.getElementById('salinity')?.value);
-  if(video.gpsDict.salinity < limits["salinity"]["min"] || video.gpsDict.salinity > limits["salinity"]["max"]) {
-    limitError("salinity", limits["salinity"]["min"], limits["salinity"]["max"]);
-    return;
-  }
+  dataFinal.video.gpsDict.site = document.getElementById('site')?.value;
+  dataFinal.video.gpsDict.latitude = parseFloat(document.getElementById('latitude')?.value);
+  dataFinal.video.gpsDict.longitude = parseFloat(document.getElementById('longitude')?.value);
+  dataFinal.video.ctdDict.depth = parseFloat(document.getElementById('depth')?.value);
+  dataFinal.video.ctdDict.temperature = parseFloat(document.getElementById('temperature')?.value);
+  dataFinal.video.ctdDict.salinity = parseInt(document.getElementById('salinity')?.value);
+  dataFinal.video.astroDict.moon = document.getElementById('moon')?.value;
+  dataFinal.video.astroDict.tide = document.getElementById('tide')?.value;
+  dataFinal.video.astroDict.coefficient = parseInt(document.getElementById('coefficient')?.value);
+  dataFinal.video.meteoAirDict.sky = document.getElementById('sky')?.value;
+  dataFinal.video.meteoAirDict.wind = parseInt(document.getElementById('wind')?.value);
+  dataFinal.video.meteoAirDict.direction = document.getElementById('direction')?.value;
+  dataFinal.video.meteoAirDict.atmPress = parseFloat(document.getElementById('atmPress')?.value);
+  dataFinal.video.meteoAirDict.tempAir = parseFloat(document.getElementById('tempAir')?.value);
+  dataFinal.video.meteoMerDict.seaState = document.getElementById('seaState')?.value;
+  dataFinal.video.meteoMerDict.swell = parseInt(document.getElementById('swell')?.value);
+  dataFinal.video.analyseDict.exploitability = document.getElementById('exploitability')?.value;
+  dataFinal.video.analyseDict.habitat = document.getElementById('habitat')?.value;
+  dataFinal.video.analyseDict.fauna = document.getElementById('fauna')?.value;
+  dataFinal.video.analyseDict.visibility = document.getElementById('visibility')?.value;
 
-  video.astroDict.moon = document.getElementById('moon')?.value;
-  video.astroDict.tide = document.getElementById('tide')?.value;
-  video.astroDict.coefficient = parseInt(document.getElementById('coefficient')?.value);
-  if(video.gpsDict.coefficient < limits["coefficient"]["min"] || video.gpsDict.coefficient > limits["coefficient"]["max"]) {
-    limitError("coefficient", limits["coefficient"]["min"], limits["coefficient"]["max"]);
-    return;
-  }
+  console.log(dataFinal);
 
-  video.meteoAirDict.sky = document.getElementById('sky')?.value;
-  video.meteoAirDict.wind = parseInt(document.getElementById('wind')?.value);
-  if(video.gpsDict.wind < limits["wind"]["min"] || video.gpsDict.wind > limits["wind"]["max"]) {
-    limitError("wind", limits["wind"]["min"], limits["wind"]["max"]);
-    return;
-  }
-  video.meteoAirDict.direction = document.getElementById('direction')?.value;
-  video.meteoAirDict.atmPress = parseFloat(document.getElementById('atmPress')?.value);
-  if(video.gpsDict.atmPress < limits["atmPress"]["min"] || video.gpsDict.atmPress > limits["atmPress"]["max"]) {
-    limitError("atmPress", limits["atmPress"]["min"], limits["atmPress"]["max"]);
-    return;
-  }
-  video.meteoAirDict.tempAir = parseFloat(document.getElementById('tempAir')?.value);
-  if(video.gpsDict.tempAir < limits["tempAir"]["min"] || video.gpsDict.tempAir > limits["tempAir"]["max"]) {
-    limitError("tempAir", limits["tempAir"]["min"], limits["tempAir"]["max"]);
-    return;
-  }
-
-  video.meteoMerDict.seaState = document.getElementById('seaState')?.value;
-  video.meteoMerDict.swell = parseInt(document.getElementById('swell')?.value);
-  if(video.gpsDict.swell < limits["swell"]["min"] || video.gpsDict.swell > limits["swell"]["max"]) {
-    limitError("swell", limits["swell"]["min"], limits["swell"]["max"]);
-    return;
-  }
-
-  video.analyseDict.exploitability = document.getElementById('exploitability')?.value;
-  video.analyseDict.habitat = document.getElementById('habitat')?.value;
-  video.analyseDict.fauna = document.getElementById('fauna')?.value;
-  video.analyseDict.visibility = document.getElementById('visibility')?.value;
-
-  dataFinal.video = video;
-
-  if ((isNaN(video.gpsDict.latitude) || isNaN(video.gpsDict.longitude)) || isNaN(video.hourDict.hour)) {
+  if ((isNaN(dataFinal.video.gpsDict.latitude) || isNaN(dataFinal.video.gpsDict.longitude)) || 
+        isNaN(dataFinal.video.hourDict.hour)) {
     Swal.fire({
       title: 'Error',
       text: 'Hour and GPS information are mandatory',
@@ -359,15 +318,6 @@ function submitForm(event) {
     sendToBack(dataFinal);
   }
 
-}
-
-function limitError(key, min, max) {
-  Swal.fire({
-      title: 'Error',
-      text: key + ' has to be between ' + min + ' and ' + max + '.',
-      icon: 'error',
-      confirmButtonText: 'OK'
-    });
 }
 
 async function sendToBack(data) {
@@ -406,7 +356,5 @@ async function sendToBack(data) {
     return;
   }
 }
-
-
 
 document.addEventListener("DOMContentLoaded", generateTable);

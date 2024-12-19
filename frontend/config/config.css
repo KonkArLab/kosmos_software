@@ -3,7 +3,6 @@
 /* Style for each parameter container */
 .parameter {
   margin-bottom: var(--margin-space-normal);
-  display: flex;
 }
 
 .container {
@@ -22,4 +21,13 @@
 
 #configTitle {
   margin-top: var(--margin-space-normal);
+}
+
+input {
+  width: 70%; /* Inputs take full width of their container */
+  padding: var(--padding-space-small); /* Add small padding inside the input */
+  border-width: var(--border-thin); /* Thin border around the input */
+  border-radius: var(--border-thick); /* Rounded corners for inputs */
+  margin-top: var(--margin-space-xsmall); /* Small margin above the input */
+  margin-bottom: var(--margin-space-xsmall); /* Small margin below the input */
 }

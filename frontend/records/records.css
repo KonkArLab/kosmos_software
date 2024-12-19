@@ -11,6 +11,9 @@
   margin-top: var(--margin-space-normal);
   margin-bottom: var(--margin-space-normal);
   border-collapse: collapse;
+  display: block;
+  overflow: auto;
+  white-space: nowrap;
  }
 
 /* Apply border and padding to table, header, and cell elements */
