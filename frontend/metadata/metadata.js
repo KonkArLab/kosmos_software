@@ -139,6 +139,8 @@ function generateTable() {
   const table = document.getElementById("metadataTable");
   table.innerHTML = ""; // Limpia la tabla existente
 
+  localStorage.setItem("pending", JSON.stringify("1"));
+
   const metaDataFromStorage = loadMetaData();
   dataFinal["system"] = metaDataFromStorage.system;
   dataFinal.campaign = JSON.parse(localStorage.getItem("campaignData"));
@@ -235,8 +237,6 @@ function createFormRow(container, field, value) {
   labelCell.appendChild(label);
   row.appendChild(labelCell);
 
-  console.log("$$$$$$$$")
-  console.log(value)
   const inputCell = document.createElement("td");
   let inputElement;
 
@@ -336,6 +336,7 @@ async function sendToBack(data) {
         icon: 'success',
         confirmButtonText: 'OK'
       });
+      localStorage.removeItem("pending");
       window.location.href = "../index.html";
     } else {
       Swal.fire({

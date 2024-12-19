@@ -21,6 +21,9 @@ shutdownButton.disabled = false;
 // Function to send a start request to the server
 async function start() {
   try {
+    if (localStorage.getItem("pending")) {
+      window.location.href = "./metadata/metadata.html";
+    }
     const storedData = localStorage.getItem("campaignData");
     if (storedData) {
       disableAllButtons();
