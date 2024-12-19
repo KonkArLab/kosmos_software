@@ -32,47 +32,38 @@ class KosmosHydro(Thread):
         self._FORMAT = pyaudio.paInt16
         self._CHANNELS = 1
         self._RATE = 44100
-        self._CHUNK = 4096
+        self._CHUNK = 1024
         
         self._audio = pyaudio.PyAudio()
-
-        self.stream = self._audio.open(format=self._FORMAT,
-        channels=self._CHANNELS,
-        rate=self._RATE,
-        input=True,
-        frames_per_buffer=self._CHUNK)
+        print(self._audio.get_device_info_by_index(0)['defaultSampleRate'])
         
-    # Exemple d'utilisation
-    def fonction_bavarde(self):
-        print("Un message stdout")
-        logging.warning("Un message de log")
-        warnings.warn("Un warning")
-        raise ValueError("Une erreur sur stderr")
-
-
-            
+        
     def save_audio(self,outputfile):
         with wave.open(outputfile, 'wb') as wf:
             wf.setnchannels(self._CHANNELS)
             wf.setsampwidth(self._audio.get_sample_size(self._FORMAT))
             wf.setframerate(self._RATE)
-            wf.writeframes(b''.join(self._frames))
+            wf.writeframes(b"".join(self._frames))
             wf.close()
                               
     def run(self):
         while not self.stop_recording:  
             self._frames = []              
             while not self._pause_event.isSet():
-                data = self.stream.read(self._CHUNK, exception_on_overflow = False) # la perte de quelques frames n'altère pas la qualité de l'enregistrement
+                self.stream = self._audio.open(format=self._FORMAT,
+                channels=self._CHANNELS,
+                rate=self._RATE,
+                input=True,
+                frames_per_buffer=self._CHUNK)
+                data = self.stream.read(self._CHUNK) # la perte de quelques frames n'altère pas la qualité de l'enregistrement
                 self._frames.append(data)
+                self.stream.stop_stream()
+                self.stream.close()
             else:
                 self._continue_event.wait()
-        logging.info("Thread Audio terminé")
+        logging.info("Thread Audio terminé")  
         
-        
-    def arret_complet(self):
-        self.stream.stop_stream()
-        self.stream.close()
+    def arret_complet(self):    
         self._audio.terminate()
   
     def stop_thread(self):

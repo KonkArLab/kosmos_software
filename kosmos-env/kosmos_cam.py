@@ -176,7 +176,9 @@ class KosmosCam(Thread):
             
             try:
                 if self.PRESENCE_HYDRO == 1:
-                    subprocess.run(['sudo', 'ffmpeg', '-probesize','2G','-r', str(self._FRAMERATE), '-i', input_file, '-i', wav_file, '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k', output_file, '-loglevel', 'warning'])
+                    subprocess.run(['sudo', 'ffmpeg', '-probesize','2G','-r', str(self._FRAMERATE), '-i', input_file, '-c', 'copy', output_file, '-loglevel', 'warning'])
+                    # décommenter ci dessous sin on veut merger son vidéo
+                    #subprocess.run(['sudo', 'ffmpeg', '-probesize','2G','-r', str(self._FRAMERATE), '-i', input_file, '-i', wav_file, '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k', output_file, '-loglevel', 'warning'])
                 else:
                     subprocess.run(['sudo', 'ffmpeg', '-probesize','2G','-r', str(self._FRAMERATE), '-i', input_file, '-c', 'copy', output_file, '-loglevel', 'warning'])
                 logging.info("Conversion video 1 successful !")
@@ -188,6 +190,7 @@ class KosmosCam(Thread):
                     output_file2 = os.path.splitext(input_file)[0] +'_STEREO.mp4'
                     subprocess.run(['sudo', 'ffmpeg', '-probesize','2G','-r', str(self._FRAMERATE), '-i', input_file2, '-c', 'copy', output_file2, '-loglevel', 'warning'])
                     logging.info("Conversion video 2 successful !")
+                    os.remove(input_file2)
                     logging.debug(f"Deleted input H.264 file: {input_file2}")
                     
             except subprocess.CalledProcessError as e:
