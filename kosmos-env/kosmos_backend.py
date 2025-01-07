@@ -31,10 +31,9 @@ class Server:
         self.app.add_url_rule("/getRecords", view_func=self.getRecords)
         self.app.add_url_rule("/changeConfig", view_func=self.changeConfig,methods=['POST'])
         self.app.add_url_rule("/getConfig", view_func=self.getConfig)
-        self.app.add_url_rule("/changeCampagne", view_func=self.changeCampagne,methods=['POST'])
-        self.app.add_url_rule("/getCampagne", view_func=self.getCampagne)
         self.app.add_url_rule("/frame", view_func=self.image)
         self.app.add_url_rule("/gps", view_func=self.position)
+        self.app.add_url_rule("/updateMetadata",view_func=self.update_metadata, methods=['POST']) 
 
 
     def run(self) :
@@ -71,14 +70,29 @@ class Server:
             return {
                 "status" : "error"
             }
-
+    
     def stop(self):
         if(self.myMain.state==KState.WORKING):
             self.myMain.record_event.set()
             self.myMain.button_event.set()
-            return {
-                "status" : "ok"
+            self.incr = self.myMain._conf.system.getint(INCREMENT_SECTION,"increment") 
+            my_file = self.myMain.video_file
+            
+            try:
+                metadata_path = self.myMain._conf.CAMPAGNE_PATH + my_file +"/" + my_file + ".json"
+                while not os.path.exists(metadata_path):
+                    time.sleep(1)
+                with open(metadata_path, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                    return {
+                        "status" : "ok",
+                        "metadata" : data
+                    }
+            except Exception as e:
+                return {
+                    "status" : "error"
             }
+
         else :
             return {
                 "status" : "error"
@@ -95,48 +109,6 @@ class Server:
             return {
                 "status" : "error"
             }
-    
-    
-    def changeCampagne(self):
-        if(self.myMain.state==KState.STANDBY):
-            data = request.json
-            for key in data:
-                #self.myMain._conf.set_val(key,data[key])
-                self.myMain._conf.config.set(CAMPAGNE_SECTION,key,data[key])
-            self.myMain._conf.update_config()
-            self.myMain.thread_camera.closeCam()
-            
-            # Désallocation des GPIOs avant reboot
-            self.myMain._ledR.close()
-            self.myMain._ledB.close()
-            self.myMain.Button_Stop.close() 
-            self.myMain.Button_Record.close()
-            if self.myMain.PRESENCE_MOTEUR==1:
-                self.myMain.motorThread.Relai_GPIO.close()
-                self.myMain.motorThread.PWM_GPIO.close()
-                self.myMain.motorThread.Button_motor.close()
-            
-            # Arrêt des Thread en cours
-            if self.myMain.PRESENCE_MOTEUR==1:
-                del self.myMain.motorThread
-            del self.myMain.thread_camera
-            
-            # Réinitialisation
-            self.myMain.init()
-            self.myMain.button_event.set()
-            return {
-                "status" : "ok"
-            }
-        else:
-            return {
-                "status" : "error"
-            }
-        
-    def getCampagne(self):
-        response=dict()        
-        response["data"] = dict(self.myMain._conf.config[CAMPAGNE_SECTION])
-        response["status"]="ok"
-        return response
     
     def changeConfig(self):
         if(self.myMain.state==KState.STANDBY):
@@ -240,9 +212,8 @@ class Server:
 
     
     def update_metadata(self):            
-        my_file = self.myMain._conf.config.get(CAMPAIGN_SECTION,"zone") + f'{self.myMain._conf.get_date_Y()}' + f'{self.incr:04}'
-                
-        metadata_path = self.myMain._conf.CAMPAIGN_PATH +my_file+"/"+my_file +".json"
+        my_file = self.myMain.video_file
+        metadata_path = self.myMain._conf.CAMPAGNE_PATH +my_file+"/"+my_file +".json"
                 
         data = request.json 
         

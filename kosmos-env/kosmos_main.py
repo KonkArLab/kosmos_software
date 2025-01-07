@@ -85,14 +85,6 @@ class kosmos_main():
                 self.motorThread = KMotor4.kosmosMotor(self._conf)
             else:
                 logging.info("Configuration moteur non effectuée.")
-        '''
-        # Definition Thread Hydrophone
-        self.PRESENCE_HYDRO = self._conf.config.getint(CONFIG_SECTION,"40_HYDROPHONE_bool") # Fonctionnement moteur si 1
-        if self.PRESENCE_HYDRO==1:
-            self.thread_hydrophone = KHydro.KosmosHydro(self._conf) 
-        else:
-            logging.info("Configuration moteur non effectuée.")        
-        '''
                 
     def clear_events(self):
         """Mise à 0 des evenements attachés aux boutons"""
@@ -110,7 +102,6 @@ class kosmos_main():
             if self.BUZZER_ENABLED == 1:
                 KMelody.playMelody(self._buzzer, KMelody.STARTING_MELODY)
             time.sleep(0.5)   
-        
         
         self.thread_camera.initialisation_awb()
         
@@ -142,12 +133,12 @@ class kosmos_main():
         increment = self._conf.system.getint(INCREMENT_SECTION,"increment")        
         # Création du dossier enregistrement dans le dossier Campagne
         os.chdir(self._conf.CAMPAGNE_PATH)
-        video_file = self._conf.config.get(CAMPAGNE_SECTION,"zone") + f'{self._conf.get_date_Y()}' + f'{increment:04}'     
-        if os.path.exists(video_file):
+        self.video_file = f'{increment:04}'
+        if os.path.exists(self.video_file):
             pass
         else:
-            os.mkdir(video_file)
-        VID_PATH = self._conf.CAMPAGNE_PATH+video_file
+            os.mkdir(self.video_file)
+        VID_PATH = self._conf.CAMPAGNE_PATH+self.video_file
         os.chdir(VID_PATH) # Ligne très importante pour bonne destination des fichiers !!!
 
         # Initialisation de fichier Event
@@ -168,12 +159,6 @@ class kosmos_main():
         # Run thread camera
         self.thread_camera.restart()
         
-        '''
-        # Run thread hydro 
-        if self.PRESENCE_HYDRO == 1:
-            # Run thread moteur
-            self.thread_hydrophone.restart()
-        '''
         
         # Attente d'un Event ou que le temps total soit dépassé
         while True:
@@ -210,12 +195,6 @@ class kosmos_main():
         if self.PRESENCE_MOTEUR==1:
             # Pause Moteur
             self.motorThread.pause()
-        '''    
-        # Arrêt de l'hydrophone 
-        if self.PRESENCE_HYDRO == 1:
-            # Run thread moteur
-            self.thread_hydrophone.pause()
-        '''
         
         if self._extinction == False:
             # On s'est arrêté via un bouton, on retourne donc en stand by
@@ -246,13 +225,7 @@ class kosmos_main():
             if self.motorThread.is_alive(): 
                 self.motorThread.join() 
             self.motorThread.power_off()
-        '''    
-        # Arrêt de l'hydrophone
-        if self.PRESENCE_HYDRO == 1:
-            self.thread_hydrophone.stop_thread()   
-            if self.thread_hydrophone.is_alive():
-                self.thread_hydrophone.join()   
-        '''
+        
         # Extinction des LEDs
         self._ledR.off()
         self._ledB.off()
@@ -325,14 +298,10 @@ def flaskMain():
     
 #Le targuet du Thread t1 qui est le thread du programme principale.
 def main():
-    # Liens entre les boutons et les fonction de callback
-    #GPIO.add_event_detect(myMain.STOP_BUTTON_GPIO, GPIO.FALLING, callback=stop_cb, bouncetime=500)
-    #GPIO.add_event_detect(myMain.RECORD_BUTTON_GPIO, GPIO.FALLING, callback=record_cb, bouncetime=500)
     
     myMain.Button_Stop.when_held = stop_cb
     myMain.Button_Record.when_held = record_cb
     
-
     # Debut prog principal :
     myMain.modeRotatif()
 

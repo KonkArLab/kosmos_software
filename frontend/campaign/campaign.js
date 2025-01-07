@@ -4,14 +4,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Define the form fields with their properties like ID, placeholder, type, etc.
     const fields = [
-        { id: "campaign", placeholder: "Sélectionnez un campagne", type: "text", label: "Campaign", tabIndex: 1, isCampaign: true },
-        { id: "zone", placeholder: "Sélectionnez une zone", type: "text", label: "Zone", tabIndex: 2, isZone: true },
-        { id: "locality", placeholder: "Illien", type: "text", label: "Location", tabIndex: 3, maxlength: "100" },
-        { id: "protection", placeholder: "Parc naturel marin d'iroise", type: "text", label: "Protection", tabIndex: 4, maxlength: "100" },
-        { id: "boat", placeholder: "Beneteau Capelan", type: "text", label: "Boat", tabIndex: 5, maxlength: "100" },
-        { id: "pilot", placeholder: "Olivier F.", type: "text", label: "Pilot", tabIndex: 6, maxlength: "100" },
-        { id: "equipment", placeholder: "C.H., J.C.", type: "text", label: "Equipment", tabIndex: 7, maxlength: "100" },
-        { id: "partners", placeholder: "Ifremer RDT, Ifremer Halgo", type: "text", label: "Partners", tabIndex: 8, maxlength: "200" }
+        { id: "date", placeholder: "Sélectionnez la date", type: "text", label: "Date", tabIndex: 1, maxlength: "10" },
+        { id: "campaign", placeholder: "Sélectionnez un campagne", type: "text", label: "Campaign", tabIndex: 2, isCampaign: true },
+        { id: "zone", placeholder: "Sélectionnez une zone", type: "text", label: "Zone", tabIndex: 3, isZone: true },
+        { id: "locality", placeholder: "Illien", type: "text", label: "Location", tabIndex: 4, maxlength: "100" },
+        { id: "protection", placeholder: "Parc naturel marin d'iroise", type: "text", label: "Protection", tabIndex: 5, maxlength: "100" },
+        { id: "boat", placeholder: "Beneteau Capelan", type: "text", label: "Boat", tabIndex: 6, maxlength: "100" },
+        { id: "pilot", placeholder: "Olivier F.", type: "text", label: "Pilot", tabIndex: 7, maxlength: "100" },
+        { id: "equipment", placeholder: "C.H., J.C.", type: "text", label: "Equipment", tabIndex: 8, maxlength: "100" },
+        { id: "partners", placeholder: "Ifremer RDT, Ifremer Halgo", type: "text", label: "Partners", tabIndex: 9, maxlength: "200" }
     ];
 
     const campaignFinal = {
@@ -23,9 +24,6 @@ document.addEventListener("DOMContentLoaded", function () {
         },
         dateDict:
         {
-            year: Number,
-            month: Number,
-            day: Number,
             date: String
         },
         deploiementDict: {
@@ -227,6 +225,8 @@ document.addEventListener("DOMContentLoaded", function () {
             });
             return;
         }
+        
+        campaignFinal.dateDict.date = formData.date;
 
         campaignFinal.deploiementDict.boat = formData.boat;
         campaignFinal.deploiementDict.equipment = formData.equipment;
@@ -237,7 +237,7 @@ document.addEventListener("DOMContentLoaded", function () {
         campaignFinal.zoneDict.locality = formData.locality;
         campaignFinal.zoneDict.protection = formData.protection;
         campaignFinal.zoneDict.zone = formData.zone;
-
+        
         // Save the data to localStorage
         localStorage.setItem("campaignData", JSON.stringify(campaignFinal));
         Swal.fire({

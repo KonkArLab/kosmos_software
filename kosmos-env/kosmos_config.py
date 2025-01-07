@@ -27,7 +27,6 @@ CONF_FILE_TEMPLATE_V4 = "kosmos_config_template_V4.ini"
 
 CONF_FILE = "kosmos_config.ini"
 CONFIG_SECTION = "KOSMOS-config"
-CAMPAGNE_SECTION = "KOSMOS-campagne"
 DEBUG_SECTION = "KOSMOS-debug"
 
 # Section video
@@ -84,7 +83,7 @@ class KosmosConfig:
         
         
         # Création Dossier Campagne si non existant               
-        campagneFile = self.get_date_YMD() + '_' + self.systemName + '_' + self.config.get(CAMPAGNE_SECTION,"campagne") + '_' + self.config.get(CAMPAGNE_SECTION,"zone") 
+        campagneFile = self.get_date_YMD() + '_' + self.systemName  
         os.chdir(USB_INSIDE_PATH)            
         if not os.path.exists(campagneFile):
             os.mkdir(campagneFile)
