@@ -1,10 +1,11 @@
 {
      "system": 
           {
+               "camera": "imx296",
+               "model": "Raspberry Pi 5 Model B Rev 1.0",
+               "moteur": "brushless",
                "system": "K5",
-               "version": "3.0",
-               "camera": "Picam HQ",
-               "moteur": "brushless"
+               "version": "3.0"
           },
      "campagne" :
           {
@@ -17,7 +18,7 @@
                     },
                "dateDict":
                     {
-                         "date":""
+                         "date":"2025-01-09"
                     },
                "deploiementDict":
                     {
@@ -29,7 +30,11 @@
           },
      "video" :
           {
-               "codeStation": "K5_BR240024",
+               "stationDict": 
+                    {
+                         "codestation": "K5_BR240024",
+                         "increment": "00024"
+                    },
                "hourDict":
                     {
                          "hour": 11,
@@ -46,7 +51,7 @@
                     {
                          "depth": 9.5,
                          "temperature": 15.9,
-                         "salinity": ""
+                         "salinity": 35.0
                     },
                "astroDict":
                     {
@@ -64,15 +69,15 @@
                     }, 
                "meteoMerDict":
                     {
-                         "seaState": "belle",
+                         "seaState": "Belle",
                          "swell": 1
                     },
                "analyseDict":
                     {
-                         "exploitability": "",
+                         "exploitability": "OK",
                          "habitat": "laminaires, sable",
                          "fauna": "Mullidae, Gobidae",
-                         "visibility":  ""    
+                         "visibility":  "OK"    
                     }
           }
 }

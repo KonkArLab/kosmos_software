@@ -383,44 +383,25 @@ class KosmosCam(Thread):
             infoStationDict["system"]["camera"] = self._CAM1_SENSOR
             infoStationDict["system"]["moteur"] = "brushless"
             
+            infoStationDict["video"]["stationDict"]["increment"] = f'{self._Conf.system.getint(INCREMENT_SECTION,"increment"):04}'
+            
+            '''
             # Les informations qui suivent sont normalement renseignées via l'onglet Campagne
             infoStationDict["campagne"]["dateDict"]["date"] = self._Conf.get_date_d()+"/"+self._Conf.get_date_m()+"/"+self._Conf.get_date_Y()
-            
-            
-            #infoStationDict["video"]["codeStation"] = self._Conf.config.get(CAMPAGNE_SECTION,"zone") + f'{self._Conf.get_date_Y()}' + f'{self._Conf.system.getint(INCREMENT_SECTION,"increment"):04}'
-                     
-            # From RTC
             infoStationDict["video"]["hourDict"]["hour"] = int(self._Conf.get_date_H())
             infoStationDict["video"]["hourDict"]["minute"] = int(self._Conf.get_date_M())
             infoStationDict["video"]["hourDict"]["second"] = int(self._Conf.get_date_S())
-            
-            infoStationDict["video"]["gpsDict"]["site"] = ""
+            '''
             
             # From sensors
             infoStationDict["video"]["gpsDict"]["latitude"] = ""
             infoStationDict["video"]["gpsDict"]["longitude"] = ""
             infoStationDict["video"]["ctdDict"]["depth"] = ""
             infoStationDict["video"]["ctdDict"]["temperature"] = ""
-            infoStationDict["video"]["ctdDict"]["salinity"] = ""
-            
-            """
-            infoStationDict["video"]["astroDict"]["moon"] = ""
-            infoStationDict["video"]["astroDict"]["tide"] = ""
-            infoStationDict["video"]["astroDict"]["coefficient"] = ""
-            infoStationDict["video"]["meteoAirDict"]["sky"] = ""
-            infoStationDict["video"]["meteoAirDict"]["wind"] = ""
-            infoStationDict["video"]["meteoAirDict"]["direction"] = ""
+            #infoStationDict["video"]["ctdDict"]["salinity"] = ""
             infoStationDict["video"]["meteoAirDict"]["atmPress"] = ""
             infoStationDict["video"]["meteoAirDict"]["tempAir"] = ""
-            infoStationDict["video"]["meteoMerDict"]["seaState"] = ""
-            infoStationDict["video"]["meteoMerDict"]["swell"] = ""
-            """
             
-            # A renseigner
-            infoStationDict["video"]["analyseDict"]["exploitability"] = ""
-            infoStationDict["video"]["analyseDict"]["habitat"] = ""
-            infoStationDict["video"]["analyseDict"]["fauna"] = ""
-            infoStationDict["video"]["analyseDict"]["visibility"] = ""
             
             with open(cam_file + '.json',mode = 'w', encoding = "utf-8") as ff:
                 #json.dump(infoStationDict,ff)

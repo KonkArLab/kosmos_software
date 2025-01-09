@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Define the form fields with their properties like ID, placeholder, type, etc.
     const fields = [
-        { id: "date", placeholder: "Sélectionnez la date", type: "text", label: "Date", tabIndex: 1, maxlength: "10" },
+        { id: "date", placeholder: "", type: "date", label: "Date", tabIndex: 1,  isDate:true },
         { id: "campaign", placeholder: "Sélectionnez un campagne", type: "text", label: "Campaign", tabIndex: 2, isCampaign: true },
         { id: "zone", placeholder: "Sélectionnez une zone", type: "text", label: "Zone", tabIndex: 3, isZone: true },
         { id: "locality", placeholder: "Illien", type: "text", label: "Location", tabIndex: 4, maxlength: "100" },
@@ -158,6 +158,20 @@ document.addEventListener("DOMContentLoaded", function () {
     form.appendChild(saveButton);
     form.appendChild(resetButton);
 
+    // Set automaticaly the date in the corresponding field
+    fields.forEach(field => {
+            let value = null;
+            if (field.id === 'date') {
+                value = new Date().toISOString().split("T")[0] 
+            } 
+            if (value) {
+                const element = document.getElementById(field.id);
+                if (element) {
+                    element.value = value;
+                }
+            }
+        });
+    
     // Load previously saved data from localStorage
     const storedData = localStorage.getItem("campaignData");
     if (storedData) {
@@ -168,12 +182,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (field.id in formData.zoneDict) {
                 value = formData.zoneDict[field.id];
-            } else if (field.id in formData.dateDict) {
-                value = formData.dateDict[field.id];
             } else if (field.id in formData.deploiementDict) {
                 value = formData.deploiementDict[field.id];
+            } else if (field.id in formData.dateDict) { // on ne se fie pas à la date RTC mais à celle pré-rentrée si elle existe
+                value = formData.dateDict[field.id];
             }
-
             if (value) {
                 if ((field.isCampaign || field.isZone) && choicesInstances[field.id]) {
                     choicesInstances[field.id].setChoiceByValue(value);

@@ -1,29 +1,23 @@
 let serverUrl = "http://10.42.0.1:5000";
 
 const fields = [
-  { id: "date", placeholder: "", type: "date", label: "Date", tabIndex: 1 },
-  { id: "hour", placeholder: "", type: "time", label: "Hour", tabIndex: 2 },
-  { id: "latitude", placeholder: "", type: "number", label: "Latitude", tabIndex: 3, min: "-90", max: "90" },
-  { id: "longitude", placeholder: "", type: "number", label: "Longitude", tabIndex: 4, min: "-180", max: "180" },
-  { id: "site", placeholder: "", type: "text", label: "Site", tabIndex: 5, maxlength: "200" },
-  { id: "codeStation", placeholder: "", type: "text", label: "Code Station", tabIndex: 6, maxlength: "200" },
-  { id: "depth", placeholder: "", type: "number", label: "Depth", tabIndex: 7, min: "0", max: "4000"},
-  { id: "temperature", placeholder: "", type: "number", label: "Temperature", tabIndex: 8, min: "-10", max: "60" },
-  { id: "salinity", placeholder: "", type: "text", label: "Salinity", tabIndex: 9, min: "0", max: "50" },
-  { id: "moon", placeholder: "", type: "text", label: "Moon", tabIndex: 10, maxlength: "200", choices : true },
-  { id: "tide", placeholder: "", type: "text", label: "Tide", tabIndex: 11, maxlength: "200", choices : true},
-  { id: "coefficient", placeholder: "", type: "number", label: "Coefficient", tabIndex: 12, min: "20", max: "120" },
-  { id: "sky", placeholder: "", type: "text", label: "Sky", tabIndex: 13, maxlength: "200" },
-  { id: "wind", placeholder: "", type: "number", label: "Wind", tabIndex: 14, min: "0", max: "12" },
-  { id: "direction", placeholder: "", type: "text", label: "Direction", tabIndex: 15, maxlength: "200", choices : true },
-  { id: "atmPress", placeholder: "", type: "number", label: "Atmospheric pressure", tabIndex: 16, min: "900", max: "1100" },
-  { id: "tempAir", placeholder: "", type: "number", label: "Air temperature", tabIndex: 17, min: "-90", max: "90" },
-  { id: "seaState", placeholder: "", type: "text", label: "Sea state", tabIndex: 18, maxlength: "200", choices : true },
-  { id: "swell", placeholder: "", type: "number", label: "Swell", tabIndex: 19, min: "0", max: "30"},
-  { id: "exploitability", placeholder: "", type: "text", label: "Exploitability", tabIndex: 20, maxlength: "200" },
-  { id: "habitat", placeholder: "", type: "text", label: "Habitat", tabIndex: 21, maxlength: "200" },
-  { id: "fauna", placeholder: "", type: "text", label: "Fauna", tabIndex: 22, maxlength: "200" },
-  { id: "visibility", placeholder: "", type: "text", label: "Visibility", tabIndex: 23, maxlength: "200" }
+  { id: "increment", placeholder: "", type: "text", label: "Increment", tabIndex: 1, maxlength: "200" },
+  { id: "codestation", placeholder: "", type: "text", label: "Code Station", tabIndex: 2, maxlength: "200" },
+
+  { id: "hour", placeholder: "", type: "time", label: "Hour", tabIndex: 3 },
+  { id: "latitude", placeholder: "", type: "number", label: "Latitude", tabIndex: 4, min: "-90", max: "90" },
+  { id: "longitude", placeholder: "", type: "number", label: "Longitude", tabIndex: 5, min: "-180", max: "180" },
+  { id: "site", placeholder: "", type: "text", label: "Site", tabIndex: 6, maxlength: "200" },
+  { id: "depth", placeholder: "", type: "number", label: "Depth (m)", tabIndex: 7, min: "0", max: "4000"},
+  { id: "temperature", placeholder: "", type: "number", label: "Temperature (°C)", tabIndex: 8, min: "-10", max: "60" },
+  { id: "moon", placeholder: "", type: "text", label: "Moon", tabIndex: 9, maxlength: "200", choices : true },
+  { id: "tide", placeholder: "", type: "text", label: "Tide", tabIndex: 10, maxlength: "200", choices : true},
+  { id: "coefficient", placeholder: "", type: "number", label: "Coefficient", tabIndex: 11, min: "20", max: "120" },
+  { id: "sky", placeholder: "", type: "text", label: "Sky", tabIndex: 12, maxlength: "200" },
+  { id: "wind", placeholder: "", type: "number", label: "Wind (Bft)", tabIndex: 13, min: "0", max: "12" },
+  { id: "direction", placeholder: "", type: "text", label: "Direction", tabIndex: 14, maxlength: "200", choices : true },
+  { id: "seaState", placeholder: "", type: "text", label: "Sea state", tabIndex: 15, maxlength: "200", choices : true },
+  { id: "swell", placeholder: "", type: "number", label: "Swell (m)", tabIndex: 16, min: "0", max: "30"},
 ];
 
 // Default metadata object in case no data is available
@@ -32,14 +26,14 @@ const defaultMetaData = {
   system: {},
   campaign: {},
   video: {
-    codeStation: String,
+    stationDict: {codestation:String, increment: String},
     hourDict: { hour: Number, minute: Number, second: Number},
     gpsDict: { site: String, latitude: Number, longitude: Number },
     ctdDict: { depth: Number, temperature: Number, salinity: String },
     astroDict: { moon: String, tide: String, coefficient: Number },
     meteoAirDict: { sky: String, wind: Number, direction: String, atmPress: Number, tempAir: Number },
     meteoMerDict: { seaState: String, swell: Number },
-    analyseDict: { exploitability: String, habitat: String, fauna: String, visibility: String },
+    //analyseDict: { exploitability: String, habitat: String, fauna: String, visibility: String },
   }
 };
 
@@ -71,13 +65,13 @@ function validateMetaData(data) {
 }
 
 const sectionTitles = {
-  codeStation: "Station Code",
-  gpsDict: "GPS Coordinates",
+  stationDict: "Station Code",
+  gpsDict: "Location",
   meteoAirDict: "Meteorological Air Information",
   meteoMerDict: "Meteorological Sea Information",
-  analyseDict: "Exploitability Information",
-  hourDict: "Date and hour",
-  ctdDict: "CTD Information",
+  //analyseDict: "Exploitability",
+  hourDict: "Hour",
+  ctdDict: "Depth and Temperature",
   astroDict: "Astronomical Information",
 };
 
@@ -183,7 +177,6 @@ function generateTable() {
       const field = fields.find(f => f.id === sectionKey);
       if (field) createFormRow(sectionContent, field, metaDataValues[sectionKey]);
     }
-
     table.appendChild(sectionContent);
     document.getElementById("formMetaData").addEventListener("submit", submitForm);
   });
@@ -204,17 +197,18 @@ function createFormRowWithButton(container, field, value) {
   inputElement.type = field.type;
   inputElement.id = field.id;
   inputElement.placeholder = field.placeholder || "";
-  inputElement.value = value || "";
+  
+  const noww = new Date().toTimeString().split(" ")[0];  
+  inputElement.value = noww.split(":").slice(0, 2).join(":") || "";
   inputElement.tabIndex = field.tabIndex;
   inputElement.classList.add("form-input");
+
 
   const button = document.createElement("button");
   button.type = "button";
   button.textContent = "Set Current";
   button.addEventListener("click", () => {
-    if (field.type === "date") {
-      inputElement.value = new Date().toISOString().split("T")[0];
-    } else if (field.type === "time") {
+    if (field.type === "time") {
        const now = new Date().toTimeString().split(" ")[0];
        inputElement.value = now.split(":").slice(0, 2).join(":"); 
     }
@@ -253,10 +247,17 @@ function createFormRow(container, field, value) {
     if (field.type === "number") {
       if (field.min) inputElement.min = field.min;
       if (field.max) inputElement.max = field.max;
-      inputElement.step = "0.0000001";
+      if (field.id === "latitude" || field.id === "longitude" ) inputElement.step = "0.0000001";
+      if (field.id === "depth" || field.id === "temperature" ) inputElement.step = "0.1";
+      if (field.id === "coefficient" || field.id === "wind" || field.id === "wind" ) inputElement.step = "1";
     }
     if (field.maxlength) inputElement.maxLength = field.maxlength;
     if (value && typeof value !== 'function') inputElement.value = value;
+    if (field.id === "codestation") {
+      const storedData = localStorage.getItem("campaignData");
+      const formData = JSON.parse(storedData);
+      inputElement.value = formData.zoneDict.campaign;
+    }
   }
 
   inputElement.tabIndex = field.tabIndex;
@@ -272,7 +273,8 @@ function submitForm(event) {
    
   dataFinal.video = defaultMetaData.video;
 
-  dataFinal.video.codeStation = document.getElementById('Station Code')?.value;
+  dataFinal.video.stationDict.codeStation = document.getElementById('codestation')?.value;
+  dataFinal.video.stationDict.increment = document.getElementById('increment')?.value;
 
   let time = document.getElementById('hour')?.value;
 
@@ -287,21 +289,21 @@ function submitForm(event) {
   dataFinal.video.gpsDict.longitude = parseFloat(document.getElementById('longitude')?.value);
   dataFinal.video.ctdDict.depth = parseFloat(document.getElementById('depth')?.value);
   dataFinal.video.ctdDict.temperature = parseFloat(document.getElementById('temperature')?.value);
-  dataFinal.video.ctdDict.salinity = parseInt(document.getElementById('salinity')?.value);
+  //dataFinal.video.ctdDict.salinity = parseInt(document.getElementById('salinity')?.value);
   dataFinal.video.astroDict.moon = document.getElementById('moon')?.value;
   dataFinal.video.astroDict.tide = document.getElementById('tide')?.value;
   dataFinal.video.astroDict.coefficient = parseInt(document.getElementById('coefficient')?.value);
   dataFinal.video.meteoAirDict.sky = document.getElementById('sky')?.value;
   dataFinal.video.meteoAirDict.wind = parseInt(document.getElementById('wind')?.value);
   dataFinal.video.meteoAirDict.direction = document.getElementById('direction')?.value;
-  dataFinal.video.meteoAirDict.atmPress = parseFloat(document.getElementById('atmPress')?.value);
+  //dataFinal.video.meteoAirDict.atmPress = parseFloat(document.getElementById('atmPress')?.value);
   dataFinal.video.meteoAirDict.tempAir = parseFloat(document.getElementById('tempAir')?.value);
   dataFinal.video.meteoMerDict.seaState = document.getElementById('seaState')?.value;
   dataFinal.video.meteoMerDict.swell = parseInt(document.getElementById('swell')?.value);
-  dataFinal.video.analyseDict.exploitability = document.getElementById('exploitability')?.value;
-  dataFinal.video.analyseDict.habitat = document.getElementById('habitat')?.value;
-  dataFinal.video.analyseDict.fauna = document.getElementById('fauna')?.value;
-  dataFinal.video.analyseDict.visibility = document.getElementById('visibility')?.value;
+  //dataFinal.video.analyseDict.exploitability = document.getElementById('exploitability')?.value;
+  //dataFinal.video.analyseDict.habitat = document.getElementById('habitat')?.value;
+  //dataFinal.video.analyseDict.fauna = document.getElementById('fauna')?.value;
+  //dataFinal.video.analyseDict.visibility = document.getElementById('visibility')?.value;
 
   console.log(dataFinal);
 
