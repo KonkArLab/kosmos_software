@@ -74,7 +74,7 @@ class KosmosCam(Thread):
             self._Y_RESOLUTION = 1088
         elif self._CAM1_SENSOR == 'imx477':
             self._X_RESOLUTION = 2028
-            self._Y_RESOLUTION = 1520
+            self._Y_RESOLUTION = 1080#1520
                        
         # Framerate et frameduration camera
         self._FRAMERATE=aConf.config.getint(CONFIG_SECTION,"34_PICAM_framerate")
