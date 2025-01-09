@@ -184,8 +184,8 @@ class KosmosCam(Thread):
                 os.remove(input_file)
                 logging.debug(f"Deleted input H.264 file: {input_file}")                
                 # Ajouter la métadonnée personnalisée
-                custom_value = "KOSMOS_TEST"  # Test 
-                self.add_metadata(output_file, custom_value)
+                #custom_value = "KOSMOS_TEST"  # Test 
+                #self.add_metadata(output_file, custom_value)
                 
                 if self.STEREO == 1:
                     input_file2 = os.path.splitext(input_file)[0]+'_STEREO.h264'
@@ -211,7 +211,7 @@ class KosmosCam(Thread):
             command = ['exiftool', '-config', config_path, f'-kosmos={hashed_value}', '-overwrite_original', video_file]
             
             # Afficher la commande pour débogage
-            print("Commande appelée :", " ".join(command))
+            logging.debug("Commande appelée :", " ".join(command))
             
             # Exécuter la commande
             subprocess.run(command, check=True)
@@ -394,8 +394,12 @@ class KosmosCam(Thread):
             '''
             
             # From sensors
-            infoStationDict["video"]["gpsDict"]["latitude"] = ""
-            infoStationDict["video"]["gpsDict"]["longitude"] = ""
+            try:
+                infoStationDict["video"]["gpsDict"]["latitude"] = float(self.gps.get_latitude())
+                infoStationDict["video"]["gpsDict"]["longitude"] = float(self.gps.get_longitude())
+            except:
+                infoStationDict["video"]["gpsDict"]["latitude"] = 0.
+                infoStationDict["video"]["gpsDict"]["longitude"] = 0.
             infoStationDict["video"]["ctdDict"]["depth"] = ""
             infoStationDict["video"]["ctdDict"]["temperature"] = ""
             #infoStationDict["video"]["ctdDict"]["salinity"] = ""
