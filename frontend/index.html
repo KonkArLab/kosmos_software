@@ -30,8 +30,13 @@
 
   <section>
     <div id="cameraContainer" class="container">
+      
+      
       <h3>State</h3>
       <p>Etat : <span id="etat">Unknown</span></p>
+    
+      <p>Latitude : <span id="latitude"> </span></p>
+      <p>Longitude : <span id="longitude"> </span></p>
 
       <h3 class="titleCamera">Buttons to record</h3>
       <button id="startCamera" onClick="start()">Start</button>
@@ -52,6 +57,8 @@
   <script src="./libs/sweetAlert/sweetAlert.min.js"></script>
   <script src="cameraScript.js"></script>
   <script src="./config/state.js"></script>
+  <script src="gps.js"></script>
+
 </body>
 
 </html>
