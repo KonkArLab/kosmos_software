@@ -18,6 +18,25 @@ stopButton.disabled = true;
 stopLiveButton.disabled = true;
 shutdownButton.disabled = false;
 
+majStateButton();
+
+async function majStateButton() {
+  try {
+    const response = await fetch(serverUrl + "/state");
+    const body = await response.json();
+    
+    if (body.state === "KState.WORKING") {
+      stopButton.disabled = false;
+      startButton.disabled = true;
+      startLiveButton.disabled = true;
+      shutdownButton.disabled = true;
+    } else {
+      stopButton.disabled = true;
+      startButton.disabled = false;
+    }
+  } finally {}
+}
+
 // Function to send a start request to the server
 async function start() {
   try {

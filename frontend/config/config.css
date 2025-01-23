@@ -2,32 +2,59 @@
 
 /* Style for each parameter container */
 .parameter {
-  margin-bottom: var(--margin-space-normal);
+  margin-bottom: var(--margin-space-xsmall);
+  margin-left:var(--margin-space-xsmall);
 }
 
 .container {
-  width: 90%;
+  width: 95%;
+  line-height: var(--line-space-xsmall);
 }
 
+label {
+  font-size: var(--font-size-xsmall);
+  line-height: var(--line-space-xsmall);
+}
+
+button {
+  font-size: var(--font-size-xsmall);
+  width: var(--element-size-large);
+  padding: var(--padding-space-xsmall) var(--padding-space-xsmall);
+  line-height: var(--line-space-xsmall);
+  float : right;
+ 
+}
 #rebootButton {
-  margin-top: var(--margin-space-small);
+  margin-top: var(--margin-space-xsmall);
+  font-size: var(--font-size-small);
+  padding: var(--padding-space-small) var(--padding-space-small);
+  width: 25%; 
+  float: left;
+}
+
+.h4{
+  margin-left: 0;
 }
 
 .parameter-element {
-  margin: var(--margin-space-small);
-  align-items: center;
+  margin: var(--margin-space-xsmall);
   vertical-align: middle;
+  line-height: var(--line-space-xsmall);
+
 }
 
 #configTitle {
-  margin-top: var(--margin-space-normal);
+  margin-top: var(--margin-space-small);
 }
 
 input {
-  width: 70%; /* Inputs take full width of their container */
-  padding: var(--padding-space-small); /* Add small padding inside the input */
-  border-width: var(--border-thin); /* Thin border around the input */
+  width: 15%; /* Inputs take full width of their container */
+  padding: var(--padding-space-xsmall); /* Add small padding inside the input */
+  border-width: var(--border-thin);  /*Thin border around the input */
   border-radius: var(--border-thick); /* Rounded corners for inputs */
-  margin-top: var(--margin-space-xsmall); /* Small margin above the input */
-  margin-bottom: var(--margin-space-xsmall); /* Small margin below the input */
+  font-size: var(--font-size-xsmall);
+  line-height: var(--line-space-xsmall);
+
+  
+
 }

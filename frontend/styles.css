@@ -1,7 +1,9 @@
 :root {
   --font-size-normal: 1.1rem;
   --font-size-small: 0.8rem;
+  --font-size-xsmall: 0.7rem;
   --font-size-big: 1.5rem;
+  --line-heigth-xsmall: 0.5rem;
   --line-heigth-small: 1.3rem;
   --line-heigth-normal: 1.5rem;
   --line-heigth-large: 1.7rem;
@@ -23,14 +25,15 @@
   --color-complementary: #ffd9ae;
   --font-weight-light: 400;
   --font-weight-bold: 600;
+  --element-size-large: 2.5rem;
+  --element-size-normal: 2rem;
+  --element-size-small: 1.5rem;
 }
 
 * {
   box-sizing: border-box;
   font-family: var(--font-family-style);
   line-height: var(--line-heigth-normal);
-  margin: 0;
-  padding: 0;
 }
 
 header {
@@ -95,7 +98,7 @@ section {
 }
 
 button {
-  padding: var(--padding-space-small) var(--padding-space-large);
+  padding: var(--padding-space-small) var(--padding-space-small);
   background-color: var(--color-primary);
   color: var(--color-secondary);
   border: none;

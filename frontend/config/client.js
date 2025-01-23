@@ -19,7 +19,7 @@ async function fetchConfig() {
 
       // Loop through each configuration parameter and create corresponding form elements
       for (const key in configsData) {
-        const parameterDiv = document.createElement("div");
+        const parameterDiv = document.createElement("h4");
         parameterDiv.classList.add("parameter");
 
         const label = document.createElement("label");
