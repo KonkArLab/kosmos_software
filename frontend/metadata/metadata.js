@@ -133,6 +133,15 @@ function generateTable() {
   const table = document.getElementById("metadataTable");
   table.innerHTML = ""; // Limpia la tabla existente
 
+  if(localStorage.getItem("pending")) {
+    Swal.fire({
+      title: 'Alert',
+      text: 'You have a previous measure pending. Please fill the information before start a new camera record',
+      icon: 'info',
+      confirmButtonText: 'OK'
+    });
+  };
+
   localStorage.setItem("pending", JSON.stringify("1"));
 
   const metaDataFromStorage = loadMetaData();
@@ -207,6 +216,7 @@ function createFormRowWithButton(container, field, value) {
   const button = document.createElement("button");
   button.type = "button";
   button.textContent = "Set Current";
+  button.id = "setHour";
   button.addEventListener("click", () => {
     if (field.type === "time") {
        const now = new Date().toTimeString().split(" ")[0];

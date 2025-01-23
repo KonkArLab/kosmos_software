@@ -72,3 +72,7 @@ input, select {
   border-width: var(--border-thin) !important;
   border-radius: var(--border-thick) !important;
 }
+
+#setHour {
+  margin-top: var(--margin-space-small);
+}
