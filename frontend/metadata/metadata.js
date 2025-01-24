@@ -266,7 +266,7 @@ function createFormRow(container, field, value) {
     if (field.id === "codestation") {
       const storedData = localStorage.getItem("campaignData");
       const formData = JSON.parse(storedData);
-      inputElement.value = formData.zoneDict.campaign;
+      inputElement.value = formData.zoneDict.zone+formData.dateDict.date.split('-')[0].split('20')[1];
     }
   }
 
