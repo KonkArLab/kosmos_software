@@ -17,10 +17,9 @@
 th,
 td {
   border: var(--border-thin) solid var(--color-light);
-  padding: var(--padding-space-normal);
+  padding: var(--padding-space-small);
   text-align: left;
 }
-
 
 /* Alternate row colors for better readability */
 th {
@@ -44,6 +43,7 @@ tr:hover {
   padding: 10px;
   border: 1px solid #ccc;
   position: relative;
+  display: none;
 }
 
 /* Add a visual indicator for collapsible sections */

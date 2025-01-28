@@ -1,21 +1,20 @@
 let serverUrl = "http://10.42.0.1:5000";
 
 const fields = [
-  { id: "increment", placeholder: "", type: "text", label: "Increment", tabIndex: 1, maxlength: "200" },
+  //{ id: "increment", placeholder: "", type: "text", label: "Increment", tabIndex: 1, maxlength: "200" },
   { id: "codestation", placeholder: "", type: "text", label: "Code Station", tabIndex: 2, maxlength: "200" },
-
   { id: "hour", placeholder: "", type: "time", label: "Hour", tabIndex: 3 },
   { id: "latitude", placeholder: "", type: "number", label: "Latitude", tabIndex: 4, min: "-90", max: "90" },
   { id: "longitude", placeholder: "", type: "number", label: "Longitude", tabIndex: 5, min: "-180", max: "180" },
   { id: "site", placeholder: "", type: "text", label: "Site", tabIndex: 6, maxlength: "200" },
   { id: "depth", placeholder: "", type: "number", label: "Depth (m)", tabIndex: 7, min: "0", max: "4000"},
   { id: "temperature", placeholder: "", type: "number", label: "Temperature (°C)", tabIndex: 8, min: "-10", max: "60" },
-  { id: "moon", placeholder: "", type: "text", label: "Moon", tabIndex: 9, maxlength: "200", choices : true },
+  { id: "moon", placeholder: "", type: "text", label: "Moon phase", tabIndex: 9, maxlength: "200", choices : true },
   { id: "tide", placeholder: "", type: "text", label: "Tide", tabIndex: 10, maxlength: "200", choices : true},
-  { id: "coefficient", placeholder: "", type: "number", label: "Coefficient", tabIndex: 11, min: "20", max: "120" },
+  { id: "coefficient", placeholder: "", type: "number", label: "Tide coefficient", tabIndex: 11, min: "20", max: "120" },
   { id: "sky", placeholder: "", type: "text", label: "Sky", tabIndex: 12, maxlength: "200" },
   { id: "wind", placeholder: "", type: "number", label: "Wind (Bft)", tabIndex: 13, min: "0", max: "12" },
-  { id: "direction", placeholder: "", type: "text", label: "Direction", tabIndex: 14, maxlength: "200", choices : true },
+  { id: "direction", placeholder: "", type: "text", label: "Wind direction", tabIndex: 14, maxlength: "200", choices : true },
   { id: "seaState", placeholder: "", type: "text", label: "Sea state", tabIndex: 15, maxlength: "200", choices : true },
   { id: "swell", placeholder: "", type: "number", label: "Swell (m)", tabIndex: 16, min: "0", max: "30"},
 ];
@@ -79,6 +78,7 @@ const sectionTitles = {
 function getChoicesForField(field) {
   const choicesData = {
     direction: [
+      { value: "", label: "" },
       { value: "N", label: "N : Nord" },
       { value: "NE", label: "NE : Nord-Est" },
       { value: "NO", label: "NO : Nord-Ouest" },
@@ -89,6 +89,7 @@ function getChoicesForField(field) {
       { value: "O", label: "O : Ouest" },
     ],
     tide: [
+      { value: "", label: ""},
       { value: "BM", label: "BM (Low Tide)" },
       { value: "BM+1", label: "BM+1" },
       { value: "BM-1", label: "BM-1" },
@@ -97,6 +98,7 @@ function getChoicesForField(field) {
       { value: "PM-1", label: "PM-1" },
     ],
     moon: [
+      { value: "", label: ""},
       { value: "NL", label: "NL : Nouvelle Lune (New Moon)" },
       { value: "PC", label: "PC : Premier Croissant (Waxing Crescent)" },
       { value: "PQ", label: "PQ : Premier Quartier (First Quarter)" },
@@ -107,6 +109,7 @@ function getChoicesForField(field) {
       { value: "DC", label: "DC : Dernier Croissant (Waning Crescent)" },
     ],
     seaState: [
+      { value: "", label: "" },
       { value: "Calm", label: "Calme" },
       { value: "Rippled", label: "Ridée" },
       { value: "Smooth", label: "Belle" },
@@ -225,7 +228,7 @@ function createFormRowWithButton(container, field, value) {
   });
 
   inputCell.appendChild(inputElement);
-  inputCell.appendChild(button);
+  //inputCell.appendChild(button);
   row.appendChild(inputCell);
 
   container.appendChild(row);
@@ -264,9 +267,9 @@ function createFormRow(container, field, value) {
     if (field.maxlength) inputElement.maxLength = field.maxlength;
     if (value && typeof value !== 'function') inputElement.value = value;
     if (field.id === "codestation") {
-      const storedData = localStorage.getItem("campaignData");
-      const formData = JSON.parse(storedData);
-      inputElement.value = formData.zoneDict.zone+formData.dateDict.date.split('-')[0].split('20')[1];
+      const FormData = JSON.parse(localStorage.getItem("campaignData"));
+      const MetaData = JSON.parse(localStorage.getItem("metaData"));
+      inputElement.value = FormData.zoneDict.zone+FormData.dateDict.date.split('-')[0].split('20')[1]+MetaData.video.stationDict.increment;
     }
   }
 

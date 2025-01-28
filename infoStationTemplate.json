@@ -1,83 +1,82 @@
 {
      "system": 
           {
-               "camera": "imx296",
-               "model": "Raspberry Pi 5 Model B Rev 1.0",
-               "moteur": "brushless",
-               "system": "K5",
-               "version": "3.0"
+               "camera": null,
+               "model": null,
+               "system": null,
+               "version": null
           },
      "campagne" :
           {
                "zoneDict":
                     {
-                         "campagne": "ATL",
-                         "zone": "CC",
-                         "lieudit": "Illien",
-                         "protection": "Parc naturel marin d'iroise"
+                         "campagne": null,
+                         "zone": null,
+                         "lieudit": null,
+                         "protection": null
                     },
                "dateDict":
                     {
-                         "date":"2025-01-09"
+                         "date":null
                     },
                "deploiementDict":
                     {
-                         "bateau": "Beneteau Capelan",
-                         "pilote": "Olivier F.",
-                         "equipage": "C.H., J.C.",
-                         "partenaires": "Ifremer RDT, Ifremer Halgo"
+                         "bateau": null,
+                         "pilote": null,
+                         "equipage": null,
+                         "partenaires": null
                     }
           },
      "video" :
           {
                "stationDict": 
                     {
-                         "codestation": "K5_BR240024",
-                         "increment": "00024"
+                         "codestation": null,
+                         "increment": null
                     },
                "hourDict":
                     {
-                         "hour": 11,
-                         "minute": 26,
-                         "second": 37
+                         "hour": null,
+                         "minute": null,
+                         "second": null
                     },
                "gpsDict":
                     {
-                         "site": "Brentec'h",
-                         "latitude": 47.85762,
-                         "longitude": -3.97411
+                         "site": null,
+                         "latitude": null,
+                         "longitude": null
                     }, 
                "ctdDict":
                     {
-                         "depth": 9.5,
-                         "temperature": 15.9,
-                         "salinity": 35.0
+                         "depth": null,
+                         "temperature": null,
+                         "salinity": null
                     },
                "astroDict":
                     {
-                         "moon": "PQ",
-                         "tide": "BM+1",
-                         "coefficient": 74
+                         "moon": null,
+                         "tide": null,
+                         "coefficient": null
                     },
                "meteoAirDict":
                     {
-                         "sky": "soleil",
-                         "wind": 2,
-                         "direction": "NE",
-                         "atmPress": 1013.0,
-                         "tempAir": 15.6
+                         "sky": null,
+                         "wind": null,
+                         "direction": null,
+                         "atmPress": null,
+                         "tempAir": null
                     }, 
                "meteoMerDict":
                     {
-                         "seaState": "Belle",
-                         "swell": 1
+                         "seaState": null,
+                         "swell": null
                     },
                "analyseDict":
                     {
-                         "exploitability": "OK",
-                         "habitat": "laminaires, sable",
-                         "fauna": "Mullidae, Gobidae",
-                         "visibility":  "OK"    
+                         "exploitability": null,
+                         "habitat": null,
+                         "fauna": null,
+                         "visibility":  null    
                     }
           }
 }
