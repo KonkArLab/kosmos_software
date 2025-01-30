@@ -1,13 +1,13 @@
 @import url('../styles.css');
 
 .container {
-  width: 95%;
+  width: 100%;
 }
 
 /* Table styling for records display */
 
 #fileTable {
-  width: 100%;
+  width: 90%;
   margin-top: var(--margin-space-normal);
   margin-bottom: var(--margin-space-normal);
   border-collapse: collapse;

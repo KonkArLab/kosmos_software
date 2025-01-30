@@ -12,10 +12,10 @@
 }
 
 label {
-  font-size: var(--font-size-normal);
+  font-size: var(--font-size-xsmall);
   line-height: var(--line-space-xsmall);
   display: inline-block;
-  width:55%;
+  width:50%;
 }
 
 button {

@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", function () {
         deploiementDict: {
             boat: String,
             pilot: String,
-            equipment: String,
+            crew: String,
             partners: String
         }
     }
@@ -149,7 +149,7 @@ document.addEventListener("DOMContentLoaded", function () {
         campaignFinal.dateDict.date = formData.date;
 
         campaignFinal.deploiementDict.boat = formData.boat;
-        campaignFinal.deploiementDict.crew = formData.equipment;
+        campaignFinal.deploiementDict.crew = formData.crew;
         campaignFinal.deploiementDict.partners = formData.partners;
         campaignFinal.deploiementDict.pilot = formData.pilot;
 
