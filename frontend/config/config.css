@@ -12,28 +12,31 @@
 }
 
 label {
-  font-size: var(--font-size-xsmall);
+  font-size: var(--font-size-normal);
   line-height: var(--line-space-xsmall);
+  display: inline-block;
+  width:55%;
 }
 
 button {
-  font-size: var(--font-size-xsmall);
+  font-size: var(--font-size-small);
   width: var(--element-size-large);
   padding: var(--padding-space-xsmall) var(--padding-space-xsmall);
   line-height: var(--line-space-xsmall);
-  float : right;
+  display: inline-block;
  
 }
 #rebootButton {
   margin-top: var(--margin-space-xsmall);
   font-size: var(--font-size-small);
   padding: var(--padding-space-small) var(--padding-space-small);
-  width: 25%; 
+  width: 20%; 
   float: left;
 }
 
-.h4{
+h4{
   margin-left: 0;
+  height: 20px;
 }
 
 .parameter-element {
@@ -52,9 +55,7 @@ input {
   padding: var(--padding-space-xsmall); /* Add small padding inside the input */
   border-width: var(--border-thin);  /*Thin border around the input */
   border-radius: var(--border-thick); /* Rounded corners for inputs */
-  font-size: var(--font-size-xsmall);
+  font-size: var(--font-size-small);
   line-height: var(--line-space-xsmall);
-
-  
-
+  display: inline-block;
 }

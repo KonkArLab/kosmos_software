@@ -5,13 +5,13 @@ document.addEventListener("DOMContentLoaded", function () {
     // Define the form fields with their properties like ID, placeholder, type, etc.
     const fields = [
         { id: "date", placeholder: "", type: "date", label: "Date", tabIndex: 1,  isDate:true },
-        { id: "campaign", placeholder: "ATL", type: "text", label: "Campaign", tabIndex: 2, maxlength: "3"},
-        { id: "zone", placeholder: "BR", type: "text", label: "Zone", tabIndex: 3, maxlength: "3"},
+        { id: "campaign", placeholder: "Sélectionnez un campagne", type: "text", label: "Campaign", tabIndex: 2, isCampaign: true },
+        { id: "zone", placeholder: "Sélectionnez une zone", type: "text", label: "Zone", tabIndex: 3, isZone: true},
         { id: "locality", placeholder: "Illien", type: "text", label: "Location", tabIndex: 4, maxlength: "100" },
         { id: "protection", placeholder: "Parc naturel marin d'iroise", type: "text", label: "Protection", tabIndex: 5, maxlength: "100" },
         { id: "boat", placeholder: "Beneteau Capelan", type: "text", label: "Boat", tabIndex: 6, maxlength: "100" },
         { id: "pilot", placeholder: "Olivier F.", type: "text", label: "Pilot", tabIndex: 7, maxlength: "100" },
-        { id: "crew", placeholder: "C.H., J.C.", type: "text", label: "Crew", tabIndex: 8, maxlength: "100" },
+        { id: "equipment", placeholder: "C.H., J.C.", type: "text", label: "Equipment", tabIndex: 8, maxlength: "100" },
         { id: "partners", placeholder: "Ifremer RDT, Ifremer Halgo", type: "text", label: "Partners", tabIndex: 9, maxlength: "200" }
     ];
 
@@ -34,8 +34,68 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    // Available options for campaigns
+    const campaignOptions = [
+        //{ code: "ANT", name: "Antarctique" },
+        //{ code: "ARC", name: "Arctique" },
+        { code: "ATL", name: "Atlantique" },
+        //{ code: "IND", name: "Indien" },
+        { code: "MED", name: "Méditerranée" },
+        //{ code: "PAC", name: "Pacifique" }
+    ];
+
+    // Available options for zones
+    const zoneOptions = [
+        { code: "AC", name: "Arcachon" },
+        { code: "AD", name: "Audierne" },
+        { code: "AJ", name: "Ajaccio" },
+        { code: "AY", name: "Auray" },
+        { code: "BA", name: "Bayonne" },
+        { code: "BI", name: "Bastia" },
+        { code: "BL", name: "Boulogne-sur-Mer" },
+        { code: "BR", name: "Brest" },
+        { code: "BX", name: "Bordeaux" },
+        { code: "BY", name: "Saint-Barthélemy" },
+        { code: "CC", name: "Concarneau" },
+        { code: "CH", name: "Cherbourg" },
+        { code: "CM", name: "Camaret" },
+        { code: "CN", name: "Caen" },
+        { code: "CY", name: "Cayenne" },
+        { code: "DP", name: "Dieppe" },
+        { code: "DK", name: "Dunkerque" },
+        { code: "DZ", name: "Douarnenez" },
+        { code: "FC", name: "Fécamp" },
+        { code: "FF", name: "Fort-de-France" },
+        { code: "GV", name: "Le Guilvinec" },
+        { code: "IO", name: "Île d'Oléron" },
+        { code: "LH", name: "Le Havre" },
+        { code: "LO", name: "Lorient" },
+        { code: "LR", name: "La Rochelle" },
+        { code: "LS", name: "Les Sables-d'Olonne" },
+        { code: "MA", name: "Marseille" },
+        { code: "MN", name: "Marennes" },
+        { code: "MT", name: "Martigues" },
+        { code: "MX", name: "Morlaix" },
+        { code: "NA", name: "Nantes" },
+        { code: "NI", name: "Nice" },
+        { code: "NO", name: "Noirmoutier" },
+        { code: "PL", name: "Paimpol" },
+        { code: "PP", name: "Pointe-à-Pitre" },
+        { code: "PV", name: "Port-Vendres" },
+        { code: "RO", name: "Rouen" },
+        { code: "RU", name: "La Réunion" },
+        { code: "SB", name: "Saint-Brieuc" },
+        { code: "SM", name: "Saint-Malo" },
+        { code: "SN", name: "Saint-Nazaire" },
+        { code: "SP", name: "Saint-Pierre-et-Miquelon" },
+        { code: "ST", name: "Sète" },
+        { code: "TL", name: "Toulon" },
+        { code: "VA", name: "Vannes" },
+        { code: "YE", name: "Île d'Yeu" }
+    ];
+
     // Object to store instances of Choices.js
-    
+    const choicesInstances = {};
 
     // Dynamically create form fields
     fields.forEach(field => {
@@ -43,17 +103,51 @@ document.addEventListener("DOMContentLoaded", function () {
         const label = document.createElement("label");
         label.setAttribute("for", field.id);
         label.textContent = field.label + ": ";
+
+        if (field.isCampaign || field.isZone) {
+            const select = document.createElement("select");
+            select.id = field.id;
+            select.setAttribute("placeholder", field.placeholder);
+            select.setAttribute("name", field.id);
+
+            // Default option
+            const defaultOption = document.createElement("option");
+            defaultOption.value = "";
+            defaultOption.textContent = field.placeholder;
+            select.appendChild(defaultOption);
+
+            // Add options
+            const options = field.isCampaign ? campaignOptions : zoneOptions;
+            options.forEach(option => {
+                const optionElement = document.createElement("option");
+                optionElement.value = option.code;
+                optionElement.textContent = `${option.code} - ${option.name}`;
+                select.appendChild(optionElement);
+            });
+
+            
+            ligneH3.appendChild(label);
+            ligneH3.appendChild(select);
+            form.appendChild(ligneH3);
+            // Initialize Choices.js and save instance
+            choicesInstances[field.id] = new Choices(select, {
+                searchEnabled: true,
+                shouldSort: false,
+                duplicateItemsAllowed: false
+            });
+        } else {
+            const input = document.createElement("input");
+            input.id = field.id;
+            input.placeholder = field.placeholder;
+            input.type = field.type;
+            input.tabIndex = field.tabIndex;
+            input.maxLength = field.maxlength;
+            
+            ligneH3.appendChild(label);
+            ligneH3.appendChild(input);
+            form.appendChild(ligneH3);
+        }
         
-        const input = document.createElement("input");
-        input.id = field.id;
-        input.placeholder = field.placeholder;
-        input.type = field.type;
-        input.tabIndex = field.tabIndex;
-        input.maxLength = field.maxlength;
-        
-        ligneH3.appendChild(label);
-        ligneH3.appendChild(input);
-        form.appendChild(ligneH3);
          
     });
 
@@ -91,6 +185,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         fields.forEach(field => {
             let value = null;
+
             if (field.id in formData.zoneDict) {
                 value = formData.zoneDict[field.id];
             } else if (field.id in formData.deploiementDict) {
@@ -99,10 +194,15 @@ document.addEventListener("DOMContentLoaded", function () {
                 value = formData.dateDict[field.id];
             }
             if (value) {
-                const element = document.getElementById(field.id);
-                if (element) {
-                    element.value = value;
-                }         
+                if ((field.isCampaign || field.isZone) && choicesInstances[field.id]) {
+                    choicesInstances[field.id].setChoiceByValue(value);
+                } else {
+                    const element = document.getElementById(field.id);
+                    if (element) {
+                        element.value = value;
+                    }
+                }
+                
             }
         });
     }
@@ -149,7 +249,7 @@ document.addEventListener("DOMContentLoaded", function () {
         campaignFinal.dateDict.date = formData.date;
 
         campaignFinal.deploiementDict.boat = formData.boat;
-        campaignFinal.deploiementDict.crew = formData.equipment;
+        campaignFinal.deploiementDict.equipment = formData.equipment;
         campaignFinal.deploiementDict.partners = formData.partners;
         campaignFinal.deploiementDict.pilot = formData.pilot;
 

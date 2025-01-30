@@ -1,82 +1,59 @@
 {
-     "system": 
-          {
-               "camera": null,
-               "model": null,
-               "system": null,
-               "version": null
-          },
-     "campagne" :
-          {
-               "zoneDict":
-                    {
-                         "campagne": null,
-                         "zone": null,
-                         "lieudit": null,
-                         "protection": null
-                    },
-               "dateDict":
-                    {
-                         "date":null
-                    },
-               "deploiementDict":
-                    {
-                         "bateau": null,
-                         "pilote": null,
-                         "equipage": null,
-                         "partenaires": null
-                    }
-          },
-     "video" :
-          {
-               "stationDict": 
-                    {
-                         "codestation": null,
-                         "increment": null
-                    },
-               "hourDict":
-                    {
-                         "hour": null,
-                         "minute": null,
-                         "second": null
-                    },
-               "gpsDict":
-                    {
-                         "site": null,
-                         "latitude": null,
-                         "longitude": null
-                    }, 
-               "ctdDict":
-                    {
-                         "depth": null,
-                         "temperature": null,
-                         "salinity": null
-                    },
-               "astroDict":
-                    {
-                         "moon": null,
-                         "tide": null,
-                         "coefficient": null
-                    },
-               "meteoAirDict":
-                    {
-                         "sky": null,
-                         "wind": null,
-                         "direction": null,
-                         "atmPress": null,
-                         "tempAir": null
-                    }, 
-               "meteoMerDict":
-                    {
-                         "seaState": null,
-                         "swell": null
-                    },
-               "analyseDict":
-                    {
-                         "exploitability": null,
-                         "habitat": null,
-                         "fauna": null,
-                         "visibility":  null    
-                    }
-          }
+    "system": {
+        "camera": null,
+        "model": null,
+        "system": null,
+        "version": null
+    },
+    "campaign": {
+        "zoneDict": {
+            "campaign": "ATL",
+            "zone": "BR",
+            "locality": "Illien",
+            "protection": "PNMM"
+        },
+        "dateDict": {
+            "date": "2025-01-30"
+        },
+        "deploiementDict": {
+            "boat": "Beneteau Capelan",
+            "pilot": "Olivier F.",
+            "partners": "Ifremer RdT"
+        }
+    },
+    "video": {
+        "stationDict": {
+            "increment": null,
+            "codestation": null
+        },
+        "hourDict": {
+            "hour": null,
+            "minute": null,
+            "second": null
+        },
+        "gpsDict": {
+            "site": "",
+            "latitude": null,
+            "longitude": null
+        },
+        "ctdDict": {
+            "depth": null,
+            "temperature": null
+        },
+        "astroDict": {
+            "moon": null,
+            "tide": null,
+            "coefficient": null
+        },
+        "meteoAirDict": {
+            "sky": null,
+            "wind": null,
+            "direction": null,
+            "tempAir": null
+        },
+        "meteoMerDict": {
+            "seaState": null,
+            "swell": null
+        }
+    }
 }

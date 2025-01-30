@@ -50,11 +50,13 @@ async function fetchConfig() {
       }
 
       // Add Reboot button after the parameter divs
+      const buttonDiv = document.createElement("h3");
       const rebootButton = document.createElement("button");
       rebootButton.setAttribute("id", "rebootButton");
       rebootButton.setAttribute("type", "button");
       rebootButton.textContent = "Reboot";
-      configContainer.appendChild(rebootButton);
+      buttonDiv.appendChild(rebootButton)
+      configContainer.appendChild(buttonDiv);
     } else {
       console.error("Failed to fetch configuration:", data.status);
     }

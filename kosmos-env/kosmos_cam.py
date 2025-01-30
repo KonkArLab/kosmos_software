@@ -381,13 +381,12 @@ class KosmosCam(Thread):
             infoStationDict["system"]["version"] = self._Conf.systemVersion
             infoStationDict["system"]["model"]=self._Conf.get_RPi_model()
             infoStationDict["system"]["camera"] = self._CAM1_SENSOR
-            infoStationDict["system"]["moteur"] = "brushless"
             
-            infoStationDict["video"]["stationDict"]["increment"] = f'{self._Conf.system.getint(INCREMENT_SECTION,"increment"):04}'
+            infoStationDict["video"]["stationDict"]["increment"] = f'{self._Conf.system.getint(INCREMENT_SECTION,"increment")-1:04}'
             
             '''
             # Les informations qui suivent sont normalement renseignées via l'onglet Campagne
-            infoStationDict["campagne"]["dateDict"]["date"] = self._Conf.get_date_d()+"/"+self._Conf.get_date_m()+"/"+self._Conf.get_date_Y()
+            infoStationDict["campaign"]["dateDict"]["date"] = self._Conf.get_date_d()+"/"+self._Conf.get_date_m()+"/"+self._Conf.get_date_Y()
             infoStationDict["video"]["hourDict"]["hour"] = int(self._Conf.get_date_H())
             infoStationDict["video"]["hourDict"]["minute"] = int(self._Conf.get_date_M())
             infoStationDict["video"]["hourDict"]["second"] = int(self._Conf.get_date_S())
