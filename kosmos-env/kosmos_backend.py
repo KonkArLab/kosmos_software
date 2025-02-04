@@ -169,12 +169,14 @@ class Server:
                 for j in range(1,len(strRef2)):
                     d=dict()
                     data=strRef2[j].split()
-                    d["size"]="{:.4f}".format(int(data[4])/(1024**2))
-                    d["month"]=data[5]
-                    d["day"]=data[6]
-                    d["time"]=data[7]
-                    d["fileName"]=data[8]
-                    outputList.append(d)
+                    nomfichier,extension = os.path.splitext(data[8])
+                    if (extension == '.mp4') or (extension == '.h264'):
+                        d["size"]="{:.4f}".format(int(data[4])/(1024**2))
+                        d["month"]=data[5]
+                        d["day"]=data[6]
+                        d["time"]=data[7]
+                        d["fileName"]=data[8]
+                        outputList.append(d)
         except:
            outputList=[] 
         response["data"]=outputList

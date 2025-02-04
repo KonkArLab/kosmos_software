@@ -3,6 +3,10 @@
 /* Importing an external CSS file */
 @import url('../styles.css');
 
+.container {
+  width: 95%;
+}
+
 
 /* Defining a specific font style for campaign form labels */
 #campaignForm label {

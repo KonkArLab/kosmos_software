@@ -38,7 +38,7 @@ async function populateTable() {
 
     // Merge Time, Day, and Month into a single column
     const timeCell = row.insertCell();
-    timeCell.textContent = `${record.time} h - ${record.day} ${record.month}`;
+    timeCell.textContent = `${record.time} ${record.day} ${record.month}`;
   });
 }
 

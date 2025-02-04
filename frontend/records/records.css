@@ -1,27 +1,26 @@
 @import url('../styles.css');
 
 .container {
-  width: 100%;
+  width: 95%;
 }
 
 /* Table styling for records display */
 
 #fileTable {
-  width: 90%;
+  width: 100%;
   margin-top: var(--margin-space-normal);
   margin-bottom: var(--margin-space-normal);
   border-collapse: collapse;
-  /*display: block;
   overflow: auto;
-  white-space: nowrap;*/
+  /*display: block;*/
+  /*overflow: auto;*/
+  white-space: nowrap;
  }
 
 /* Apply border and padding to table, header, and cell elements */
-#fileTable,
-th,
-td {
+#fileTable,td,th {
   border: var(--border-thin) solid;
-  padding: var(--padding-space-normal);
+  /*padding: var(--padding-space-normal);*/
   text-align: left;
   font-size: var(--font-size-small);
 }
