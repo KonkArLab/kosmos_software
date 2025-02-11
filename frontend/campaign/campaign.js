@@ -58,6 +58,8 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // Add "Save" and "Reset" buttons to the form
+    
+    const ligneH3button = document.createElement("h3");
     const saveButton = document.createElement("button");
     saveButton.type = "submit";
     saveButton.textContent = "Save";
@@ -67,8 +69,9 @@ document.addEventListener("DOMContentLoaded", function () {
     resetButton.textContent = "Reset";
     resetButton.id = "campaignResetButton"
 
-    form.appendChild(saveButton);
-    form.appendChild(resetButton);
+    ligneH3button.appendChild(saveButton);
+    ligneH3button.appendChild(resetButton);
+    form.appendChild(ligneH3button);
 
     // Set automaticaly the date in the corresponding field
     fields.forEach(field => {

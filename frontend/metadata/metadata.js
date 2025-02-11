@@ -14,8 +14,8 @@ const fields = [
   { id: "coefficient", placeholder: "", type: "number", label: "Tide coefficient", tabIndex: 11, min: "20", max: "120" , isVisible:false},
   { id: "sky", placeholder: "", type: "text", label: "Sky", tabIndex: 12, maxlength: "200" , isVisible:false},
   { id: "wind", placeholder: "", type: "number", label: "Wind (Bft)", tabIndex: 13, min: "0", max: "12" , isVisible:false},
-  { id: "direction", placeholder: "", type: "text", label: "Wind direction", tabIndex: 14, maxlength: "200", choices : true , isVisible:false},
-  { id: "seaState", placeholder: "", type: "text", label: "Sea state", tabIndex: 15, maxlength: "200", choices : true },
+  { id: "direction", placeholder: "", type: "text", label: "Wind direction", tabIndex: 14, maxlength: "200", choices : true, isVisible:false},
+  { id: "seaState", placeholder: "", type: "text", label: "Sea state", tabIndex: 15, maxlength: "200", choices : true, isVisible:false },
   { id: "swell", placeholder: "", type: "number", label: "Swell (m)", tabIndex: 16, min: "0", max: "30", isVisible:false},
 ];
 
