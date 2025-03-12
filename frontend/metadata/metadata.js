@@ -1,30 +1,23 @@
 let serverUrl = "http://10.42.0.1:5000";
 
 const fields = [
-  { id: "increment", placeholder: "", type: "text", label: "Increment", tabIndex: 1, maxlength: "4", isVisible:false },
-  { id: "codestation", placeholder: "", type: "text", label: "Code Station", tabIndex: 2, maxlength: "200", isVisible:true },
-  { id: "hour", placeholder: "", type: "time", label: "Hour", tabIndex: 3 , isVisible:true},
-  { id: "latitude", placeholder: "", type: "number", label: "Latitude", tabIndex: 4, min: "-90", max: "90" , isVisible:true},
-  { id: "longitude", placeholder: "", type: "number", label: "Longitude", tabIndex: 5, min: "-180", max: "180" , isVisible:true},
-  { id: "site", placeholder: "", type: "text", label: "Site", tabIndex: 6, maxlength: "200" , isVisible:false},
-  { id: "depth", placeholder: "", type: "number", label: "Depth (m)", tabIndex: 7, min: "0", max: "4000", isVisible:false},
-  { id: "temperature", placeholder: "", type: "number", label: "Temperature (°C)", tabIndex: 8, min: "-10", max: "60" , isVisible:false},
-  { id: "moon", placeholder: "", type: "text", label: "Moon phase", tabIndex: 9, maxlength: "200", choices : true , isVisible:false},
-  { id: "tide", placeholder: "", type: "text", label: "Tide", tabIndex: 10, maxlength: "200", choices : true, isVisible:false},
-  { id: "coefficient", placeholder: "", type: "number", label: "Tide coefficient", tabIndex: 11, min: "20", max: "120" , isVisible:false},
-  { id: "sky", placeholder: "", type: "text", label: "Sky", tabIndex: 12, maxlength: "200" , isVisible:false},
-  { id: "wind", placeholder: "", type: "number", label: "Wind (Bft)", tabIndex: 13, min: "0", max: "12" , isVisible:false},
-  { id: "direction", placeholder: "", type: "text", label: "Wind direction", tabIndex: 14, maxlength: "200", choices : true, isVisible:false},
-  { id: "seaState", placeholder: "", type: "text", label: "Sea state", tabIndex: 15, maxlength: "200", choices : true, isVisible:false },
-  { id: "swell", placeholder: "", type: "number", label: "Swell (m)", tabIndex: 16, min: "0", max: "30", isVisible:false},
-  { id: "exploitability", placeholder: "", type: "text", label: "Exploitability", tabIndex: 17, maxlength: "200" , isVisible:false},
-  { id: "habitat", placeholder: "", type: "text", label: "Habitat", tabIndex: 18, maxlength: "200" , isVisible:false},
-  { id: "fauna", placeholder: "", type: "text", label: "Fauna", tabIndex: 19, maxlength: "200" , isVisible:false},
-  { id: "visibility", placeholder: "", type: "text", label: "Visibility", tabIndex:20, maxlength: "200" , isVisible:false}
+  { id: "codestation", placeholder: "", type: "text", label: "Code Station", tabIndex: 1, maxlength: "200", isVisible:true },
+  { id: "hour", placeholder: "", type: "time", label: "Hour", tabIndex: 2 , isVisible:true},
+  { id: "latitude", placeholder: "", type: "number", label: "Latitude", tabIndex: 3, min: "-90", max: "90" , isVisible:true},
+  { id: "longitude", placeholder: "", type: "number", label: "Longitude", tabIndex: 4, min: "-180", max: "180" , isVisible:true},
+  { id: "site", placeholder: "", type: "text", label: "Site", tabIndex: 5, maxlength: "200" , isVisible:false},
+  { id: "depth", placeholder: "", type: "number", label: "Depth (m)", tabIndex: 6, min: "0", max: "4000", isVisible:false},
+  { id: "moon", placeholder: "", type: "text", label: "Moon phase", tabIndex: 7, maxlength: "200", choices : true , isVisible:false},
+  { id: "tide", placeholder: "", type: "text", label: "Tide", tabIndex: 8, maxlength: "200", choices : true, isVisible:false},
+  { id: "coefficient", placeholder: "", type: "number", label: "Tide coefficient", tabIndex: 9, min: "20", max: "120" , isVisible:false},
+  { id: "sky", placeholder: "", type: "text", label: "Sky", tabIndex: 10, maxlength: "200" , isVisible:false},
+  { id: "wind", placeholder: "", type: "number", label: "Wind (Bft)", tabIndex: 11, min: "0", max: "12" , isVisible:false},
+  { id: "direction", placeholder: "", type: "text", label: "Wind direction", tabIndex: 12, maxlength: "200", choices : true, isVisible:false},
+  { id: "seaState", placeholder: "", type: "text", label: "Sea state", tabIndex: 13, maxlength: "200", choices : true, isVisible:false },
+  { id: "swell", placeholder: "", type: "number", label: "Swell (m)", tabIndex: 14, min: "0", max: "30", isVisible:false},
 ];
 
 // Default metadata object in case no data is available
-
 const defaultMetaData = {
   system: {},
   campaign: {},
@@ -36,7 +29,6 @@ const defaultMetaData = {
     astroDict: { moon: String, tide: String, coefficient: Number },
     meteoAirDict: { sky: String, wind: Number, direction: String, atmPress: Number, tempAir: Number },
     meteoMerDict: { seaState: String, swell: Number },
-    analyseDict: { exploitability: String, habitat: String, fauna: String, visibility: String }
   }
 };
 
@@ -72,7 +64,6 @@ const sectionTitles = {
   gpsDict: "Location",
   meteoAirDict: "Meteorological Air Information",
   meteoMerDict: "Meteorological Sea Information",
-  analyseDict: "Analysis",
   hourDict: "Hour",
   ctdDict: "Depth and Temperature",
   astroDict: "Astronomical Information",
@@ -286,44 +277,41 @@ function createFormRow(container, field, value) {
 }
 
 function submitForm(event) {
-  event.preventDefault();
-   
-  dataFinal.video = defaultMetaData.video;
 
+  event.preventDefault();
+  
+  // Chargement des Metadata déjà présentes
+  const MetaData = JSON.parse(localStorage.getItem("metaData"));
+  dataFinal.video = MetaData.video;
+
+  // Modification des Metadata grâce à l'appliWeb 
   dataFinal.video.stationDict.codestation = document.getElementById('codestation')?.value;
-  dataFinal.video.stationDict.increment = document.getElementById('increment')?.value;
 
   let time = document.getElementById('hour')?.value;
-
   if (time) {
     dataFinal.video.hourDict.hour = parseInt(time.substr(0,2));
     dataFinal.video.hourDict.minute =  parseInt(time.substr(3,2));
     dataFinal.video.hourDict.second =  0;
   }
-  dataFinal.video.hourDict.hourOS = parseInt(document.getElementById('hourOS')?.value);
-  dataFinal.video.hourDict.minuteOS =  parseInt(document.getElementById('minuteOS')?.value);
-  dataFinal.video.hourDict.secondOS =  parseInt(document.getElementById('secondOS')?.value);
-  dataFinal.video.gpsDict.site = document.getElementById('site')?.value;
+  
+  dataFinal.video.gpsDict.site = document.getElementById('site')?.value || null;
   dataFinal.video.gpsDict.latitude = parseFloat(document.getElementById('latitude')?.value);
   dataFinal.video.gpsDict.longitude = parseFloat(document.getElementById('longitude')?.value);
+  
   dataFinal.video.ctdDict.depth = parseFloat(document.getElementById('depth')?.value);
-  dataFinal.video.ctdDict.temperature = parseFloat(document.getElementById('temperature')?.value);
-  dataFinal.video.ctdDict.salinity = parseFloat(document.getElementById('salinity')?.value);
-  dataFinal.video.astroDict.moon = document.getElementById('moon')?.value;
-  dataFinal.video.astroDict.tide = document.getElementById('tide')?.value;
+  
+  dataFinal.video.astroDict.moon = document.getElementById('moon')?.value || null;
+  dataFinal.video.astroDict.tide = document.getElementById('tide')?.value || null;
   dataFinal.video.astroDict.coefficient = parseInt(document.getElementById('coefficient')?.value);
-  dataFinal.video.meteoAirDict.sky = document.getElementById('sky')?.value;
+  
+  dataFinal.video.meteoAirDict.sky = document.getElementById('sky')?.value || null;
   dataFinal.video.meteoAirDict.wind = parseInt(document.getElementById('wind')?.value);
-  dataFinal.video.meteoAirDict.direction = document.getElementById('direction')?.value;
-  dataFinal.video.meteoAirDict.atmPress = parseFloat(document.getElementById('atmPress')?.value);
-  dataFinal.video.meteoAirDict.tempAir = parseFloat(document.getElementById('tempAir')?.value);
-  dataFinal.video.meteoMerDict.seaState = document.getElementById('seaState')?.value;
+  dataFinal.video.meteoAirDict.direction = document.getElementById('direction')?.value || null;
+  
+  dataFinal.video.meteoMerDict.seaState = document.getElementById('seaState')?.value || null;
   dataFinal.video.meteoMerDict.swell = parseInt(document.getElementById('swell')?.value);
-  dataFinal.video.analyseDict.exploitability = document.getElementById('exploitability')?.value;
-  dataFinal.video.analyseDict.habitat = document.getElementById('habitat')?.value;
-  dataFinal.video.analyseDict.fauna = document.getElementById('fauna')?.value;
-  dataFinal.video.analyseDict.visibility = document.getElementById('visibility')?.value;
 
+  // Erreur si longitude et latitude non renseignées
   if ((isNaN(dataFinal.video.gpsDict.latitude) || isNaN(dataFinal.video.gpsDict.longitude)) || 
         isNaN(dataFinal.video.hourDict.hour)) {
     Swal.fire({

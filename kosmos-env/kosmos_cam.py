@@ -385,10 +385,8 @@ class KosmosCam(Thread):
             infoStationDict["video"]["stationDict"]["increment"] = f'{self._Conf.system.getint(INCREMENT_SECTION,"increment")-1:04}'
             
             # On sauvegarde date et heure venant de l'OS, même si on conservera aussi date et heure provenant du smartphone
-            infoStationDict["campaign"]["dateDict"]["dateOS"] = self._Conf.get_date_d()+"/"+self._Conf.get_date_m()+"/"+self._Conf.get_date_Y()
-            infoStationDict["video"]["hourDict"]["hourOS"] = int(self._Conf.get_date_H())
-            infoStationDict["video"]["hourDict"]["minuteOS"] = int(self._Conf.get_date_M())
-            infoStationDict["video"]["hourDict"]["secondOS"] = int(self._Conf.get_date_S())
+            infoStationDict["video"]["hourDict"]["ymdOS"] = self._Conf.get_date_d()+"/"+self._Conf.get_date_m()+"/"+self._Conf.get_date_Y()
+            infoStationDict["video"]["hourDict"]["HMSOS"] = self._Conf.get_date_H()+":"+self._Conf.get_date_M()+":"+self._Conf.get_date_S()
                  
             # From sensors
             try:

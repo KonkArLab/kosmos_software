@@ -13,8 +13,7 @@
             "protection": null
         },
         "dateDict": {
-            "date": null,
-            "dateOS": null
+            "date": null
         },
         "deploiementDict": {
             "boat": null,
@@ -32,9 +31,8 @@
             "hour": null,
             "minute": null,
             "second": null,
-            "hourOS": null,
-            "minuteOS": null,
-            "secondOS": null
+            "ymdOS": null,
+            "HMSOS": null
         },
         "gpsDict": {
             "site": null,

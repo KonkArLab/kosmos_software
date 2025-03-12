@@ -13,7 +13,7 @@ from threading import Thread
 
 #Tous les methodes de l'API sont dans le fichier kosmos_backend.py
 import kosmos_backend as KBackend
-import kosmos_melody as KMelody
+from kosmos_melody import *
 
 #Isolation du class KState dans le fichier kosmos_state.py
 from kosmos_state import KState
@@ -61,7 +61,7 @@ class kosmos_main():
         if self._conf.systemVersion == "4.0":
             self.BUZZER_ENABLED = self._conf.config.getint(CONFIG_SECTION, "16_SYSTEM_buzzer_mode")
             if self.BUZZER_ENABLED == 1:
-                    self._buzzer = TonalBuzzer(self._conf.config.getint(CONFIG_SECTION, "08_SYSTEM_buzzer"), octaves = 4)
+                    self._buzzer = TonalBuzzer(self._conf.config.getint(DEBUG_SECTION, "08_SYSTEM_buzzer"), octaves = 4)
             
         # Boutons
         self.Button_Stop = Button(self._conf.config.getint(DEBUG_SECTION,"02_SYSTEM_stop_button_gpio"))
@@ -100,8 +100,7 @@ class kosmos_main():
         # Buzzer si version 4
         if self._conf.systemVersion == "4.0":
             if self.BUZZER_ENABLED == 1:
-                KMelody.playMelody(self._buzzer, KMelody.STARTING_MELODY)
-            time.sleep(0.5)   
+                playMelody(self._buzzer, STARTING_MELODY)
         
         self.thread_camera.initialisation_awb()
         
@@ -119,7 +118,8 @@ class kosmos_main():
         # Buzzer si version 4
         if self._conf.systemVersion == "4.0" :
             if self.BUZZER_ENABLED == 1:
-                KMelody.playMelody(self._buzzer, KMelody.STANDBY_MELODY)
+                playMelody(self._buzzer, STANDBY_MELODY)
+                time.sleep(0.1)
         
         self.button_event.wait()
         if myMain.stop_event.is_set():
@@ -150,7 +150,7 @@ class kosmos_main():
         # Buzzer si version 4
         if self._conf.systemVersion == "4.0" :
             if self.BUZZER_ENABLED == 1:
-                KMelody.playMelody(self._buzzer, KMelody.WORKING_MELODY)   
+                playMelody(self._buzzer, WORKING_MELODY)
         
         if self.PRESENCE_MOTEUR == 1:
             # Run thread moteur
@@ -187,7 +187,7 @@ class kosmos_main():
         # Buzzer si version 4
         if self._conf.systemVersion == "4.0" :
             if self.BUZZER_ENABLED == 1:
-                KMelody.playMelody(self._buzzer, KMelody.STOPPING_MELODY)   
+                playMelody(self._buzzer, STOPPING_MELODY)
         
         # Demander la fin de l'enregistrement
         self.thread_camera.stopCam()
@@ -233,7 +233,8 @@ class kosmos_main():
         # Buzzer si version 4
         if self._conf.systemVersion == "4.0" :
             if self.BUZZER_ENABLED == 1:
-                KMelody.playMelody(self._buzzer, KMelody.SHUTDOWN_MELODY)
+                playMelody(self._buzzer, SHUTDOWN_MELODY)
+                self._buzzer.stop()
         
         logging.info("EXTINCTION")
         #Arrêt du logging
