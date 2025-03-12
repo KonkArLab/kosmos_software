@@ -17,6 +17,10 @@ const fields = [
   { id: "direction", placeholder: "", type: "text", label: "Wind direction", tabIndex: 14, maxlength: "200", choices : true, isVisible:false},
   { id: "seaState", placeholder: "", type: "text", label: "Sea state", tabIndex: 15, maxlength: "200", choices : true, isVisible:false },
   { id: "swell", placeholder: "", type: "number", label: "Swell (m)", tabIndex: 16, min: "0", max: "30", isVisible:false},
+  { id: "exploitability", placeholder: "", type: "text", label: "Exploitability", tabIndex: 17, maxlength: "200" , isVisible:false},
+  { id: "habitat", placeholder: "", type: "text", label: "Habitat", tabIndex: 18, maxlength: "200" , isVisible:false},
+  { id: "fauna", placeholder: "", type: "text", label: "Fauna", tabIndex: 19, maxlength: "200" , isVisible:false},
+  { id: "visibility", placeholder: "", type: "text", label: "Visibility", tabIndex:20, maxlength: "200" , isVisible:false}
 ];
 
 // Default metadata object in case no data is available
@@ -26,13 +30,13 @@ const defaultMetaData = {
   campaign: {},
   video: {
     stationDict: {codestation:String, increment: String},
-    hourDict: { hour: Number, minute: Number, second: Number},
+    hourDict: { hour: Number, minute: Number, second: Number, hourOS: Number, minuteOS: Number, secondOS: Number },
     gpsDict: { site: String, latitude: Number, longitude: Number },
     ctdDict: { depth: Number, temperature: Number, salinity: String },
     astroDict: { moon: String, tide: String, coefficient: Number },
     meteoAirDict: { sky: String, wind: Number, direction: String, atmPress: Number, tempAir: Number },
     meteoMerDict: { seaState: String, swell: Number },
-    //analyseDict: { exploitability: String, habitat: String, fauna: String, visibility: String },
+    analyseDict: { exploitability: String, habitat: String, fauna: String, visibility: String }
   }
 };
 
@@ -68,7 +72,7 @@ const sectionTitles = {
   gpsDict: "Location",
   meteoAirDict: "Meteorological Air Information",
   meteoMerDict: "Meteorological Sea Information",
-  //analyseDict: "Exploitability",
+  analyseDict: "Analysis",
   hourDict: "Hour",
   ctdDict: "Depth and Temperature",
   astroDict: "Astronomical Information",
@@ -296,7 +300,9 @@ function submitForm(event) {
     dataFinal.video.hourDict.minute =  parseInt(time.substr(3,2));
     dataFinal.video.hourDict.second =  0;
   }
-
+  dataFinal.video.hourDict.hourOS = parseInt(document.getElementById('hourOS')?.value);
+  dataFinal.video.hourDict.minuteOS =  parseInt(document.getElementById('minuteOS')?.value);
+  dataFinal.video.hourDict.secondOS =  parseInt(document.getElementById('secondOS')?.value);
   dataFinal.video.gpsDict.site = document.getElementById('site')?.value;
   dataFinal.video.gpsDict.latitude = parseFloat(document.getElementById('latitude')?.value);
   dataFinal.video.gpsDict.longitude = parseFloat(document.getElementById('longitude')?.value);
@@ -313,10 +319,10 @@ function submitForm(event) {
   dataFinal.video.meteoAirDict.tempAir = parseFloat(document.getElementById('tempAir')?.value);
   dataFinal.video.meteoMerDict.seaState = document.getElementById('seaState')?.value;
   dataFinal.video.meteoMerDict.swell = parseInt(document.getElementById('swell')?.value);
-  //dataFinal.video.analyseDict.exploitability = document.getElementById('exploitability')?.value;
-  //dataFinal.video.analyseDict.habitat = document.getElementById('habitat')?.value;
-  //dataFinal.video.analyseDict.fauna = document.getElementById('fauna')?.value;
-  //dataFinal.video.analyseDict.visibility = document.getElementById('visibility')?.value;
+  dataFinal.video.analyseDict.exploitability = document.getElementById('exploitability')?.value;
+  dataFinal.video.analyseDict.habitat = document.getElementById('habitat')?.value;
+  dataFinal.video.analyseDict.fauna = document.getElementById('fauna')?.value;
+  dataFinal.video.analyseDict.visibility = document.getElementById('visibility')?.value;
 
   if ((isNaN(dataFinal.video.gpsDict.latitude) || isNaN(dataFinal.video.gpsDict.longitude)) || 
         isNaN(dataFinal.video.hourDict.hour)) {

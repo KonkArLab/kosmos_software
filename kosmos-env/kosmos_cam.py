@@ -384,14 +384,12 @@ class KosmosCam(Thread):
             
             infoStationDict["video"]["stationDict"]["increment"] = f'{self._Conf.system.getint(INCREMENT_SECTION,"increment")-1:04}'
             
-            '''
-            # Les informations qui suivent sont normalement renseignées via l'onglet Campagne
-            infoStationDict["campaign"]["dateDict"]["date"] = self._Conf.get_date_d()+"/"+self._Conf.get_date_m()+"/"+self._Conf.get_date_Y()
-            infoStationDict["video"]["hourDict"]["hour"] = int(self._Conf.get_date_H())
-            infoStationDict["video"]["hourDict"]["minute"] = int(self._Conf.get_date_M())
-            infoStationDict["video"]["hourDict"]["second"] = int(self._Conf.get_date_S())
-            '''
-            
+            # On sauvegarde date et heure venant de l'OS, même si on conservera aussi date et heure provenant du smartphone
+            infoStationDict["campaign"]["dateDict"]["dateOS"] = self._Conf.get_date_d()+"/"+self._Conf.get_date_m()+"/"+self._Conf.get_date_Y()
+            infoStationDict["video"]["hourDict"]["hourOS"] = int(self._Conf.get_date_H())
+            infoStationDict["video"]["hourDict"]["minuteOS"] = int(self._Conf.get_date_M())
+            infoStationDict["video"]["hourDict"]["secondOS"] = int(self._Conf.get_date_S())
+                 
             # From sensors
             try:
                 infoStationDict["video"]["gpsDict"]["latitude"] = float(self.gps.get_latitude())
@@ -399,11 +397,11 @@ class KosmosCam(Thread):
             except:
                 infoStationDict["video"]["gpsDict"]["latitude"] = 0.
                 infoStationDict["video"]["gpsDict"]["longitude"] = 0.
-            infoStationDict["video"]["ctdDict"]["depth"] = ""
-            infoStationDict["video"]["ctdDict"]["temperature"] = ""
-            #infoStationDict["video"]["ctdDict"]["salinity"] = ""
-            infoStationDict["video"]["meteoAirDict"]["atmPress"] = ""
-            infoStationDict["video"]["meteoAirDict"]["tempAir"] = ""
+            infoStationDict["video"]["ctdDict"]["depth"] = None
+            infoStationDict["video"]["ctdDict"]["temperature"] = None
+            infoStationDict["video"]["ctdDict"]["salinity"] = None
+            infoStationDict["video"]["meteoAirDict"]["atmPress"] = None
+            infoStationDict["video"]["meteoAirDict"]["tempAir"] = None
             
             
             with open(cam_file + '.json',mode = 'w', encoding = "utf-8") as ff:
@@ -452,7 +450,7 @@ class KosmosCam(Thread):
             i=i+1
         else:
             if i < imax:
-                logging.info('Coefficients AWB trouvés')
+                logging.debug('Coefficients AWB trouvés')
             else:
                 logging.error('Coefficients AWB non trouvés, retour en mode awb_auto')
                 self._camera.controls.AwbMode=0
@@ -501,8 +499,6 @@ class KosmosCam(Thread):
         event_line =  self._Conf.get_date_HMS()  + ";END BRIGHT ALGO; "
         self._Conf.add_line(EVENT_FILE,event_line) 
     """
-    
-    
     
     def stopCam(self):
         """  Demande la fin de l'enregistrement et ferme l'objet caméra."""

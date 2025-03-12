@@ -7,18 +7,20 @@
     },
     "campaign": {
         "zoneDict": {
-            "campaign": "ATL",
-            "zone": "BR",
-            "locality": "Illien",
-            "protection": "PNMM"
+            "campaign": null,
+            "zone": null,
+            "locality": null,
+            "protection": null
         },
         "dateDict": {
-            "date": "2025-01-30"
+            "date": null,
+            "dateOS": null
         },
         "deploiementDict": {
-            "boat": "Beneteau Capelan",
-            "pilot": "Olivier F.",
-            "partners": "Ifremer RdT"
+            "boat": null,
+            "pilot": null,
+            "crew": null,
+            "partners": null
         }
     },
     "video": {
@@ -29,16 +31,20 @@
         "hourDict": {
             "hour": null,
             "minute": null,
-            "second": null
+            "second": null,
+            "hourOS": null,
+            "minuteOS": null,
+            "secondOS": null
         },
         "gpsDict": {
-            "site": "",
+            "site": null,
             "latitude": null,
             "longitude": null
         },
         "ctdDict": {
             "depth": null,
-            "temperature": null
+            "temperature": null,
+            "salinity": null
         },
         "astroDict": {
             "moon": null,
@@ -54,6 +60,12 @@
         "meteoMerDict": {
             "seaState": null,
             "swell": null
+        },
+        "analyseDict": {
+            "exploitability": null,
+            "habitat": null,
+            "fauna": null,
+            "visibility" : null
         }
     }
 }
