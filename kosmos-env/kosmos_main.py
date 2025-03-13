@@ -59,9 +59,9 @@ class kosmos_main():
 
         # Buzzer
         if self._conf.systemVersion == "4.0":
-            self.BUZZER_ENABLED = self._conf.config.getint(CONFIG_SECTION, "16_SYSTEM_buzzer_mode")
+            self.BUZZER_ENABLED = self._conf.config.getint(CONFIG_SECTION, "08_SYSTEM_buzzer_mode")
             if self.BUZZER_ENABLED == 1:
-                    self._buzzer = TonalBuzzer(self._conf.config.getint(DEBUG_SECTION, "08_SYSTEM_buzzer"), octaves = 4)
+                    self._buzzer = TonalBuzzer(self._conf.config.getint(DEBUG_SECTION, "08_SYSTEM_buzzer"), octaves = 3)
             
         # Boutons
         self.Button_Stop = Button(self._conf.config.getint(DEBUG_SECTION,"02_SYSTEM_stop_button_gpio"))
