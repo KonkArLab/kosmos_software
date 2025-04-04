@@ -126,6 +126,7 @@ Dans un terminal taper les commandes suivantes:
 ```
 git clone https://github.com/KonkArLab/kosmos_software.git		//Clone le dossier kosmos_software depuis le git
 cd kosmos_software							//Ouvre le dossier kosmos_software
+git checkout dev_stereo_merge_imt
 ```
 <br>
 
@@ -156,10 +157,10 @@ Si besoin, mettre également à jour l'`increment`.  Si c'est le premier usage d
 
 Le fichier kosmos_config.ini contient les paramètres de configuration du système. Ces paramètres seront visibles depuis l'interface web grâce à un ficher Javascript. [Explication](https://github.com/KonkArLab/kosmos_software/blob/dev_stereo2/README.md#prise-en-main-de-linterface-web)  
 
-Le dossier s'appelle normalement date_system_campagne_zone. L'association de ces informations définit une campagne sur un instrument pour un jour donné. 
+Le dossier contenant les données associées à une journée de campagne s'appelle normalement date_system, typiquement `250403_IMT`. Dans ce dossier, seront présents d'autres dossiers correspondant à chaque enregistrement (passage de l'état STANDBY à WORKING). Ils auront pour nom l'increment, typiquement `0054` 
 
-Toutes les vidéos et métadata associées seront enregistrées dans ce dossier. Concrètement, à chaque activation du kosmos (passage de l'état STANDBY à WORKING) un dossier dont le nom sera `zone+annee+codestation` sera créé. Le codestation s'incrémente à chaque nouvelle vidéo. Ce dossier contiendra cinq fichiers : 
-- Le fichier vidéo `zone+annee+codestation.mp4`
+Chacun de ces dossiers contiennent une vidéo (voire deux si l'on filme en stéréo) et ses métadonnées. 
+- Le fichier vidéo `increment.mp4` (et éventuellement )
 - Un fichier `zone+annee+codestation.txt` qui stocke l'instant de chaque frame de la video.
 - Un fichier `zone+annee+codestation.csv` qui stocke des paramètres de la caméra ainsi que les données T,P et position pendant la prise de vue.
 - Un fichier `zone+annee+codestation.json` qui stocke les métadonnées de la prise de vue.
