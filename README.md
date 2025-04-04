@@ -157,7 +157,7 @@ Si besoin, mettre également à jour l'`increment`.  Si c'est le premier usage d
 
 Le fichier kosmos_config.ini contient les paramètres de configuration du système. Ces paramètres seront visibles depuis l'interface web grâce à un ficher Javascript. [Explication](https://github.com/KonkArLab/kosmos_software/blob/dev_stereo2/README.md#prise-en-main-de-linterface-web)  
 
-Le dossier contenant les données associées à une journée de campagne s'appelle normalement date_system, typiquement `250403_IMT`. Dans ce dossier, seront présents d'autres dossiers correspondant à chaque enregistrement (passage de l'état STANDBY à WORKING). Ils auront pour nom l'increment, typiquement `0054` 
+Le dossier contenant les données associées à une journée de campagne s'appelle normalement `date_system`, typiquement `250403_IMT`. Dans ce dossier, seront présents d'autres dossiers correspondant à chaque enregistrement (passage de l'état STANDBY à WORKING). Ils auront pour nom l'`increment`, typiquement `0054` 
 
 Chacun de ces dossiers contiennent une vidéo (voire deux si l'on filme en stéréo) et ses métadonnées. 
 - Le fichier vidéo `increment.mp4` (et éventuellement increment_STEREO.mp4 si la stéréo est activée)
