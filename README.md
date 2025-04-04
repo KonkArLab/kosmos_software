@@ -126,7 +126,6 @@ Dans un terminal taper les commandes suivantes:
 ```
 git clone https://github.com/KonkArLab/kosmos_software.git		//Clone le dossier kosmos_software depuis le git
 cd kosmos_software							//Ouvre le dossier kosmos_software
-git checkout dev_stereo2
 ```
 <br>
 
@@ -171,8 +170,7 @@ A noter qu'un fichier `infoStation.csv` existe aussi dans le dossier de campagne
 ## Mode d'emploi
 
 ### Procédure de mise au point de la caméra
-- La première étape consiste à oter le filtre IR présent sur le capteur de la picam afin de maximiser le nombre de photons incidents. Pour cela on peut suivre le [guide](https://www.raspberrypi.com/documentation/accessories/camera.html#filter-removal) proposé par Raspberry.
-- Cette étape réalisée, on nettoiera toutes les surfaces avec un chiffon microfibre puis on remontera l'objectif Edmund sur le capteur. Ré-assembler enfin ce module optique sur le système.
+- Nettoyer toutes les surfaces avec un chiffon microfibre puis on remontera l'objectif Edmund sur le capteur. Ré-assembler enfin ce module optique sur le système.
 - Pour faire la mise au point de la caméra, le système ne sera pas placé dans le caisson. On branchera par ailleurs un écran à la Raspberry pour visualiser ce que filme la caméra.
 - Une fois l'écran branché, on allumera le système et on attendra que le système KOSMOS soit en STAND BY.
 - Dans l'interface WEB, modifier le paramètre `05_SYSTEM_shutdown` pour le mettre à 0 et effectuer un `Reboot`. Aller ensuite dans l'onglet `Camera` et éteindre arrêter le système KOSMOS en appuyant sur `Shutdown`. (Cette manipulation permet d'arrêter le script KOSMOS sans éteindre la Rpi. La caméra peut ainsi être utilisée.)
