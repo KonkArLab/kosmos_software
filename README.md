@@ -107,6 +107,7 @@ dtoverlay=disable-bt
 - Aller dans le menu principal (icone avec la framboise en haut à gauche de l'écran)
 - Cliquer sur `Préférence` puis `Configuration du Raspberry Pi`
 - Dans l'onglet `Interface`
+- Passer le `VNC` à `Enable`
 - Passer le `Port serial` à `Enable`
 - Passer le `Serial Console` à `Disable`
 - Redémarrer enfin la Rpi.
