@@ -33,6 +33,7 @@ class Server:
         self.app.add_url_rule("/getConfig", view_func=self.getConfig)
         self.app.add_url_rule("/frame", view_func=self.image)
         self.app.add_url_rule("/gps", view_func=self.position)
+        self.app.add_url_rule("/tp", view_func=self.TP)
         self.app.add_url_rule("/updateMetadata",view_func=self.update_metadata, methods=['POST']) 
 
 
@@ -51,14 +52,29 @@ class Server:
             LAT = str(self.myMain.thread_camera.gps.get_latitude())
             LONG = str(self.myMain.thread_camera.gps.get_longitude())
         except:
-            LAT = "azrb"
-            LONG = "strnage"
+            LAT = "ERR"
+            LONG = "ERR"
         return{
             "status" : "ok",
             "latitude" : LAT,
             "longitude" : LONG
         }
-        
+    
+    def TP(self):
+        try:
+            press = self.myMain.thread_camera.pressure_sensor.pressure()
+            PRESSURE = f'{press:.1f}'
+            temp = self.pressure_sensor.temperature()  # Default is degrees C (no arguments)
+            TEMPERATURE = f'{temp:.1f}'
+        except:
+            PRESSURE = "ERR"
+            TEMPERATURE = "ERR"
+        return{
+            "status" : "ok",
+            "pression" : PRESSURE,
+            "temperature" : TEMPERATURE
+        }
+          
     def start(self):
         if(self.myMain.state==KState.STANDBY):   
             self.myMain.record_event.set() 
@@ -114,11 +130,10 @@ class Server:
         if(self.myMain.state==KState.STANDBY):
             data = request.json
             for key in data:
-                #self.myMain._conf.set_val(key,data[key])
                 self.myMain._conf.config.set(CONFIG_SECTION,key,data[key])
             self.myMain._conf.update_config()
             self.myMain.thread_camera.closeCam()
-            
+
             # Désallocation des GPIOs avant reboot
             self.myMain._ledR.close()
             self.myMain._ledB.close()

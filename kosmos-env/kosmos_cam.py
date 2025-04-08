@@ -10,6 +10,7 @@ from picamera2.encoders import H264Encoder
 from picamera2 import Picamera2,Preview,MappedArray,Metadata
 import cv2
 import hashlib
+from collections import defaultdict
 
 import os
 from kosmos_config import *
@@ -46,7 +47,7 @@ class KosmosCam(Thread):
         
         # On restreint les messages 
         Picamera2.set_logging(Picamera2.ERROR)
-        
+                
         # Dénombrement des caméras disponibles
         self._CAM_NUMBER = len(Picamera2.global_camera_info())
         self._CAM1_SENSOR = Picamera2.global_camera_info()[0]['Model']
@@ -64,18 +65,22 @@ class KosmosCam(Thread):
                 self.STEREO = False
         else:
             logging.info(f"Une caméra détectées {self._CAM1_SENSOR} -> MODE MONO")
-            self.STEREO = False
-
+            self.STEREO = False   
+        
         Thread.__init__(self)
         self._Conf = aConf    
         # Résolutions horizontale
         if self._CAM1_SENSOR == 'imx296':
             self._X_RESOLUTION = 1456
             self._Y_RESOLUTION = 1088
+            #tuning = Picamera2.load_tuning_file(GIT_PATH+"imx296_kosmos.json")
+            #algo = Picamera2.find_tuning_algo(tuning,"rpi.awb")
+            #algo["sensitivity_r"] = 1.05
         elif self._CAM1_SENSOR == 'imx477':
             self._X_RESOLUTION = 2028
             self._Y_RESOLUTION = 1080#1520
-                       
+            #tuning = Picamera2.load_tuning_file("imx477.json")          
+        
         # Framerate et frameduration camera
         self._FRAMERATE=aConf.config.getint(CONFIG_SECTION,"34_PICAM_framerate")
         self._FRAMEDURATION = int(1/self._FRAMERATE*1000000)
@@ -99,7 +104,7 @@ class KosmosCam(Thread):
         self._start_again = Event()
      
         # Instanciation Camera
-        self._camera = Picamera2(0)
+        self._camera = Picamera2(0)#,tuning = tuning)
         self._video_config = self._camera.create_video_configuration()
         self._video_config['main']['size'] = (self._X_RESOLUTION,self._Y_RESOLUTION)
         self._video_config['controls']['FrameDurationLimits'] = (self._FRAMEDURATION,self._FRAMEDURATION)
@@ -227,9 +232,11 @@ class KosmosCam(Thread):
     def initialisation_awb(self):
         if self._AWB == 0:
             logging.info('Gains AWB ajustés par Rpi')
+            self._camera.set_controls({'AwbEnable': True})
             self._camera.controls.AwbMode=0
             if self.STEREO:
-                self._camera2.controls.AwbMode=0
+                self._camera2.set_controls({'AwbEnable': True})
+                self._camera2.controls.AwbMode=0        
         else:
             if self._AWB == 1:
                 logging.info('Gains AWB fixes')
@@ -349,7 +356,8 @@ class KosmosCam(Thread):
                                
                 # Ecriture json
                 self.writeJSON(self._file_name)
-                self._Conf.addInfoStation(self._file_name+'.json')
+                ## Ajout d'une ligne dans le InfoStation.csv
+                #self._Conf.addInfoStation(self._file_name+'.json')
                                
                 if self._PREVIEW == 1:
                     self._camera.stop_preview() #stop .QTGL
@@ -395,16 +403,29 @@ class KosmosCam(Thread):
             except:
                 infoStationDict["video"]["gpsDict"]["latitude"] = 0.
                 infoStationDict["video"]["gpsDict"]["longitude"] = 0.
-            infoStationDict["video"]["ctdDict"]["depth"] = None
-            infoStationDict["video"]["ctdDict"]["temperature"] = None
+                
             infoStationDict["video"]["ctdDict"]["salinity"] = None
+            
+            infoStationDict["video"]["ctdDict"]["depth"] = None
+            
+            infoStationDict["video"]["ctdDict"]["temperature"] = None
             infoStationDict["video"]["meteoAirDict"]["atmPress"] = None
             infoStationDict["video"]["meteoAirDict"]["tempAir"] = None
-            
+            #print(self.PressMax())
             
             with open(cam_file + '.json',mode = 'w', encoding = "utf-8") as ff:
-                #json.dump(infoStationDict,ff)
                 ff.write(json.dumps(infoStationDict, indent = 4))
+    
+    def PressMax(self):
+        columns = defaultdict(list) # each value in each column is appended to a list
+        with open("/home/kosmos/0133.csv") as f:
+            reader = csv.DictReader(f, delimiter=';') # read rows into a dictionary format
+            for row in reader: # read a row as {column1: value1, column2: value2,...}
+                for (k,v) in row.items(): # go over each column name and value 
+                    columns[k].append(v) # append the value into the appropriate list
+            x = np.array(columns['TStamp'], dtype=float)
+            ma = np.max(x)
+        return ma    
     
     def RatiosRBsurG(self):
         """Capture puis calcul des ratios R/G et B/G"""        
@@ -462,41 +483,6 @@ class KosmosCam(Thread):
         event_line =  self._Conf.get_date_HMS()  + ";END AWB ALGO; "
         self._Conf.add_line(EVENT_FILE,event_line)
     
-    """
-    def adjust_brightness(self,br,tolerance):
-        event_line =  self._Conf.get_date_HMS()  + ";START BRIGHT ALGO; "
-        self._Conf.add_line(EVENT_FILE,event_line)
-        
-        # Capture de la brigthness
-        brightness = self._camera.camera_controls['Brightness'][2]               
-        # Calcul des ratios R/G B/G
-        histo_med = self.RatiosRBsurG()[2]
-        # Paramètres de l'algo d'ajustement
-        coef_convergence=0.002 # step de l'ajustement de la brightness
-        i=0 # compteur initialisé pour sortir de la boucle si trop long
-        imax=10 # nombre d'itérations max avant retour à référence
-        while i<imax and ( histo_med > br+tolerance or histo_med < br-tolerance ) :
-            brightness = brightness + coef_convergence*(br-histo_med)
-            # On threshold pour rester dans les clous 0&8
-            a=min(0.99,brightness)
-            brightness=max(-0.99,a)
-            #MàJ
-            self._camera.set_controls({'Brightness': brightness})                      
-            time.sleep(10*self._FRAMEDURATION*0.000001) # 10 frames de décalage entre modif des gain awb et calcul des nouveaux R/G etB/G
-            histo_med = self.RatiosRBsurG()[2]
-            #print(histo_med)
-            i=i+1
-        else:
-            if i < imax:
-                logging.info('Coefficient Brightness trouvé')
-            else:
-                logging.info('Coefficient Brightness non trouvé, retour à la normale')
-                self._camera.set_controls({'Brightness': 0})
-                
-                
-        event_line =  self._Conf.get_date_HMS()  + ";END BRIGHT ALGO; "
-        self._Conf.add_line(EVENT_FILE,event_line) 
-    """
     
     def stopCam(self):
         """  Demande la fin de l'enregistrement et ferme l'objet caméra."""
