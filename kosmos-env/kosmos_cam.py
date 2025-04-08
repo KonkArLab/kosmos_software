@@ -405,27 +405,45 @@ class KosmosCam(Thread):
                 infoStationDict["video"]["gpsDict"]["longitude"] = 0.
                 
             infoStationDict["video"]["ctdDict"]["salinity"] = None
+
+            try:
+                ma = self.PT()
+                depth = (ma[0]-ma[1])/(1029*9.80665)
+                infoStationDict["video"]["ctdDict"]["depth"] = depth
+                infoStationDict["video"]["ctdDict"]["temperature"] = ma[2]
+                infoStationDict["video"]["meteoAirDict"]["atmPress"] = ma[1]
+                infoStationDict["video"]["meteoAirDict"]["tempAir"] = ma[3]
+                print(depth, ma[2],ma[1],ma[3])
+            except:
+                infoStationDict["video"]["ctdDict"]["depth"] = None
+                infoStationDict["video"]["ctdDict"]["temperature"] = None
+                infoStationDict["video"]["meteoAirDict"]["atmPress"] = None
+                infoStationDict["video"]["meteoAirDict"]["tempAir"] = None
             
-            infoStationDict["video"]["ctdDict"]["depth"] = None
-            
-            infoStationDict["video"]["ctdDict"]["temperature"] = None
-            infoStationDict["video"]["meteoAirDict"]["atmPress"] = None
-            infoStationDict["video"]["meteoAirDict"]["tempAir"] = None
-            #print(self.PressMax())
             
             with open(cam_file + '.json',mode = 'w', encoding = "utf-8") as ff:
                 ff.write(json.dumps(infoStationDict, indent = 4))
     
-    def PressMax(self):
-        columns = defaultdict(list) # each value in each column is appended to a list
-        with open("/home/kosmos/0133.csv") as f:
-            reader = csv.DictReader(f, delimiter=';') # read rows into a dictionary format
-            for row in reader: # read a row as {column1: value1, column2: value2,...}
-                for (k,v) in row.items(): # go over each column name and value 
-                    columns[k].append(v) # append the value into the appropriate list
-            x = np.array(columns['TStamp'], dtype=float)
-            ma = np.max(x)
-        return ma    
+    def PT(self):
+        try:
+            columns = defaultdict(list) # each value in each column is appended to a list
+            with open(self._file_name +'.csv') as f:
+                reader = csv.DictReader(f, delimiter=';') # read rows into a dictionary format
+                for row in reader: # read a row as {column1: value1, column2: value2,...}
+                    for (k,v) in row.items(): # go over each column name and value 
+                        columns[k].append(v) # append the value into the appropriate list
+                x = np.array(columns['Pression'], dtype=float)
+                y = np.array(columns['TempC'], dtype=float)
+                Pfond = np.max(x)
+                Psurf = np.min(x)
+                IndFond = np.argmax(x)
+                IndSurf = np.argmin(x)
+                Tfond = y[IndFond]
+                Tsurf = y[IndSurf]
+                ma = Pfond,Psurf,Tfond,Tsurf
+        except:
+            ma = None, None, None, None
+        return ma 
     
     def RatiosRBsurG(self):
         """Capture puis calcul des ratios R/G et B/G"""        
