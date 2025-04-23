@@ -144,7 +144,9 @@ class Server:
                 self.myMain.motorThread.Relai_GPIO.close()
                 self.myMain.motorThread.PWM_GPIO.close()
                 self.myMain.motorThread.Button_motor.close()
-            
+            if self.myMain.BUZZER_ENABLED == 1:
+                    self.myMain._buzzer.close()
+                    
             # Arrêt des Thread en cours
             if self.myMain.PRESENCE_MOTEUR==1:
                 del self.myMain.motorThread
