@@ -98,6 +98,7 @@ class kosmos_main():
         self._ledB.blink()
         
         # Buzzer si version 4
+        self.BUZZER_ENABLED == 0:
         if self._conf.systemVersion == "4.0":
             if self.BUZZER_ENABLED == 1:
                 playMelody(self._buzzer, STARTING_MELODY)
