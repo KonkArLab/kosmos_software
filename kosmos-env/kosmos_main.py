@@ -58,11 +58,13 @@ class kosmos_main():
         self._ledR.off()        
 
         # Buzzer
+        
         if self._conf.systemVersion == "4.0":
             self.BUZZER_ENABLED = self._conf.config.getint(CONFIG_SECTION, "08_SYSTEM_buzzer_mode")
             if self.BUZZER_ENABLED == 1:
-                    self._buzzer = TonalBuzzer(self._conf.config.getint(DEBUG_SECTION, "08_SYSTEM_buzzer"), octaves = 3)
-            
+                self._buzzer = TonalBuzzer(self._conf.config.getint(DEBUG_SECTION, "08_SYSTEM_buzzer"), octaves = 3)
+        else:
+            self.BUZZER_ENABLED = 0
         # Boutons
         self.Button_Stop = Button(self._conf.config.getint(DEBUG_SECTION,"02_SYSTEM_stop_button_gpio"))
         self.Button_Record = Button(self._conf.config.getint(DEBUG_SECTION,"01_SYSTEM_record_button_gpio"))
@@ -98,7 +100,6 @@ class kosmos_main():
         self._ledB.blink()
         
         # Buzzer si version 4
-        self.BUZZER_ENABLED == 0:
         if self._conf.systemVersion == "4.0":
             if self.BUZZER_ENABLED == 1:
                 playMelody(self._buzzer, STARTING_MELODY)
