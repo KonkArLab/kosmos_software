@@ -311,13 +311,16 @@ class KosmosCam(Thread):
                         tempStr = ""
                         #profStr = ""
                         if self._press_sensor_ok:
-                            if self.pressure_sensor.read():
-                                press = self.pressure_sensor.pressure()  # Default is mbar (no arguments)
-                                pressStr = f'{press:.1f}'
-                                temp = self.pressure_sensor.temperature()  # Default is degrees C (no arguments)
-                                tempStr = f'{temp:.1f}'
-                                #prof=(press-1013)/100
-                                #profStr=f'{prof:2f}'
+                            try:
+                                if self.pressure_sensor.read():
+                                    press = self.pressure_sensor.pressure()  # Default is mbar (no arguments)
+                                    pressStr = f'{press:.1f}'
+                                    temp = self.pressure_sensor.temperature()  # Default is degrees C (no arguments)
+                                    tempStr = f'{temp:.1f}'
+                                    #prof=(press-1013)/100
+                                    #profStr=f'{prof:2f}'
+                            except:
+                                logging.info("Erreur de récupération des données TP")
                         # Récupération metadata caméra
                         mtd = Metadata(self._camera.capture_metadata())
                         bright = self._camera.camera_controls['Brightness'][2]
@@ -413,7 +416,7 @@ class KosmosCam(Thread):
                 infoStationDict["video"]["ctdDict"]["temperature"] = ma[2]
                 infoStationDict["video"]["meteoAirDict"]["atmPress"] = ma[1]
                 infoStationDict["video"]["meteoAirDict"]["tempAir"] = ma[3]
-                print(depth, ma[2],ma[1],ma[3])
+                #print(depth, ma[2],ma[1],ma[3])
             except:
                 infoStationDict["video"]["ctdDict"]["depth"] = None
                 infoStationDict["video"]["ctdDict"]["temperature"] = None
