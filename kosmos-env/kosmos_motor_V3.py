@@ -47,6 +47,9 @@ class kosmosEscMotor(Thread):
     def power_off(self):
         """Commande le relai d'alimentation de l'ESC"""
         self.Relai_GPIO.off() # Ouverture du relai
+        self.Relai_GPIO.close()
+        self.PWM_GPIO.close()
+        self.Button_motor.close()
         
     def set_speed(self, aSpeed):
         """Lancement à la vitesse passée en paramètre

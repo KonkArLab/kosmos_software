@@ -133,27 +133,10 @@ class Server:
             for key in data:
                 self.myMain._conf.config.set(CONFIG_SECTION,key,data[key])
             self.myMain._conf.update_config()
-            self.myMain.thread_camera.closeCam()
 
-            # Désallocation des GPIOs avant reboot
-            self.myMain._ledR.close()
-            self.myMain._ledB.close()
-            self.myMain.Button_Stop.close() 
-            self.myMain.Button_Record.close()
-            if self.myMain.PRESENCE_MOTEUR==1 and self.myMain._conf.systemVersion == "3.0":        
-                self.myMain.motorThread.Relai_GPIO.close()
-                self.myMain.motorThread.PWM_GPIO.close()
-                self.myMain.motorThread.Button_motor.close()
-            if self.myMain.BUZZER_ENABLED == 1:
-                    self.myMain._buzzer.close()
-                    
-            # Arrêt des Thread en cours
-            if self.myMain.PRESENCE_MOTEUR==1:
-                del self.myMain.motorThread
-            if self.myMain.thread_camera.PRESENCE_HYDRO==1:
-                del self.myMain.thread_camera.thread_hydrophone    
-            del self.myMain.thread_camera
-    
+            # Arret des threads du systeme
+            self.myMain.arretThreads()
+                
             # Réinitialisation
             self.myMain.init()
             self.myMain.button_event.set()

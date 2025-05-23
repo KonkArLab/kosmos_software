@@ -44,7 +44,6 @@ class KosmosCam(Thread):
              38_PICAM_timestamp : présence d'une incrustation avec le temps en haut à gauche
              39_PICAM_stereo : 1 si on souhaite capturer en stéréo, 0 sinon. A noter que si c'est à 1 alors qu'il n'y a qu'une caméra, le soft ne s'arrêtera pas. 
         """
-        
         # On restreint les messages 
         Picamera2.set_logging(Picamera2.ERROR)
                 
@@ -119,7 +118,6 @@ class KosmosCam(Thread):
         if aConf.config.getint(CONFIG_SECTION,"38_PICAM_timestamp") == 1:
             self._camera.pre_callback = self.apply_timestamp
         
-        
         #Initialisation deuxième CAMéRA pour stéréo    
         if self.STEREO:      
             self._camera2 = Picamera2(1)
@@ -128,8 +126,20 @@ class KosmosCam(Thread):
             self._camera2.start() #A noter que le Preview.NULL démarre également 
             logging.info("Caméra stéréo démarrée") 
             # Instanciation Encoder    
-            self._encoder2=H264Encoder(framerate=self._FRAMERATE, bitrate=10000000)
-            
+            self._encoder2=H264Encoder(framerate=self._FRAMERATE, bitrate=10000000)            
+        
+        # Initialisation Capteur TP        
+        self._press_sensor_ok = False
+        try:
+            self.pressure_sensor = ms5837.MS5837_30BA()        
+            if self.pressure_sensor.init():
+                self._press_sensor_ok = True
+            logging.info("Capteur de pression OK")
+        except Exception as e:
+            print(e)
+            logging.error("Erreur d'initialisation du capteur de pression")
+        
+        
         #Initialisation GPS
         self._gps_ok = False
         try:
@@ -142,17 +152,8 @@ class KosmosCam(Thread):
                 logging.error("Port Serie GPS OK mais non fonctionnel")
         except:    
             logging.error("Erreur d'initialisation du GPS")
-            
-        # Initialisation Capteur TP
-        self._press_sensor_ok = False
-        try:
-            self.pressure_sensor = ms5837.MS5837_30BA()
-            if self.pressure_sensor.init():
-                self._press_sensor_ok = True
-            logging.info("Capteur de pression OK")
-        except:
-            logging.error("Erreur d'initialisation du capteur de pression")
-       
+        
+    
         # Definition Thread Hydrophone
         self.PRESENCE_HYDRO = self._Conf.config.getint(CONFIG_SECTION,"40_HYDROPHONE_bool") # Fonctionnement moteur si 1
         if self.PRESENCE_HYDRO==1:
@@ -512,8 +513,12 @@ class KosmosCam(Thread):
               
     def closeCam(self):
         """Arrêt du GPS"""
-        if self._gps_ok == True:
+        if self._gps_ok == True:    
             self.gps.stop_thread()
+        """Arrêt du TP"""
+        if self._press_sensor_ok == True:
+            self.pressure_sensor._bus.close()
+            
         """Arrêt définitif de la caméra"""
         self._end = True
         self._start_again.set()

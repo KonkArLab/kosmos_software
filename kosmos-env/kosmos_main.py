@@ -4,7 +4,7 @@ import logging
 import time
 from threading import Event
 import threading
-from gpiozero import LED, Button, TonalBuzzer
+from gpiozero import LED, Button, TonalBuzzer,DigitalOutputDevice
 import os
 import json
 
@@ -26,7 +26,7 @@ import kosmos_motor_V4 as KMotor4
 #import kosmos_hydrophone as KHydro
 
 import sys
-
+import ms5837
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)s : %(message)s',
                     datefmt='%d/%m %I:%M:%S')#,filename='kosmos.log')
@@ -58,13 +58,13 @@ class kosmos_main():
         self._ledR.off()        
 
         # Buzzer
-        
         if self._conf.systemVersion == "4.0":
             self.BUZZER_ENABLED = self._conf.config.getint(CONFIG_SECTION, "08_SYSTEM_buzzer_mode")
             if self.BUZZER_ENABLED == 1:
                 self._buzzer = TonalBuzzer(self._conf.config.getint(DEBUG_SECTION, "08_SYSTEM_buzzer"), octaves = 3)
         else:
             self.BUZZER_ENABLED = 0
+        
         # Boutons
         self.Button_Stop = Button(self._conf.config.getint(DEBUG_SECTION,"02_SYSTEM_stop_button_gpio"))
         self.Button_Record = Button(self._conf.config.getint(DEBUG_SECTION,"01_SYSTEM_record_button_gpio"))
@@ -73,11 +73,8 @@ class kosmos_main():
         self.MODE=self._conf.config.getint(CONFIG_SECTION,"00_SYSTEM_mode") 
         
         # Temps total de fonctionnement de l'appareil (pour éviter des crashs batteries)
-        self.tps_total_acquisition = self._conf.config.getint(CONFIG_SECTION,"07_SYSTEM_tps_fonctionnement") 
+        self.tps_total_acquisition = self._conf.config.getint(CONFIG_SECTION,"07_SYSTEM_tps_fonctionnement")         
         
-        # Paramètres camera & définition Thread Camera
-        self.thread_camera = KCam.KosmosCam(self._conf)
-                 
         # Definition Thread Moteur
         self.PRESENCE_MOTEUR = self._conf.config.getint(CONFIG_SECTION,"06_SYSTEM_moteur") # Fonctionnement moteur si 1
         if self.PRESENCE_MOTEUR==1:
@@ -87,7 +84,15 @@ class kosmos_main():
                 self.motorThread = KMotor4.kosmosMotor(self._conf)
             else:
                 logging.info("Configuration moteur non effectuée.")
-                
+        else:
+            # Instructions visiblement essentielles au bon foncitonnement du TP quand le moteur ne marche pas
+            self.wakeUp_GPIO = DigitalOutputDevice(self._conf.config.getint(CONFIG_SECTION, "09_SYSTEM_wake_up_motor"))
+            self.wakeUp_GPIO.off()    
+        
+        # Paramètres camera & définition Thread Camera
+        self.thread_camera = KCam.KosmosCam(self._conf)
+    
+        
     def clear_events(self):
         """Mise à 0 des evenements attachés aux boutons"""
         self.record_event.clear()
@@ -211,33 +216,53 @@ class kosmos_main():
             time.sleep(5) #tempo pour gérer la boucle while d'enregistrement
             self.state = KState.SHUTDOWN
         
-    def shutdown(self):
-        logging.info("SHUTDOWN : Kosmos passe à l'arrêt total")
-              
+    def arretThreads(self):
+        logging.info("Arret des Threads pour Reboot ou Shutdown")
         self._ledR.on()
-             
-        # Arrêt de la caméra
-        self.thread_camera.closeCam()   # Stop caméra
-        if self.thread_camera.is_alive():
-            self.thread_camera.join()   # Caméra stoppée
-        
-        # Arrêt du moteur
-        if self.PRESENCE_MOTEUR == 1:  
-            self.motorThread.stop_thread() 
-            if self.motorThread.is_alive(): 
-                self.motorThread.join() 
-            self.motorThread.power_off()
-        
-        # Extinction des LEDs
-        self._ledR.off()
         self._ledB.off()
+        
+        self.Button_Stop.close() 
+        self.Button_Record.close()
         
         # Buzzer si version 4
         if self._conf.systemVersion == "4.0" :
             if self.BUZZER_ENABLED == 1:
                 playMelody(self._buzzer, SHUTDOWN_MELODY)
                 self._buzzer.stop()
+                self._buzzer.close()
+    
+        if self.PRESENCE_MOTEUR==1:
+            self.motorThread.stop_thread()
+            self.motorThread.power_off()
+            
+            if self.motorThread.is_alive(): 
+                self.motorThread.join()
+            del self.motorThread
+        else:
+            self.wakeUp_GPIO.off()
+            self.wakeUp_GPIO.close()
+            
+            
+        # Arret Camera   
+        if self.thread_camera.PRESENCE_HYDRO==1:
+            del self.thread_camera.thread_hydrophone
+        self.thread_camera.closeCam()
+        if self.thread_camera.is_alive():
+            self.thread_camera.join()   # Caméra stoppée    
+        del self.thread_camera
+                
+        self._ledR.off()
+        self._ledR.close()
+        self._ledB.close()
         
+            
+    def shutdown(self):
+        logging.info("SHUTDOWN : Kosmos passe à l'arrêt total")
+        
+        # Arret des threads du systeme
+        self.arretThreads()
+
+        # Extinction
         logging.info("EXTINCTION")
         #Arrêt du logging
         logging.shutdown()

@@ -39,7 +39,7 @@ class kosmosMotor(Thread):
         self.wakeUp_GPIO = DigitalOutputDevice(aConf.config.getint(CONFIG_SECTION, "09_SYSTEM_wake_up_motor"))
         self.wakeUp_GPIO.off()
       
-        self._address = 0x08#0x04
+        self._address = 0x04#0x08
         self._state = 1
         self._sleep_mode = 0
         
@@ -66,8 +66,10 @@ class kosmosMotor(Thread):
         self.wakeUp_GPIO.off()
       
     def power_off(self):
-        """Commande l'arrêt de la rotation moteur (fonction appelée par la main en cas de shutdown)"""
+        """Commande l'arrêt de la rotation moteur (fonction appelée par la main en cas de shutdown ou de reboot)"""
         self.wakeUp_GPIO.off()
+        self.wakeUp_GPIO.close()
+
         self._state = 0
         self._sleep_mode = 1
         self.send_data()
