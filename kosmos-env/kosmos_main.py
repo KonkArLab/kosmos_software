@@ -78,17 +78,18 @@ class kosmos_main():
         # Definition Thread Moteur
         self.PRESENCE_MOTEUR = self._conf.config.getint(CONFIG_SECTION,"06_SYSTEM_moteur") # Fonctionnement moteur si 1
         if self.PRESENCE_MOTEUR==1:
+            if self._conf.systemVersion == "4.0":
+                self.motorThread = KMotor4.kosmosMotor(self._conf)
             if self._conf.systemVersion == "3.0":
                 self.motorThread = KMotor3.kosmosEscMotor(self._conf)
-            elif self._conf.systemVersion == "4.0":
-                self.motorThread = KMotor4.kosmosMotor(self._conf)
             else:
-                logging.info("Configuration moteur non effectuée.")
-        else:
-            # Instructions visiblement essentielles au bon foncitonnement du TP quand le moteur ne marche pas
-            self.wakeUp_GPIO = DigitalOutputDevice(self._conf.config.getint(CONFIG_SECTION, "09_SYSTEM_wake_up_motor"))
-            self.wakeUp_GPIO.off()    
+                logging.info("Moteur demandé mais non initialisé")
         
+        # Instructions visiblement essentielles au bon foncitonnement du TP quand le moteur ne marche pas
+        if self.PRESENCE_MOTEUR == 0 and self._conf.systemVersion == "4.0":
+            self.wakeUp_GPIO = DigitalOutputDevice(self._conf.config.getint(CONFIG_SECTION, "09_SYSTEM_wake_up_motor"))
+            self.wakeUp_GPIO.off()
+                
         # Paramètres camera & définition Thread Camera
         self.thread_camera = KCam.KosmosCam(self._conf)
     
@@ -233,15 +234,15 @@ class kosmos_main():
     
         if self.PRESENCE_MOTEUR==1:
             self.motorThread.stop_thread()
-            self.motorThread.power_off()
-            
+            self.motorThread.power_off()       
             if self.motorThread.is_alive(): 
                 self.motorThread.join()
             del self.motorThread
-        else:
-            self.wakeUp_GPIO.off()
-            self.wakeUp_GPIO.close()
             
+        if self.PRESENCE_MOTEUR == 0 and self._conf.systemVersion == "4.0":
+                self.wakeUp_GPIO.off()
+                self.wakeUp_GPIO.close()   
+        
             
         # Arret Camera   
         if self.thread_camera.PRESENCE_HYDRO==1:
