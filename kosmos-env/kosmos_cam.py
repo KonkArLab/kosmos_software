@@ -44,9 +44,9 @@ class KosmosCam(Thread):
              38_PICAM_timestamp : présence d'une incrustation avec le temps en haut à gauche
              39_PICAM_stereo : 1 si on souhaite capturer en stéréo, 0 sinon. A noter que si c'est à 1 alors qu'il n'y a qu'une caméra, le soft ne s'arrêtera pas. 
         """
-        # On restreint les messages 
-        Picamera2.set_logging(Picamera2.ERROR)
-                
+        # On restreint les messages d'erreurs de PiCamera2 
+        os.environ["LIBCAMERA_LOG_LEVELS"] = "3"
+        
         # Dénombrement des caméras disponibles
         self._CAM_NUMBER = len(Picamera2.global_camera_info())
         self._CAM1_SENSOR = Picamera2.global_camera_info()[0]['Model']
@@ -63,7 +63,7 @@ class KosmosCam(Thread):
                 logging.error(f"Deux caméras détectées mais différentes -> MODE MONO")
                 self.STEREO = False
         else:
-            logging.info(f"Une caméra détectées {self._CAM1_SENSOR} -> MODE MONO")
+            logging.info(f"Une caméra détectée {self._CAM1_SENSOR} -> MODE MONO")
             self.STEREO = False   
         
         Thread.__init__(self)
@@ -81,17 +81,17 @@ class KosmosCam(Thread):
             #tuning = Picamera2.load_tuning_file("imx477.json")          
         
         # Framerate et frameduration camera
-        self._FRAMERATE=aConf.config.getint(CONFIG_SECTION,"34_PICAM_framerate")
+        self._FRAMERATE=aConf.config.getint(DEBUG_SECTION,"34_PICAM_framerate")
         self._FRAMEDURATION = int(1/self._FRAMERATE*1000000)
         
         # Temps de l'échantillonnage temporel des infos caméra. égal à celui le CSV TPGPS
-        self._time_step = aConf.config.getint(CONFIG_SECTION,"20_CSV_step_time")
+        self._time_step = aConf.config.getint(DEBUG_SECTION,"20_CSV_step_time")
         
         # Preview ou non
-        self._PREVIEW = aConf.config.getint(CONFIG_SECTION,"33_PICAM_preview")
+        self._PREVIEW = aConf.config.getint(DEBUG_SECTION,"33_PICAM_preview")
         
         # si 1 : conversion mp4
-        self._CONVERSION = aConf.config.getint(CONFIG_SECTION,"36_PICAM_conversion_mp4")
+        self._CONVERSION = aConf.config.getint(DEBUG_SECTION,"36_PICAM_conversion_mp4")
         
         # A clarifier
         self._AWB = aConf.config.getint(CONFIG_SECTION,"37_PICAM_AWB")
@@ -110,7 +110,7 @@ class KosmosCam(Thread):
         self._camera.set_controls({'AeExposureMode': 'Short'}) # on privilégie une adaptation par gain analogique que par augmentation du tps d'expo, et ce, pour limiter le flou de bougé
         self._camera.configure(self._video_config)
         self._camera.start() #A noter que le Preview.NULL démarre également 
-        logging.info("Caméra démarrée")      
+        #logging.info("Caméra démarrée")      
         # Instanciation Encoder
         self._encoder=H264Encoder(framerate=self._FRAMERATE, bitrate=10000000)
         
@@ -124,7 +124,7 @@ class KosmosCam(Thread):
             self._camera2.set_controls({'AeExposureMode': 'Short'}) # on privilégie une adaptation par gain analogique que par augmentation du tps d'expo, et ce, pour limiter le flou de bougé
             self._camera2.configure(self._video_config) # même config pour les deux caméras            
             self._camera2.start() #A noter que le Preview.NULL démarre également 
-            logging.info("Caméra stéréo démarrée") 
+            #logging.info("Caméra stéréo démarrée") 
             # Instanciation Encoder    
             self._encoder2=H264Encoder(framerate=self._FRAMERATE, bitrate=10000000)            
         
@@ -136,8 +136,7 @@ class KosmosCam(Thread):
                 self._press_sensor_ok = True
             logging.info("Capteur de pression OK")
         except Exception as e:
-            print(e)
-            logging.error("Erreur d'initialisation du capteur de pression")
+            logging.error("Erreur d'initialisation du capteur de pression ")
         
         
         #Initialisation GPS
@@ -155,7 +154,7 @@ class KosmosCam(Thread):
         
     
         # Definition Thread Hydrophone
-        self.PRESENCE_HYDRO = self._Conf.config.getint(CONFIG_SECTION,"40_HYDROPHONE_bool") # Fonctionnement moteur si 1
+        self.PRESENCE_HYDRO = self._Conf.config.getint(CONFIG_SECTION,"40_HYDROPHONE_bool") # Fonctionnement hydrophone si 1
         if self.PRESENCE_HYDRO==1:
             self.thread_hydrophone = KHydro.KosmosHydro(self._Conf)
             logging.info("Hydrophone démarré")
@@ -241,15 +240,16 @@ class KosmosCam(Thread):
         else:
             if self._AWB == 1:
                 logging.info('Gains AWB fixes')
+                self._camera.controls.AwbMode=0
+                time.sleep(0.5)
+                self._camera.set_controls({'AwbEnable': False})
+                if self.STEREO:
+                    self._camera2.set_controls({'AwbEnable': False})
+                    self._camera2.set_controls({'ColourGains': self._camera.capture_metadata()['ColourGains']})
             if self._AWB == 2:
                 logging.info('Gains AWB ajustés par Algo Maison')
-            self._camera.controls.AwbMode=0
-            time.sleep(0.5)
-            self._camera.set_controls({'AwbEnable': False})
-            if self.STEREO:
-                self._camera2.set_controls({'AwbEnable': False})
-                self._camera2.set_controls({'ColourGains': self._camera.capture_metadata()['ColourGains']})
-       
+                self.adjust_awb(1,1,0.2)
+            
     def run(self):       
         while not self._end:
             i=0            
@@ -338,8 +338,6 @@ class KosmosCam(Thread):
                         j=j+1
                         if j == int(intervalle_awb/paas): 
                             self.adjust_awb(1,1,0.2) # on vise des ratios unitaires avec une tolérance de +- 20%
-                            #time.sleep(0.5)
-                            #self.adjust_brightness(120,20)
                             j = 0
                         else :
                             time.sleep(paas)
@@ -405,8 +403,8 @@ class KosmosCam(Thread):
                 infoStationDict["video"]["gpsDict"]["latitude"] = float(self.gps.get_latitude())
                 infoStationDict["video"]["gpsDict"]["longitude"] = float(self.gps.get_longitude())
             except:
-                infoStationDict["video"]["gpsDict"]["latitude"] = 0.
-                infoStationDict["video"]["gpsDict"]["longitude"] = 0.
+                infoStationDict["video"]["gpsDict"]["latitude"] = None
+                infoStationDict["video"]["gpsDict"]["longitude"] = None
                 
             infoStationDict["video"]["ctdDict"]["salinity"] = None
 
@@ -523,14 +521,14 @@ class KosmosCam(Thread):
         self._end = True
         self._start_again.set()
         self._camera.stop()    
-        logging.info("Caméra arrêtée")
+        #logging.info("Caméra arrêtée")
         self._camera.close()
-        logging.info("Caméra éteinte")
+        #logging.info("Caméra éteinte")
         if self.STEREO:
             self._camera2.stop()    
-            logging.info("Caméra stéréo arrêtée")
+            #logging.info("Caméra stéréo arrêtée")
             self._camera2.close()
-            logging.info("Caméra stéréo éteinte")
+            #logging.info("Caméra stéréo éteinte")
         if self.PRESENCE_HYDRO == 1:
             self.thread_hydrophone.stop_thread()   
             if self.thread_hydrophone.is_alive():

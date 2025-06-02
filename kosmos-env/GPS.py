@@ -18,8 +18,8 @@ class GPS(Thread):
         self._continue_event = Event()
         self._t_stop = False 
         
-        self.latitude = 0.
-        self.longitude = 0.
+        self.latitude = None
+        self.longitude = None
                 
     def init(self):
         bool_gps = False  
@@ -50,14 +50,14 @@ class GPS(Thread):
                         self.latitude = (self.card2sign(LATGPS[1])*(int(float(LATGPS[0])/100) + ((float(LATGPS[0])/100) % 1)*100/60))
                     else:
                         logging.debug("Latitude non captée")
-                        self.latitude = 0.
+                        self.latitude = None
                     
                     LONGGPS = rcvsplit[4:6]
                     if LONGGPS[0] != b'':    
                         self.longitude = (self.card2sign(LONGGPS[1])*(int(float(LONGGPS[0])/100) + ((float(LONGGPS[0])/100) % 1)*100/60))
                         logging.debug("Longitude captée")
                     else:
-                        self.longitude = 0.
+                        self.longitude = None
                         logging.debug("Longitude non captée")
                 time.sleep(0.01)
             else:

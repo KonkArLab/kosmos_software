@@ -62,16 +62,27 @@ class kosmos_main():
             self.BUZZER_ENABLED = self._conf.config.getint(CONFIG_SECTION, "08_SYSTEM_buzzer_mode")
             if self.BUZZER_ENABLED == 1:
                 self._buzzer = TonalBuzzer(self._conf.config.getint(DEBUG_SECTION, "08_SYSTEM_buzzer"), octaves = 3)
+                logging.info("BUZZER demandé !")
+            else:
+                logging.info("BUZZER non demandé")    
         else:
             self.BUZZER_ENABLED = 0
+            logging.info("BUZZER non demandé")    
         
         # Boutons
         self.Button_Stop = Button(self._conf.config.getint(DEBUG_SECTION,"02_SYSTEM_stop_button_gpio"))
         self.Button_Record = Button(self._conf.config.getint(DEBUG_SECTION,"01_SYSTEM_record_button_gpio"))
         
-        # Mode du système
-        self.MODE=self._conf.config.getint(CONFIG_SECTION,"00_SYSTEM_mode") 
-        
+        # Mode du système   #1 STAVIRO     #2 MICADO
+        self.MODE = self._conf.config.getint(CONFIG_SECTION,"00_SYSTEM_mode") 
+        if self.MODE==1:
+            logging.info("MODE STAVIRO demandé")    
+        elif self.MODE==2: 
+            logging.info("MODE MICADO demandé")
+            # Chargement du temps de veille entre deux prises de vue
+            self.tps_veille =  self._conf.config.getint(CONFIG_SECTION,"10_SYSTEM_tps_veille")#temps de veille en seconde
+        self.bool_micado = 1 # init du booléen micado
+
         # Temps total de fonctionnement de l'appareil (pour éviter des crashs batteries)
         self.tps_total_acquisition = self._conf.config.getint(CONFIG_SECTION,"07_SYSTEM_tps_fonctionnement")         
         
@@ -85,9 +96,9 @@ class kosmos_main():
             else:
                 logging.info("Moteur demandé mais non initialisé")
         
-        # Instructions visiblement essentielles au bon foncitonnement du TP quand le moteur ne marche pas
+        # Instructions visiblement essentielles au bon fonctionnement du TP quand le moteur ne marche pas
         if self.PRESENCE_MOTEUR == 0 and self._conf.systemVersion == "4.0":
-            self.wakeUp_GPIO = DigitalOutputDevice(self._conf.config.getint(CONFIG_SECTION, "09_SYSTEM_wake_up_motor"))
+            self.wakeUp_GPIO = DigitalOutputDevice(self._conf.config.getint(DEBUG_SECTION, "09_SYSTEM_wake_up_motor"))
             self.wakeUp_GPIO.off()
                 
         # Paramètres camera & définition Thread Camera
@@ -128,15 +139,23 @@ class kosmos_main():
             if self.BUZZER_ENABLED == 1:
                 playMelody(self._buzzer, STANDBY_MELODY)
                 time.sleep(0.1)
-        
-        self.button_event.wait()
-        if myMain.stop_event.is_set():
-            self.state = KState.SHUTDOWN
-        elif myMain.record_event.is_set():
+                
+        # Mode MICADO démarrage immédiat d'une vidéo
+        if self.MODE == 2 and self.bool_micado == 1:
             self.state = KState.WORKING
-             
+        else: # Mode STAVIRO         
+            self.button_event.wait()
+            if myMain.stop_event.is_set():
+                self.state = KState.SHUTDOWN
+            elif myMain.record_event.is_set():
+                self.state = KState.WORKING
+                 
     def working(self):
-        logging.info("WORKING : Debut de l'enregistrement")       
+        logging.info("WORKING : Debut de l'enregistrement")
+        
+        if self.MODE == 2: # Mode MICADO
+            #On remet le booléen à 1 pour que l'enregistrement suive la programmation automatique
+            self.bool_micado = 1
         
         increment = self._conf.system.getint(INCREMENT_SECTION,"increment")        
         # Création du dossier enregistrement dans le dossier Campagne
@@ -166,7 +185,6 @@ class kosmos_main():
         
         # Run thread camera
         self.thread_camera.restart()
-        
         
         # Attente d'un Event ou que le temps total soit dépassé
         while True:
@@ -206,6 +224,8 @@ class kosmos_main():
         
         if self._extinction == False:
             # On s'est arrêté via un bouton, on retourne donc en stand by
+            if self.MODE==2: #En mode MICADO, on veut relancer la video automatiquement
+                self.bool_micado = 0
             self.state = KState.STANDBY
             event_line = self._conf.get_date_HMS()  + "; SORTIE BOUTON"
             self._conf.add_line(EVENT_FILE,event_line)
@@ -242,8 +262,7 @@ class kosmos_main():
         if self.PRESENCE_MOTEUR == 0 and self._conf.systemVersion == "4.0":
                 self.wakeUp_GPIO.off()
                 self.wakeUp_GPIO.close()   
-        
-            
+         
         # Arret Camera   
         if self.thread_camera.PRESENCE_HYDRO==1:
             del self.thread_camera.thread_hydrophone
@@ -267,12 +286,16 @@ class kosmos_main():
         logging.info("EXTINCTION")
         #Arrêt du logging
         logging.shutdown()
-
+        
+        if self.MODE == 2 and self.bool_micado == 1: #Mode MICADO avec temps écoulé
+            os.system("echo +"+str(self.tps_veille)+" | sudo tee /sys/class/rtc/rtc0/wakealarm")
+            os.system("sudo halt")
+        else: # Mode STAVIRO ou Mode MICADO avec arrêt par bouton
         # Commande de stop au choix arrêt du programme ou du PC
-        if self._conf.config.getint(CONFIG_SECTION,"05_SYSTEM_shutdown") != 0 :
-            os.system("sudo shutdown -h now")
-        else :
-            os._exit(0)
+            if self._conf.config.getint(CONFIG_SECTION,"05_SYSTEM_shutdown") != 0 :
+                os.system("sudo shutdown -h now")
+            else :
+                os._exit(0)
 
     def modeRotatif(self):
         """programme principal du mode rotatif"""

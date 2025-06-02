@@ -69,10 +69,10 @@ class KosmosConfig:
         logging.debug("Lecture kosmos_config.ini")
         if self.systemVersion == "3.0":
             subprocess.run(["sudo", "cp", "-n", GIT_PATH+CONF_FILE_TEMPLATE_V3,USB_INSIDE_PATH+CONF_FILE])
-            logging.info("Version de 3.0")
+            logging.info("Version 3.0")
         elif self.systemVersion == "4.0":
             subprocess.run(["sudo", "cp", "-n", GIT_PATH+CONF_FILE_TEMPLATE_V4,USB_INSIDE_PATH+CONF_FILE])
-            logging.info("Version de 4.0")
+            logging.info("Version 4.0")
         else:
             logging.error("Version de Kosmos non spécifiée (3.0 ou 4.0), arrêt du programme")
             os._exit(0)
@@ -186,7 +186,7 @@ class KosmosConfig:
                 csv_variable.flush() 
                 csv_variable.close()
         except:
-            logging.info('Problème écriture dans le CSV Event')
+            logging.error('Problème écriture dans le CSV Event')
     
     def json2dict(self,json_file):
         with open(json_file) as f:

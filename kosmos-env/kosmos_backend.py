@@ -138,6 +138,7 @@ class Server:
             self.myMain.arretThreads()
                 
             # Réinitialisation
+            logging.info("REBOOOOOOOT !")
             self.myMain.init()
             self.myMain.button_event.set()
             return {

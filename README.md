@@ -87,6 +87,20 @@ Plusieurs fenêtres vont s'afficher:
 - Cocher `Connect Automatically with priority`, cela vous permettra de vous reconnecter directement lorsque le système effectuera un reboot  
 - Cliquer sur `Enregistrer`
 
+### Opération pour préparer la Rpi au mode de consommation minimale pour le mode MICADO
+
+- Dans un terminal taper la commande suivante:
+```
+sudo -E rpi-eeprom-config --edit
+```
+- Ajouter/modifier les lignes de telle sorte qu'il y ait:
+```
+POWER_OFF_ON_HALT=1
+WAKE_ON_GPIO=0
+```
+- Sauvegarder les modifications en appuyant sur `Ctrl + Shift + o`
+- Quitter le fichier en appuyant sur `Ctrl + Shift + x`
+
 ### Activation du port Serial pour le GPS
 #### Sur Rpi4
 Modification du fichier config.txt
