@@ -42,7 +42,7 @@ sudo raspi-config nonint do_vnc 0
 
 #Ajout de la ligne de commande dans crontab qui permet le lancement au demarrage et création d'un dossier log
 mkdir -p /home/$USER/logfile_kosmos
-(sudo crontab -l; echo @reboot sudo bash -c '/home/kosmos/lancement_kosmos.sh >> "/home/kosmos/logfile_kosmos/$(date +\%Y-\%m-\%d_\%Hh\%Mm\%Ss).log" 2>&1';) | uniq - | sudo crontab
+(sudo crontab -l; echo @reboot sudo bash -c '/home/$USER/lancement_kosmos.sh >> "/home/$USER/logfile_kosmos/$(date +\%Y-\%m-\%d_\%Hh\%Mm\%Ss).log" 2>&1';) | uniq - | sudo crontab
 sudo crontab -l
 
 exit 0
