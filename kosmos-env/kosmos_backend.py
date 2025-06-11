@@ -34,6 +34,7 @@ class Server:
         self.app.add_url_rule("/frame", view_func=self.image)
         self.app.add_url_rule("/gps", view_func=self.position)
         self.app.add_url_rule("/tp", view_func=self.TP)
+        self.app.add_url_rule("/name", view_func=self.systemName)
         self.app.add_url_rule("/updateMetadata",view_func=self.update_metadata, methods=['POST']) 
 
 
@@ -44,7 +45,7 @@ class Server:
     def state(self):
         return {
             "status" : "ok",
-            "state" : str(self.myMain.state)
+            "state" : self.myMain._conf.systemName + " is in " + str(self.myMain.state).split('.')[1]
         }
     
     def position(self):
@@ -75,7 +76,8 @@ class Server:
             "pression" : PRESSURE,
             "temperature" : TEMPERATURE
         }
-          
+    
+      
     def start(self):
         if(self.myMain.state==KState.STANDBY):   
             self.myMain.record_event.set() 

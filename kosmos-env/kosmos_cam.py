@@ -11,6 +11,8 @@ from picamera2 import Picamera2,Preview,MappedArray,Metadata
 import cv2
 import hashlib
 from collections import defaultdict
+from gpiozero import CPUTemperature
+
 
 import os
 from kosmos_config import *
@@ -290,9 +292,9 @@ class KosmosCam(Thread):
                     self.thread_hydrophone.restart()
                 
                 #Création CSV
-                ligne = "HMS;Lat;Long;Pression;TempC;Delta(s);TStamp;ExpTime;AnG;DiG;Lux;RedG;BlueG;Bright"
+                ligne = "HMS;Lat;Long;Pression;TempC;TempCPU;Delta(s);TStamp;ExpTime;AnG;DiG;Lux;RedG;BlueG;Bright"
                 if self.STEREO:
-                    ligne="HMS;Lat;Long;Pression;TempC;Delta(s);TStamp;ExpTime;AnG;DiG;Lux;RedG;BlueG;Bright;TStamp2;ExpTime2;AnG2;DiG2;Lux2;RedG2;BlueG2;Bright2"
+                    ligne="HMS;Lat;Long;Pression;TempC;TempCPU;Delta(s);TStamp;ExpTime;AnG;DiG;Lux;RedG;BlueG;Bright;TStamp2;ExpTime2;AnG2;DiG2;Lux2;RedG2;BlueG2;Bright2"
                 self._Conf.add_line(self._file_name + '.csv',ligne)
                 paas=1. # pas de la boucle while qui vérifie si le bouton stop a été activé ou que le temps de séquence n'est pas dépassé
                 k_sampling = int(self._time_step / paas)
@@ -325,16 +327,18 @@ class KosmosCam(Thread):
                                     tempStr = f'{temp:.1f}'
                             except:
                                 logging.debug("Erreur de récupération des données TP")
+                        # Récupération température CPU
+                        cpuStr = f'{CPUTemperature().temperature:.2f}'
                         # Récupération metadata caméra
                         mtd = Metadata(self._camera.capture_metadata())
                         bright = self._camera.camera_controls['Brightness'][2]
                         brightStr = f'{bright:.1f}'
-                        ligne = f'{self._Conf.get_date_HMS()};{LAT};{LONG};{pressStr};{tempStr};{delta_time:.1f};{mtd.SensorTimestamp};{mtd.ExposureTime};{mtd.AnalogueGain:.1f};{mtd.DigitalGain:.1f};{mtd.Lux:.1f};{mtd.ColourGains[0]:.1f};{mtd.ColourGains[1]:.1f};{brightStr}'
+                        ligne = f'{self._Conf.get_date_HMS()};{LAT};{LONG};{pressStr};{tempStr};{cpuStr};{delta_time:.1f};{mtd.SensorTimestamp};{mtd.ExposureTime};{mtd.AnalogueGain:.1f};{mtd.DigitalGain:.1f};{mtd.Lux:.1f};{mtd.ColourGains[0]:.1f};{mtd.ColourGains[1]:.1f};{brightStr}'
                         if self.STEREO:
                             mtd2 = Metadata(self._camera2.capture_metadata())
                             bright2 = self._camera2.camera_controls['Brightness'][2]
                             brightStr2 = f'{bright2:.1f}'
-                            ligne = f'{self._Conf.get_date_HMS()};{LAT};{LONG};{pressStr};{tempStr};{delta_time:.1f};{mtd.SensorTimestamp};{mtd.ExposureTime};{mtd.AnalogueGain:.1f};{mtd.DigitalGain:.1f};{mtd.Lux:.1f};{mtd.ColourGains[0]:.1f};{mtd.ColourGains[1]:.1f};{brightStr};{mtd2.SensorTimestamp};{mtd2.ExposureTime};{mtd2.AnalogueGain:.1f};{mtd2.DigitalGain:.1f};{mtd2.Lux:.1f};{mtd2.ColourGains[0]:.1f};{mtd2.ColourGains[1]:.1f};{brightStr2}'
+                            ligne = f'{self._Conf.get_date_HMS()};{LAT};{LONG};{pressStr};{tempStr};{cpuStr};{delta_time:.1f};{mtd.SensorTimestamp};{mtd.ExposureTime};{mtd.AnalogueGain:.1f};{mtd.DigitalGain:.1f};{mtd.Lux:.1f};{mtd.ColourGains[0]:.1f};{mtd.ColourGains[1]:.1f};{brightStr};{mtd2.SensorTimestamp};{mtd2.ExposureTime};{mtd2.AnalogueGain:.1f};{mtd2.DigitalGain:.1f};{mtd2.Lux:.1f};{mtd2.ColourGains[0]:.1f};{mtd2.ColourGains[1]:.1f};{brightStr2}'
                         self._Conf.add_line(self._file_name + '.csv',ligne)   
                     k = k+1
                     if self._AWB == 2: #Ajustement Maison des gains AWB 
