@@ -79,7 +79,10 @@ class KosmosCam(Thread):
             self._X_RESOLUTION = 2028
             self._Y_RESOLUTION = 1080#1520
             #tuning = Picamera2.load_tuning_file("imx477.json")          
-        
+        elif self._CAM1_SENSOR == 'ov5647':
+            self._X_RESOLUTION = 2592
+            self._Y_RESOLUTION = 1944
+         
         # Framerate et frameduration camera
         self._FRAMERATE=aConf.config.getint(DEBUG_SECTION,"34_PICAM_framerate")
         self._FRAMEDURATION = int(1/self._FRAMERATE*1000000)
@@ -305,12 +308,14 @@ class KosmosCam(Thread):
                         LAT = ""
                         LONG = ""
                         if self._gps_ok:
-                            LAT = self.gps.get_latitude()
-                            LONG = self.gps.get_longitude() 
+                            try:
+                                LAT = self.gps.get_latitude()
+                                LONG = self.gps.get_longitude()
+                            except:
+                                logging.debug("Erreur de récupération des données GPS")
                         #Récupération données TP
                         pressStr = ""
                         tempStr = ""
-                        #profStr = ""
                         if self._press_sensor_ok:
                             try:
                                 if self.pressure_sensor.read():
@@ -318,10 +323,8 @@ class KosmosCam(Thread):
                                     pressStr = f'{press:.1f}'
                                     temp = self.pressure_sensor.temperature()  # Default is degrees C (no arguments)
                                     tempStr = f'{temp:.1f}'
-                                    #prof=(press-1013)/100
-                                    #profStr=f'{prof:2f}'
                             except:
-                                logging.info("Erreur de récupération des données TP")
+                                logging.debug("Erreur de récupération des données TP")
                         # Récupération metadata caméra
                         mtd = Metadata(self._camera.capture_metadata())
                         bright = self._camera.camera_controls['Brightness'][2]
