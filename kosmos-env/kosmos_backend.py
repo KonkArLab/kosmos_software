@@ -34,7 +34,6 @@ class Server:
         self.app.add_url_rule("/frame", view_func=self.image)
         self.app.add_url_rule("/gps", view_func=self.position)
         self.app.add_url_rule("/tp", view_func=self.TP)
-        self.app.add_url_rule("/name", view_func=self.systemName)
         self.app.add_url_rule("/updateMetadata",view_func=self.update_metadata, methods=['POST']) 
 
 
