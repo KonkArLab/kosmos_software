@@ -343,8 +343,12 @@ class KosmosCam(Thread):
                     k = k+1
                     if self._AWB == 2: #Ajustement Maison des gains AWB 
                         j=j+1
-                        if j == int(intervalle_awb/paas): 
+                        if j == int(intervalle_awb/paas):
+                            event_line =  self._Conf.get_date_HMS()  + ";START AWB ALGO; "
+                            self._Conf.add_line(EVENT_FILE,event_line)
                             self.adjust_awb(1,1,0.2) # on vise des ratios unitaires avec une tolérance de +- 20%
+                            event_line =  self._Conf.get_date_HMS()  + ";END AWB ALGO; "
+                            self._Conf.add_line(EVENT_FILE,event_line)       
                             j = 0
                         else :
                             time.sleep(paas)
@@ -466,9 +470,6 @@ class KosmosCam(Thread):
         return r_med/g_med,b_med/g_med,(r_med+g_med+b_med)/3
        
     def adjust_awb(self,rh,bh,tolerance):
-        event_line =  self._Conf.get_date_HMS()  + ";START AWB ALGO; "
-        self._Conf.add_line(EVENT_FILE,event_line)
-        
         # Capture des gains AWB sur la caméra principale seulement
         ColourGains = self._camera.capture_metadata()['ColourGains']
         red=ColourGains[0]
@@ -507,10 +508,6 @@ class KosmosCam(Thread):
                 if self.STEREO:
                     self._camera2.set_controls({'AwbEnable': False})
 
-        event_line =  self._Conf.get_date_HMS()  + ";END AWB ALGO; "
-        self._Conf.add_line(EVENT_FILE,event_line)
-    
-    
     def stopCam(self):
         """  Demande la fin de l'enregistrement et ferme l'objet caméra."""
         # permet d'arrêter l'enregistrement si on passe par le bouton stop"
