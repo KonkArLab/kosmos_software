@@ -25,7 +25,7 @@ async function majStateButton() {
     const response = await fetch(serverUrl + "/state");
     const body = await response.json();
     
-    if (body.state === "KState.WORKING") {
+    if (body.state.substr(body.state.length-7) === "WORKING") {
       stopButton.disabled = false;
       startButton.disabled = true;
       startLiveButton.disabled = true;
@@ -105,7 +105,8 @@ async function setLive(state) {
     const body = await response.json();
 
     if (state) {
-      if (body.state === "KState.STANDBY") {
+      console.log(body.state.substr(body.state.length-7))
+      if (body.state.substr(body.state.length-7) === "STANDBY") {
         live = true;
         frameLoop();
         stopLiveButton.disabled = false; // Enable only the stop live button

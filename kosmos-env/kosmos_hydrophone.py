@@ -32,7 +32,7 @@ class KosmosHydro(Thread):
         self._FORMAT = pyaudio.paInt16
         self._CHANNELS = 1
         self._RATE = 44100
-        self._CHUNK = 1024
+        self._CHUNK = 2048
         
         self._audio = pyaudio.PyAudio()
         print(self._audio.get_device_info_by_index(0)['defaultSampleRate'])

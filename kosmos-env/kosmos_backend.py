@@ -44,7 +44,7 @@ class Server:
     def state(self):
         return {
             "status" : "ok",
-            "state" : self.myMain._conf.systemName + " is in " + str(self.myMain.state).split('.')[1]
+            "state" : self.myMain._conf.systemName + " state is " + str(self.myMain.state).split('.')[1]
         }
     
     def position(self):

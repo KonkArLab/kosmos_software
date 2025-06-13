@@ -184,10 +184,10 @@ class KosmosCam(Thread):
             output_file = os.path.splitext(input_file)[0] + '.mp4'
             
             try:
-                if self.PRESENCE_HYDRO == 1:
-                    subprocess.run(['sudo', 'ffmpeg', '-probesize','2G','-r', str(self._FRAMERATE), '-i', input_file, '-c', 'copy', output_file, '-loglevel', 'warning'])
+                if self.PRESENCE_HYDRO == 1 and self._Conf.get_RPi_model().split(' ')[2] == '4':
+                    #subprocess.run(['sudo', 'ffmpeg', '-probesize','2G','-r', str(self._FRAMERATE), '-i', input_file, '-c', 'copy', output_file, '-loglevel', 'warning'])
                     # décommenter ci dessous sin on veut merger son vidéo
-                    #subprocess.run(['sudo', 'ffmpeg', '-probesize','2G','-r', str(self._FRAMERATE), '-i', input_file, '-i', wav_file, '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k', output_file, '-loglevel', 'warning'])
+                    subprocess.run(['sudo', 'ffmpeg', '-probesize','2G','-r', str(self._FRAMERATE), '-i', input_file, '-i', wav_file, '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k', output_file, '-loglevel', 'warning'])
                 else:
                     subprocess.run(['sudo', 'ffmpeg', '-probesize','2G','-r', str(self._FRAMERATE), '-i', input_file, '-c', 'copy', output_file, '-loglevel', 'warning'])
                 logging.info("Conversion video 1 successful !")
@@ -523,7 +523,14 @@ class KosmosCam(Thread):
         """Arrêt du TP"""
         if self._press_sensor_ok == True:
             self.pressure_sensor._bus.close()
-            
+        
+        #"""Arrêt hydrophone"""
+        #if self.PRESENCE_HYDRO == 1:
+        #    self.thread_hydrophone.stop_thread()   
+        #    if self.thread_hydrophone.is_alive():
+        #        self.thread_hydrophone.join() 
+        
+        
         """Arrêt définitif de la caméra"""
         self._end = True
         self._start_again.set()
@@ -536,10 +543,7 @@ class KosmosCam(Thread):
             #logging.info("Caméra stéréo arrêtée")
             self._camera2.close()
             #logging.info("Caméra stéréo éteinte")
-        if self.PRESENCE_HYDRO == 1:
-            self.thread_hydrophone.stop_thread()   
-            if self.thread_hydrophone.is_alive():
-                self.thread_hydrophone.join() 
+         
             
     def restart(self):
         """démarre ou redémarre le thread"""
