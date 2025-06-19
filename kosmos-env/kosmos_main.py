@@ -20,10 +20,14 @@ from kosmos_state import KState
 
 from kosmos_config import *
 import kosmos_config as KConf
+
+# Import des classes caméra
 import kosmos_cam as KCam
+import magpi_cam as MCam
+
+# Import des classes moteur pour les v 3 et 4
 import kosmos_motor_V3 as KMotor3
 import kosmos_motor_V4 as KMotor4
-#import kosmos_hydrophone as KHydro
 
 import sys
 import ms5837
@@ -59,7 +63,7 @@ class kosmos_main():
 
         # Buzzer
         if self._conf.systemVersion == "4.0":
-            self.BUZZER_ENABLED = self._conf.config.getint(CONFIG_SECTION, "08_SYSTEM_buzzer_mode")
+            self.BUZZER_ENABLED = self._conf.config.getint(CONFIG_SECTION, "09_BUZZER")
             if self.BUZZER_ENABLED == 1:
                 self._buzzer = TonalBuzzer(self._conf.config.getint(DEBUG_SECTION, "08_SYSTEM_buzzer"), octaves = 3)
                 logging.info("BUZZER demandé !")
@@ -74,20 +78,22 @@ class kosmos_main():
         self.Button_Record = Button(self._conf.config.getint(DEBUG_SECTION,"01_SYSTEM_record_button_gpio"))
         
         # Mode du système   #1 STAVIRO     #2 MICADO
-        self.MODE = self._conf.config.getint(CONFIG_SECTION,"00_SYSTEM_mode") 
+        self.MODE = self._conf.config.getint(CONFIG_SECTION,"00_STAVIRO_MICADO") 
         if self.MODE==1:
             logging.info("MODE STAVIRO demandé")    
         elif self.MODE==2: 
             logging.info("MODE MICADO demandé")
             # Chargement du temps de veille entre deux prises de vue
-            self.tps_veille =  self._conf.config.getint(CONFIG_SECTION,"10_SYSTEM_tps_veille")#temps de veille en seconde
+            self.tps_veille =  self._conf.config.getint(CONFIG_SECTION,"04_TPS_VEILLE")#temps de veille en seconde
         self.bool_micado = 1 # init du booléen micado
 
+        
+
         # Temps total de fonctionnement de l'appareil (pour éviter des crashs batteries)
-        self.tps_total_acquisition = self._conf.config.getint(CONFIG_SECTION,"07_SYSTEM_tps_fonctionnement")         
+        self.tps_total_acquisition = self._conf.config.getint(CONFIG_SECTION,"03_TPS_FONCTIONNEMENT")         
         
         # Definition Thread Moteur
-        self.PRESENCE_MOTEUR = self._conf.config.getint(CONFIG_SECTION,"06_SYSTEM_moteur") # Fonctionnement moteur si 1
+        self.PRESENCE_MOTEUR = self._conf.config.getint(CONFIG_SECTION,"05_MOTEUR") # Fonctionnement moteur si 1
         if self.PRESENCE_MOTEUR==1:
             if self._conf.systemVersion == "4.0":
                 self.motorThread = KMotor4.kosmosMotor(self._conf)
@@ -101,8 +107,15 @@ class kosmos_main():
             self.wakeUp_GPIO = DigitalOutputDevice(self._conf.config.getint(DEBUG_SECTION, "09_SYSTEM_wake_up_motor"))
             self.wakeUp_GPIO.off()
                 
+        # Type d'enregistrement : TimeLapse ou Caméra
+        self.ENREGISTREMENT = self._conf.config.getint(CONFIG_SECTION,"01_CAM_TIMELAPSE") 
         # Paramètres camera & définition Thread Camera
-        self.thread_camera = KCam.KosmosCam(self._conf)
+        if self.ENREGISTREMENT == 2:
+            logging.info("ENREGISTREMENT de type time lapse") 
+            self.thread_camera = MCam.MagpiCam(self._conf)
+        else:
+            logging.info("ENREGISTREMENT de type vidéo") 
+            self.thread_camera = KCam.KosmosCam(self._conf)
     
         
     def clear_events(self):
@@ -264,8 +277,9 @@ class kosmos_main():
                 self.wakeUp_GPIO.close()   
          
         # Arret Camera   
-        if self.thread_camera.PRESENCE_HYDRO==1:
-            del self.thread_camera.thread_hydrophone
+        if self.ENREGISTREMENT != 2:
+            if self.thread_camera.PRESENCE_HYDRO==1:
+                del self.thread_camera.thread_hydrophone
         self.thread_camera.closeCam()
         if self.thread_camera.is_alive():
             self.thread_camera.join()   # Caméra stoppée    
@@ -292,7 +306,7 @@ class kosmos_main():
             os.system("sudo halt")
         else: # Mode STAVIRO ou Mode MICADO avec arrêt par bouton
         # Commande de stop au choix arrêt du programme ou du PC
-            if self._conf.config.getint(CONFIG_SECTION,"05_SYSTEM_shutdown") != 0 :
+            if self._conf.config.getint(CONFIG_SECTION,"06_SHUTDOWN") != 0 :
                 os.system("sudo shutdown -h now")
             else :
                 os._exit(0)

@@ -15,7 +15,6 @@ log.setLevel(logging.ERROR)
 from kosmos_state import KState
 from kosmos_config import *
 
-
 class Server:
     
     app = Flask(__name__)
@@ -110,7 +109,6 @@ class Server:
                 return {
                     "status" : "error"
             }
-
         else :
             return {
                 "status" : "error"

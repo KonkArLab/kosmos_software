@@ -24,15 +24,13 @@ async function majStateButton() {
   try {
     const response = await fetch(serverUrl + "/state");
     const body = await response.json();
-    
     if (body.state.substr(body.state.length-7) === "WORKING") {
       stopButton.disabled = false;
       startButton.disabled = true;
       startLiveButton.disabled = true;
       shutdownButton.disabled = true;
     } else {
-      stopButton.disabled = true;
-      startButton.disabled = false;
+      resetButtonState()
     }
   } finally {}
 }
@@ -70,8 +68,9 @@ async function stop() {
   try {
     const response = await fetch(serverUrl + "/stop");
     const body = await response.json();
-    localStorage.setItem("metaData", JSON.stringify(body.metadata));
-    window.location.href = "./metadata/metadata.html";
+    /////////////
+    //localStorage.setItem("metaData", JSON.stringify(body.metadata));
+    //window.location.href = "./metadata/metadata.html";
   } catch (error) {
     console.error("Error stopping the camera:", error);
   } finally {

@@ -55,7 +55,7 @@ class KosmosCam(Thread):
         if self._CAM_NUMBER == 2:
             self._CAM2_SENSOR = Picamera2.global_camera_info()[1]['Model']
             if self._CAM1_SENSOR == self._CAM2_SENSOR:
-                if aConf.config.getint(CONFIG_SECTION,"39_PICAM_stereo") == 1:
+                if aConf.config.getint(CONFIG_SECTION,"08_STEREO") == 1:
                     logging.info(f"Deux caméras indentiques détectées {self._CAM1_SENSOR}-> MODE STEREO")
                     self.STEREO = True
                 else:
@@ -99,8 +99,8 @@ class KosmosCam(Thread):
         self._CONVERSION = aConf.config.getint(DEBUG_SECTION,"36_PICAM_conversion_mp4")
         
         # A clarifier
-        self._AWB = aConf.config.getint(CONFIG_SECTION,"37_PICAM_AWB")
-        self._record_time = aConf.config.getint(CONFIG_SECTION,"35_PICAM_record_time")
+        self._AWB = aConf.config.getint(DEBUG_SECTION,"37_PICAM_AWB")
+        self._record_time = aConf.config.getint(CONFIG_SECTION,"02_TPS_ENREGISTREMENT")
 
         # Booléens pour les évènements
         self._end = False
@@ -159,7 +159,7 @@ class KosmosCam(Thread):
         
     
         # Definition Thread Hydrophone
-        self.PRESENCE_HYDRO = self._Conf.config.getint(CONFIG_SECTION,"40_HYDROPHONE_bool") # Fonctionnement hydrophone si 1
+        self.PRESENCE_HYDRO = self._Conf.config.getint(CONFIG_SECTION,"07_HYDROPHONE") # Fonctionnement hydrophone si 1
         if self.PRESENCE_HYDRO==1:
             self.thread_hydrophone = KHydro.KosmosHydro(self._Conf)
             logging.info("Hydrophone démarré")
