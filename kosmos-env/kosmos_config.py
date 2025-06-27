@@ -9,12 +9,7 @@ from datetime import datetime
 import json
 import pandas as pd
 
-
-#Arborescence USB
-USB_ROOT_PATH = "/media/"+(os.listdir("/home")[0])
-USB_NAME = os.listdir(USB_ROOT_PATH)[0]
-USB_INSIDE_PATH = USB_ROOT_PATH+"/"+USB_NAME+"/"
-
+        
 # Arborescence Picam
 ROOT_PATH = "/home/"+os.listdir("/home")[0]+"/"
 LOG_PATH = ROOT_PATH+"logfile_kosmos/"
@@ -61,12 +56,23 @@ class KosmosConfig:
         self._system_path=ROOT_PATH+SYSTEM_FILE
         self.system = configparser.ConfigParser()
         self.system.read(self._system_path)
-        logging.info("kosmos_system.ini lu dans home")
+        logging.debug("kosmos_system.ini lu dans home")
         self.systemName = self.system.get(SYSTEM_SECTION,"system")
         self.systemVersion = self.system.get(SYSTEM_SECTION,"version")
 
-        
-        logging.debug("Lecture kosmos_config.ini")
+        # Init clé usb ou carte sd
+        USB_ROOT_PATH = "/media/"+(os.listdir("/home")[0])
+        if len(os.listdir(USB_ROOT_PATH)) == 1:
+            logging.info("Présence d'une seule clé usb")
+            USB_NAME = os.listdir(USB_ROOT_PATH)[0]
+            USB_INSIDE_PATH = USB_ROOT_PATH+"/"+USB_NAME+"/"
+        else :
+            logging.info("Absence de clé usb ou clé usb fantome -> Ecriture en Local")
+            subprocess.run(["sudo", "mkdir", "-p", ROOT_PATH + "kosmos_local_sd"])
+            USB_INSIDE_PATH = ROOT_PATH + "kosmos_local_sd/"
+            subprocess.run(["sudo", "chown", os.listdir("/home")[0]+":"+os.listdir("/home")[0] , ROOT_PATH+"kosmos_local_sd"])
+
+            
         if self.systemVersion == "3.0":
             subprocess.run(["sudo", "cp", "-n", GIT_PATH+CONF_FILE_TEMPLATE_V3,USB_INSIDE_PATH+CONF_FILE])
             logging.info("Version 3.0")
@@ -79,8 +85,6 @@ class KosmosConfig:
         self._config_path=USB_INSIDE_PATH+CONF_FILE
         self.config = configparser.ConfigParser()
         self.config.read(self._config_path)
-        logging.info("kosmos_config.ini lu sur clé usb")
-        
         
         # Création Dossier Campagne si non existant               
         campagneFile = self.get_date_YMD() + '_' + self.systemName  
