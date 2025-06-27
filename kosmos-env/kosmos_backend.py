@@ -33,6 +33,8 @@ class Server:
         self.app.add_url_rule("/frame", view_func=self.image)
         self.app.add_url_rule("/gps", view_func=self.position)
         self.app.add_url_rule("/tp", view_func=self.TP)
+        self.app.add_url_rule("/rgb", view_func=self.RGB)
+        self.app.add_url_rule("/magneto", view_func=self.magneto)
         self.app.add_url_rule("/updateMetadata",view_func=self.update_metadata, methods=['POST']) 
 
 
@@ -74,7 +76,36 @@ class Server:
             "pression" : PRESSURE,
             "temperature" : TEMPERATURE
         }
+
+    def RGB(self):
+        try:
+            r, g, b = self.myMain.thread_camera.light_sensor.read()
+            lux_r = f"{r}"
+            lux_g = f"{g}"
+            lux_b = f"{b}"
+            LUX = lux_r + ' ' + lux_b + ' ' + lux_b
+        except:
+            LUX = "ERR"
+        return{
+            "status" : "ok",
+            "RGB" : LUX
+        }
     
+    def magneto(self):
+        try:
+            #if self.myMain.thread_camera.magneto_sensor.read():
+            x, y, z = self.myMain.thread_camera.magneto_sensor.read()
+            magneto_x = f"{x:.2f}"
+            magneto_y = f"{y:.2f}"
+            magneto_z = f"{z:.2f}"
+            MAGNETO = magneto_x + ' ' + magneto_y + ' ' + magneto_z
+            #print('toto')
+        except:
+            MAGNETO = "ERR"
+        return{
+            "status" : "ok",
+            "magneto" : MAGNETO
+        }
       
     def start(self):
         if(self.myMain.state==KState.STANDBY):   

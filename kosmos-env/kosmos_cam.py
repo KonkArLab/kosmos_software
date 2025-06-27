@@ -22,10 +22,12 @@ import time
 import csv
 import json
 
-#import GPS & capteur TP
+#import GPS capteur TP, LUX, magneto et hydrophone
 from GPS import *
 import ms5837
 import kosmos_hydrophone as KHydro
+import isl29125
+import bmm150
 
 
 class KosmosCam(Thread):
@@ -143,7 +145,6 @@ class KosmosCam(Thread):
         except Exception as e:
             logging.error("Erreur d'initialisation du capteur de pression ")
         
-        
         #Initialisation GPS
         self._gps_ok = False
         try:
@@ -156,6 +157,30 @@ class KosmosCam(Thread):
                 logging.error("Port Serie GPS OK mais non fonctionnel")
         except:    
             logging.error("Erreur d'initialisation du GPS")
+            
+        # Initialisation Capteur lumière        
+        self._light_sensor_ok = False
+        try:
+            self.light_sensor = isl29125.RGBSensor()
+            if self.light_sensor.init():
+                self._light_sensor_ok = True
+                logging.info("Capteur de lumière OK")
+            else:
+                logging.error("Port série lumière OK mais non fonctionnel")
+        except Exception as e:
+            logging.error("Erreur d'initialisation du capteur de lumière")
+            
+        # Initialisation Capteur magneto        
+        self._magneto_sensor_ok = False
+        try:
+            self.magneto_sensor = bmm150.magnetoSensor()
+            if self.magneto_sensor.init():
+                self._magneto_sensor_ok = True
+                logging.info("Magnétomètre OK")
+            else:
+                logging.error("Port série magnétomètre OK mais non fonctionnel")
+        except Exception as e:
+            logging.error("Erreur d'initialisation du magnetomètre")
         
     
         # Definition Thread Hydrophone
@@ -292,9 +317,9 @@ class KosmosCam(Thread):
                     self.thread_hydrophone.restart()
                 
                 #Création CSV
-                ligne = "HMS;Lat;Long;Pression;TempC;TempCPU;Delta(s);TStamp;ExpTime;AnG;DiG;Lux;RedG;BlueG;Bright"
+                ligne = "HMS;Lat;Long;Pression;TempC;RLux;GLux;BLux;XMagneto;YMagneto;ZMagneto;TempCPU;Delta(s);TStamp;ExpTime;AnG;DiG;Lux;RedG;BlueG;Bright"
                 if self.STEREO:
-                    ligne="HMS;Lat;Long;Pression;TempC;TempCPU;Delta(s);TStamp;ExpTime;AnG;DiG;Lux;RedG;BlueG;Bright;TStamp2;ExpTime2;AnG2;DiG2;Lux2;RedG2;BlueG2;Bright2"
+                    ligne="HMS;Lat;Long;Pression;TempC;RLux;GLux;BLux;XMagneto;YMagneto;ZMagneto;TempCPU;Delta(s);TStamp;ExpTime;AnG;DiG;Lux;RedG;BlueG;Bright;TStamp2;ExpTime2;AnG2;DiG2;Lux2;RedG2;BlueG2;Bright2"
                 self._Conf.add_line(self._file_name + '.csv',ligne)
                 paas=1. # pas de la boucle while qui vérifie si le bouton stop a été activé ou que le temps de séquence n'est pas dépassé
                 k_sampling = int(self._time_step / paas)
@@ -327,18 +352,46 @@ class KosmosCam(Thread):
                                     tempStr = f'{temp:.1f}'
                             except:
                                 logging.debug("Erreur de récupération des données TP")
+                                
+                        # Récupération lumière
+                        lux_r = ""
+                        lux_g = ""
+                        lux_b = ""
+                        if self._light_sensor_ok:
+                            try:
+                                r, g, b = self.light_sensor.read()
+                                lux_r = f"{r}"
+                                lux_g = f"{g}"
+                                lux_b = f"{b}"
+                            except:
+                                logging.error("Erreur de récupération des données lumière")
+                                
+                        # Récupération magneto
+                        magneto_x = ""
+                        magneto_y = ""
+                        magneto_z = ""
+                        if self._magneto_sensor_ok:
+                            try:
+                                x,y,z = self.magneto_sensor.read()
+                                magneto_x = f"{x:.2f}"
+                                magneto_y = f"{y:.2f}"
+                                magneto_z = f"{z:.2f}"
+                            except:
+                                logging.debug("Erreur de récupération des données magneto")
+    
                         # Récupération température CPU
                         cpuStr = f'{CPUTemperature().temperature:.2f}'
+                        
                         # Récupération metadata caméra
                         mtd = Metadata(self._camera.capture_metadata())
                         bright = self._camera.camera_controls['Brightness'][2]
                         brightStr = f'{bright:.1f}'
-                        ligne = f'{self._Conf.get_date_HMS()};{LAT};{LONG};{pressStr};{tempStr};{cpuStr};{delta_time:.1f};{mtd.SensorTimestamp};{mtd.ExposureTime};{mtd.AnalogueGain:.1f};{mtd.DigitalGain:.1f};{mtd.Lux:.1f};{mtd.ColourGains[0]:.1f};{mtd.ColourGains[1]:.1f};{brightStr}'
+                        ligne = f'{self._Conf.get_date_HMS()};{LAT};{LONG};{pressStr};{tempStr};{lux_r};{lux_g};{lux_b};{magneto_x};{magneto_y};{magneto_z};{cpuStr};{delta_time:.1f};{mtd.SensorTimestamp};{mtd.ExposureTime};{mtd.AnalogueGain:.1f};{mtd.DigitalGain:.1f};{mtd.Lux:.1f};{mtd.ColourGains[0]:.1f};{mtd.ColourGains[1]:.1f};{brightStr}'
                         if self.STEREO:
                             mtd2 = Metadata(self._camera2.capture_metadata())
                             bright2 = self._camera2.camera_controls['Brightness'][2]
                             brightStr2 = f'{bright2:.1f}'
-                            ligne = f'{self._Conf.get_date_HMS()};{LAT};{LONG};{pressStr};{tempStr};{cpuStr};{delta_time:.1f};{mtd.SensorTimestamp};{mtd.ExposureTime};{mtd.AnalogueGain:.1f};{mtd.DigitalGain:.1f};{mtd.Lux:.1f};{mtd.ColourGains[0]:.1f};{mtd.ColourGains[1]:.1f};{brightStr};{mtd2.SensorTimestamp};{mtd2.ExposureTime};{mtd2.AnalogueGain:.1f};{mtd2.DigitalGain:.1f};{mtd2.Lux:.1f};{mtd2.ColourGains[0]:.1f};{mtd2.ColourGains[1]:.1f};{brightStr2}'
+                            ligne = f'{self._Conf.get_date_HMS()};{LAT};{LONG};{pressStr};{tempStr};{lux_r};{lux_g};{lux_b};{magneto_x};{magneto_y};{magneto_z};{cpuStr};{delta_time:.1f};{mtd.SensorTimestamp};{mtd.ExposureTime};{mtd.AnalogueGain:.1f};{mtd.DigitalGain:.1f};{mtd.Lux:.1f};{mtd.ColourGains[0]:.1f};{mtd.ColourGains[1]:.1f};{brightStr};{mtd2.SensorTimestamp};{mtd2.ExposureTime};{mtd2.AnalogueGain:.1f};{mtd2.DigitalGain:.1f};{mtd2.Lux:.1f};{mtd2.ColourGains[0]:.1f};{mtd2.ColourGains[1]:.1f};{brightStr2}'
                         self._Conf.add_line(self._file_name + '.csv',ligne)   
                     k = k+1
                     if self._AWB == 2: #Ajustement Maison des gains AWB 
