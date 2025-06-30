@@ -84,8 +84,8 @@ class KosmosCam(Thread):
             self._Y_RESOLUTION = 1080#1520
             #tuning = Picamera2.load_tuning_file("imx477.json")          
         elif self._CAM1_SENSOR == 'ov5647':
-            self._X_RESOLUTION = 2592
-            self._Y_RESOLUTION = 1944
+            self._X_RESOLUTION = 1920
+            self._Y_RESOLUTION = 1080
          
         # Framerate et frameduration camera
         self._FRAMERATE=aConf.config.getint(DEBUG_SECTION,"34_PICAM_framerate")
