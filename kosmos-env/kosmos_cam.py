@@ -13,7 +13,6 @@ import hashlib
 from collections import defaultdict
 from gpiozero import CPUTemperature
 
-
 import os
 from kosmos_config import *
 from PIL import Image
@@ -21,6 +20,7 @@ import numpy as np
 import time
 import csv
 import json
+import pandas as pd
 
 #import GPS capteur TP, LUX, magneto et hydrophone
 from GPS import *
@@ -28,7 +28,6 @@ import ms5837
 import kosmos_hydrophone as KHydro
 import isl29125
 import bmm150
-
 
 class KosmosCam(Thread):
     """
@@ -464,8 +463,9 @@ class KosmosCam(Thread):
                  
             # From sensors
             try:
-                infoStationDict["video"]["gpsDict"]["latitude"] = float(self.gps.get_latitude())
-                infoStationDict["video"]["gpsDict"]["longitude"] = float(self.gps.get_longitude())
+                lalo = self.LatLong()
+                infoStationDict["video"]["gpsDict"]["latitude"] = lalo[0]#float(self.gps.get_latitude())
+                infoStationDict["video"]["gpsDict"]["longitude"] = lalo[1]#float(self.gps.get_longitude())
             except:
                 infoStationDict["video"]["gpsDict"]["latitude"] = None
                 infoStationDict["video"]["gpsDict"]["longitude"] = None
@@ -498,18 +498,39 @@ class KosmosCam(Thread):
                 for row in reader: # read a row as {column1: value1, column2: value2,...}
                     for (k,v) in row.items(): # go over each column name and value 
                         columns[k].append(v) # append the value into the appropriate list
-                x = np.array(columns['Pression'], dtype=float)
-                y = np.array(columns['TempC'], dtype=float)
-                Pfond = np.max(x)
-                Psurf = np.min(x)
-                IndFond = np.argmax(x)
-                IndSurf = np.argmin(x)
+                x = np.array(columns['Pression'])#, dtype=float)
+                y = np.array(columns['TempC'])#, dtype=float)
+                a = pd.to_numeric(x,errors='coerce')
+                b = pd.to_numeric(x,errors='coerce')
+                Pfond = np.nanmax(x)
+                Psurf = np.nanmin(x)
+                IndFond = np.argnanmax(x)
+                IndSurf = np.argnanmin(x)
                 Tfond = y[IndFond]
                 Tsurf = y[IndSurf]
                 ma = Pfond,Psurf,Tfond,Tsurf
         except:
             ma = None, None, None, None
         return ma 
+    
+    def LatLong(self):
+        try:
+            columns = defaultdict(list) # each value in each column is appended to a list
+            with open(self._file_name +'.csv') as f:
+                reader = csv.DictReader(f, delimiter=';') # read rows into a dictionary format
+                for row in reader: # read a row as {column1: value1, column2: value2,...}
+                    for (k,v) in row.items(): # go over each column name and value 
+                        columns[k].append(v) # append the value into the appropriate list
+                x = np.array(columns['Lat'])#, dtype=float)
+                y = np.array(columns['Long'])#, dtype=float)
+                a = pd.to_numeric(x,errors='coerce')
+                b = pd.to_numeric(y,errors='coerce')
+                a_clean = [x for x in a if x == x]
+                b_clean = [x for x in b if x == x]
+                lalo = a_clean[-1], b_clean[-1]    
+        except:
+            lalo = None, None
+        return lalo 
     
     def RatiosRBsurG(self):
         """Capture puis calcul des ratios R/G et B/G"""        

@@ -71,6 +71,9 @@ async function stop() {
     /////////////
     //localStorage.setItem("metaData", JSON.stringify(body.metadata));
     //window.location.href = "./metadata/metadata.html";
+    //localStorage.setItem("metaData", JSON.stringify(body.metadata));
+    //console.log("toto")
+    //submitForm()
   } catch (error) {
     console.error("Error stopping the camera:", error);
   } finally {
