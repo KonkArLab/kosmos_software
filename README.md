@@ -102,7 +102,7 @@ WAKE_ON_GPIO=0
 - Quitter le fichier en appuyant sur `Ctrl + Shift + x`
 
 ### Activation du port Serial pour le GPS
-#### Sur Rpi4
+#### Sur Rpi4 seulement
 Modification du fichier config.txt
 
 - Dans un terminal taper la commande suivante pour ouvrir le fichier config.txt:
@@ -118,21 +118,14 @@ dtoverlay=disable-bt
 - Sauvegarder les modifications en appuyant sur `Ctrl + Shift + o`
 - Quitter le fichier en appuyant sur `Ctrl + Shift + x`
 
+#### Sur Rpi5 & Rpi4
+
 - Aller dans le menu principal (icone avec la framboise en haut à gauche de l'écran)
 - Cliquer sur `Préférence` puis `Configuration du Raspberry Pi`
 - Dans l'onglet `Interface`
 - Passer le `VNC` à `Enable`
 - Passer le `Port serial` à `Enable`
 - Passer le `Serial Console` à `Disable`
-- Redémarrer enfin la Rpi.
-
-#### Sur Rpi5
-- Dans un terminal taper :
-```
-sudo raspi-config
-```
-- Aller dans `3 Interface Options` puis dans `I6 Serial Port`
-- Mettre `Oui` aux deux questions posées.
 - Redémarrer enfin la Rpi.
 
 ### Importation du dossier software
