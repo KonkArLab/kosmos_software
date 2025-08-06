@@ -158,47 +158,35 @@ Si besoin, mettre également à jour l'`increment`.  Si c'est le premier usage d
   
 ### Stockage des données
 
- - Brancher la clé USB pour le stockage des données. Elle peut être vide ou contenir déjà des dossiers des campagnes précédentes. Nous recommandons toutefois de repartir d'une clé vierge pour éviter une saturation mémoire de la clé usb. 
+ - Deux choix s'ouvrent à vous : un stockage sur la carte SD ou sur une clé USB. Si une clé USB est branchée, elle sera prioritaire. Si aucune clé usb n'est branchée, les fichiers seront stockées dans `/home/kosmos/kosmos_local_sd`.
+
+ - Il peut arriver que la clé USB (si ce système de stockage est choisi), contienne déjà des vidéos ainsi qu'un fichier de configuration kosmos_config.ini. Nous recommandons de renommer ce dernier fichier (en kosmos_config_old.ini) pour éviter des bugs de compatibilité entre les versions du soft. Par ailleurs, il faudra veiller à ce que la clé propose assez de places pour accueillir les nouvelles vidéos. Typiquement prévoir 10Go par journée de campagne. 
   
- - Redémarrer maintenant la RPi. Si au démarrage, la led verte de la carte électronique clignote c'est que le système est opérationnel. Si la clé était vierge, elle doit maintenant contenir un dossiers et un ficher texte :
+ - Redémarrer maintenant la RPi. Si au démarrage, la led verte de la carte électronique clignote c'est que le système est opérationnel (cela peut prendre une trentaine de secondes). Si la clé était vierge, elle doit maintenant contenir un dossiers et un ficher texte (si aucune clé n'est branché, ces éléments sont dans `/home/kosmos/kosmos_local_sd`) :
 
-Le fichier kosmos_config.ini contient les paramètres de configuration du système. Ces paramètres seront visibles depuis l'interface web grâce à un ficher Javascript. [Explication](https://github.com/KonkArLab/kosmos_software/blob/dev_stereo2/README.md#prise-en-main-de-linterface-web)  
+1. Le fichier kosmos_config.ini contient les paramètres de configuration du système. Ces paramètres seront visibles depuis l'interface web grâce à un ficher Javascript.
 
-Le dossier contenant les données associées à une journée de campagne s'appelle normalement `date_system`, typiquement `250403_IMT`. Dans ce dossier, seront présents d'autres dossiers correspondant à chaque enregistrement (passage de l'état STANDBY à WORKING). Ils auront pour nom l'`increment`, typiquement `0054` 
+2. Le dossier contenant les données associées à une journée de campagne s'appelle normalement `date_system`, typiquement `250403_KIMT`. Dans ce dossier, seront présents d'autres dossiers correspondant à chaque enregistrement (passage de l'état STANDBY à WORKING). Ils auront pour nom l'`increment`, typiquement `0054` 
 
 Chacun de ces dossiers contiennent une vidéo (voire deux si l'on filme en stéréo) et ses métadonnées. 
 - Le fichier vidéo `increment.mp4` (et éventuellement increment_STEREO.mp4 si la stéréo est activée)
-- Un fichier `increment.txt` qui stocke l'instant de chaque frame de la video.
-- Un fichier `increment.csv` qui stocke des paramètres de la caméra ainsi que les données T,P et position pendant la prise de vue.
+- Un fichier `increment.txt` qui stocke l'instant (ou timestamp en anglais) de chaque frame de la video.
+- Un fichier `increment.csv` qui stocke des paramètres de la caméra ainsi que les données T,P, position et autres données fournies par les capteurs du système pendant la prise de vue.
 - Un fichier `increment.json` qui stocke les métadonnées de la prise de vue.
-- Un fichier `systemEvent.csv` qui stocke les évènements du sytème comme la rotation du moteur ou la mise à jour des gains AWB
+- Un fichier `systemEvent.csv` qui stocke les évènements du sytème comme la rotation du moteur ou la mise à jour des gains de couleur AWB
 - Un fichier `increment.mp3` qui stocke l'enregistrement audio si l'hydrophone est activé.
-
-A noter qu'un fichier `infoStation.csv` existe aussi dans le dossier de campagne journalière. Il rassemble les métadonnées de chaque vidéo prise durant la journée.
 
 ## Mode d'emploi
 
-### Procédure de mise au point de la caméra
-- Nettoyer toutes les surfaces avec un chiffon microfibre puis on remontera l'objectif Edmund sur le capteur. Ré-assembler enfin ce module optique sur le système.
-- Pour faire la mise au point de la caméra, le système ne sera pas placé dans le caisson. On branchera par ailleurs un écran à la Raspberry pour visualiser ce que filme la caméra.
-- Une fois l'écran branché, on allumera le système et on attendra que le système KOSMOS soit en STAND BY.
-- Dans l'interface WEB, modifier le paramètre `05_SYSTEM_shutdown` pour le mettre à 0 et effectuer un `Reboot`. Aller ensuite dans l'onglet `Camera` et éteindre arrêter le système KOSMOS en appuyant sur `Shutdown`. (Cette manipulation permet d'arrêter le script KOSMOS sans éteindre la Rpi. La caméra peut ainsi être utilisée.)
-- Dans le terminal, taper ```rpicam-hello --timeout 0 ``` Cette instruction permet d'afficher le preview. Pour le quitter il suffira de taper ```Ctrl + C ```
-- Viser un objet à l'infini (par exemple le feuillage d'arbres au loin). Ouvrir à fond l'objectif (le petit point blanc devant 1.8) pour avoir une profondeur de champ minimale. Réaliser le focus sur l'objet avec la bague puis la bloquer solidement. Fermer enfin l'objectif à moitié (le petit point blanc sur 2.8) pour récupérer une meilleure profondeur de champ. Bloquer la bague d'ouverture dans cette position. Vérifier que le focus est toujours bon (le fait de serrer les bagues peut parfois les faire bouger.)
-- Sortir du preview puis redémarrer la Raspberry Pi. Le soft kosmos va se remettre en route. Dans l'interface web, remettre le paramètre  `05_SYSTEM_shutdown` sur 1. Effectuer un `Reboot` puis éteindre le système avec un `Shutdown`.
-
-### Processus de mise à l'eau
-Pour déployer KOSMOS en mer suivre le [guide de mise en service](https://kosmos.fish/index.php/deployer/).
-
 ### Prise en main de l'Interface web
-Une IHM (Interface Homme Machine) a été développée et permet de commander Kosmos depuis un téléphone. Elle remplace les étapes à réaliser avec les aimants dans le guide de mise en service. (À noter que le fonctionnement avec les aimants est toujours opérationnel.)
+Une IHM (Interface Homme Machine) a été développée pour commander Kosmos depuis un téléphone ou un ordinateur portable. Elle remplace les étapes à réaliser avec les aimants dans le guide de mise en service. (À noter que le fonctionnement avec les aimants est toujours opérationnel.)
 
 Sur un téléphone ou un ordinateur portable:
  - Se connecter au réseau  WiFi de la raspberry qui a été créé dans les étapes précédentes  
- - Dans un navigateur web entrer l'adresse 10.42.0.1 qui permet d'accéder à l'interface de commande du KOSMOS
+ - Dans un navigateur web, créer une fenêtre de navigation privée et entrer l'adresse 10.42.0.1 pour accéder à l'interface de commande du KOSMOS. 
 
-
-En haut de l'écran il y a 3 onglets:
+En haut de l'écran il y a 5 onglets:
+ * Campagne
  * Camera
  * Records
  * Configuration
@@ -285,3 +273,17 @@ Il est également possible de modifier les paramètres directement dans le fichi
  - `38_PICAM_timestamp = 0` incruste ou non une horloge dans l'image
     * si `0` pas d'incrustation
     * si `1` incrustation
+
+
+
+### Procédure de mise au point de la caméra
+- Nettoyer toutes les surfaces avec un chiffon microfibre puis on remontera l'objectif Edmund sur le capteur. Ré-assembler enfin ce module optique sur le système.
+- Pour faire la mise au point de la caméra, le système ne sera pas placé dans le caisson. On branchera par ailleurs un écran à la Raspberry pour visualiser ce que filme la caméra.
+- Une fois l'écran branché, on allumera le système et on attendra que le système KOSMOS soit en STAND BY.
+- Dans l'interface WEB, modifier le paramètre `05_SYSTEM_shutdown` pour le mettre à 0 et effectuer un `Reboot`. Aller ensuite dans l'onglet `Camera` et éteindre arrêter le système KOSMOS en appuyant sur `Shutdown`. (Cette manipulation permet d'arrêter le script KOSMOS sans éteindre la Rpi. La caméra peut ainsi être utilisée.)
+- Dans le terminal, taper ```rpicam-hello --timeout 0 ``` Cette instruction permet d'afficher le preview. Pour le quitter il suffira de taper ```Ctrl + C ```
+- Viser un objet à l'infini (par exemple le feuillage d'arbres au loin). Ouvrir à fond l'objectif (le petit point blanc devant 1.8) pour avoir une profondeur de champ minimale. Réaliser le focus sur l'objet avec la bague puis la bloquer solidement. Fermer enfin l'objectif à moitié (le petit point blanc sur 2.8) pour récupérer une meilleure profondeur de champ. Bloquer la bague d'ouverture dans cette position. Vérifier que le focus est toujours bon (le fait de serrer les bagues peut parfois les faire bouger.)
+- Sortir du preview puis redémarrer la Raspberry Pi. Le soft kosmos va se remettre en route. Dans l'interface web, remettre le paramètre  `05_SYSTEM_shutdown` sur 1. Effectuer un `Reboot` puis éteindre le système avec un `Shutdown`.
+
+### Processus de mise à l'eau
+Pour déployer KOSMOS en mer suivre le [guide de mise en service](https://kosmos.fish/index.php/deployer/).
