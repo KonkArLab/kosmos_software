@@ -229,7 +229,20 @@ Un fichier javascript vient lire le fichier kosmos_config.ini.
 Puis il va créer une liste avec les différents noms des paramètres écrits dans le fichier kosmos_config.ini. Les noms des paramètres seront associés à un label et les valeurs des paramètres seront associées à un input. Par défaut l'input est en "readonly" c'est à dire qu'il n'est pas modifiable. Pour pouvoir le modifier il faut appuyer sur le bouton `Modify` entrer la nouvelle valeur puis la sauvegarder avec `Save`. Une fois la valeur sauvegardée le fichier kosmos_config.ini se mettra à jour.  
 Il est également possible de modifier les paramètres directement dans le fichier kosmos_config.ini.
 
- - `00_SYSTEM_mode = 1` permet de permuter entre les modes de fonctionnement du KOSMOS, seul le mode STAVIRO [1] existe pour le moment.  
+ - `00_STAVIRO_MICADO = 1` permet de permuter entre les modes de fonctionnement du KOSMOS. `1` permet d'opter pour le mode STAVIRO, c'est-à-dire un fonctionnement de pose puis relevé rapide du système. `2` correspond au mode MICADO qui correspond à une version pose longue du système.
+ - `01_CAM_TIMELAPSE = 1` permet de permuter entre les modes vidéo ou photo. `1` génére des vidéos, `2` génèrera des photos prises en rafale.
+ - `02_TEMPS_ENRGISTREMENT = 1600` correspond au temps d'enregistement en secondes (typiquement 1600 secondes) des séquences vidéos/rafale de photos. Si le système doit filmer plus longtemps que ce temps d'enregistrement, la vidéo sera découpée en plusieurs séquences. Ceci permet d'éviter la perte de données si un arrêt brutal se produit.
+ - `03_TPS_FONCTIONNEMENT = 1800` règle le temps en secondes avant l'extinction automatique (mode STAVIRO) ou de la mise en veille (mode MICADO) du système.
+ - `04_TPS_VEILLE = 600` règle le temps de veille en mode MICADO. 
+
+ - `05_MOTEUR = 1` déclenche `1` ou non `0` le fonctionnement du moteur et donc de la rotation.
+
+ - `06_SHUTDOWN = 1`  permet d'éteindre ou non la Rpi lorsque le bouton arrêt est pressé. 
+    * si `0` lors du shutdown le programme s'arrête mais la Rpi reste allumée (utiliser ce réglage pour le debug ou le développement software)
+    * si `1` lors du shutdown le programme s'éteint (privilégier ce mode sur le terrain)
+ - `07_HYDROPHONE = 0` déclenche `1` ou non `0` le fonctionnement de l'hydrophone.
+ - `08_STEREO = 0`  déclenche `1` ou non `0` la capture STEREO. A noter que le mode `1` n'est opérationnel que si deux caméras identiques sont détectées.
+   
  - `01_SYSTEM_record_button_gpio = 17` adresse gpio du bouton début/arrêt de l'enregistrement 
  - `02_SYSTEM_stop_button_gpio = 23` adresse gpio du bouton d'arrêt du système
  - `03_SYSTEM_led_b = 4` adresse gpio de la LED verte
@@ -240,7 +253,17 @@ Il est également possible de modifier les paramètres directement dans le fichi
  - `06_SYSTEM_moteur = 1`  Active ou désactive le moteur
     * si `0` Moteur désactivé
     * si `1` Moteur activé
- - `07_SYSTEM_tps_fonctionnement = 1800` Règle le temps en secondes avant l'extinction automatique du système. Ce réglage permet d'éviter un déchargement complet des batteries ce qui les rendrait inutilisables.
+ - `07_SYSTEM_tps_fonctionnement = 1800` 
+
+
+ - `38_picam_timestamp = 0` incruste ou non une horloge dans l'image
+    * si `0` pas d'incrustation
+    * si `1` incrustation
+  
+*****************************************************
+
+
+   
 <br>
 
  - `10_MOTOR_esc_gpio = 22` adresse gpio de l'esc qui pilote le moteur (c'est un signal PWM)
@@ -270,9 +293,7 @@ Il est également possible de modifier les paramètres directement dans le fichi
     * si `0` ne convertit pas les fichiers vidéos en mp4 et les laisse en h264.
     * si `1` convertit les fichiers vidéos en mp4 et supprime les h264
  - `37_PICAM_awb = 0` permet de définir le mode de fonctionnement de l'Automatic White Balance (seul le mode 0 fonctionne pour le moment)
- - `38_PICAM_timestamp = 0` incruste ou non une horloge dans l'image
-    * si `0` pas d'incrustation
-    * si `1` incrustation
+
 
 
 
