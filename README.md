@@ -162,11 +162,11 @@ Si besoin, mettre également à jour l'`increment`.  Si c'est le premier usage d
 
  - Il peut arriver que la clé USB (si ce système de stockage est choisi), contienne déjà des vidéos ainsi qu'un fichier de configuration kosmos_config.ini. Nous recommandons de renommer ce dernier fichier (en kosmos_config_old.ini) pour éviter des bugs de compatibilité entre les versions du soft. Par ailleurs, il faudra veiller à ce que la clé propose assez de places pour accueillir les nouvelles vidéos. Typiquement prévoir 10Go par journée de campagne. 
   
- - Redémarrer maintenant la RPi. Si au démarrage, la led verte de la carte électronique clignote c'est que le système est opérationnel (cela peut prendre une trentaine de secondes). Si la clé était vierge, elle doit maintenant contenir un dossiers et un ficher texte (si aucune clé n'est branché, ces éléments sont dans `/home/kosmos/kosmos_local_sd`) :
+ - Redémarrer maintenant la RPi. Si au démarrage, la led verte de la carte électronique clignote c'est que le système est opérationnel (cela peut prendre une trentaine de secondes). Si la clé était vierge, elle doit maintenant contenir un dossier et un ficher texte (si aucune clé n'est branché, ces éléments sont dans `/home/kosmos/kosmos_local_sd`) :
 
 1. Le fichier kosmos_config.ini contient les paramètres de configuration du système. Ces paramètres seront visibles depuis l'interface web grâce à un ficher Javascript.
 
-2. Le dossier contenant les données associées à une journée de campagne s'appelle normalement `date_system`, typiquement `250403_KIMT`. Dans ce dossier, seront présents d'autres dossiers correspondant à chaque enregistrement (passage de l'état STANDBY à WORKING). Ils auront pour nom l'`increment`, typiquement `0054` 
+2. Le dossier contenant les données associées à une journée de campagne s'appelle normalement `date_system`, typiquement `250403_KIMT`. Dans ce dossier, seront présents d'autres dossiers correspondant à chaque enregistrement. Ils auront pour nom l'`increment`, typiquement `0054`.
 
 Chacun de ces dossiers contiennent une vidéo (voire deux si l'on filme en stéréo) et ses métadonnées. 
 - Le fichier vidéo `increment.mp4` (et éventuellement increment_STEREO.mp4 si la stéréo est activée)
@@ -176,6 +176,97 @@ Chacun de ces dossiers contiennent une vidéo (voire deux si l'on filme en stér
 - Un fichier `systemEvent.csv` qui stocke les évènements du sytème comme la rotation du moteur ou la mise à jour des gains de couleur AWB
 - Un fichier `increment.mp3` qui stocke l'enregistrement audio si l'hydrophone est activé.
 
+### Configuration du kosmos
+
+Il est possible de configurer le système KOSMOS grâce au fichier de configuration `kosmos_config.ini` contenu soit dans la clé USB, soit dans  `/home/kosmos/kosmos_local_sd` suivant qu'on choisisse l'un ou l'autre de ces solutions de stockage. 
+Ce fichier `kosmos_config.ini`est découpé en deux sections permettant de distinguer des paramètres que l'on peut changer durant la campagne soit lors d'un débug. Les premiers paramètres sont modifiables via l'interface web, tandis que les seconds doivent être modifiés directement dans le fichier `.ini`.
+
+#### Paramètres modifiables sur le terrain via l'interface Web (Onglet Configuration)
+
+ - `00_STAVIRO_MICADO = 1` permet de permuter entre les modes de fonctionnement du KOSMOS.
+   * `1` permet d'opter pour le mode STAVIRO, c'est-à-dire un fonctionnement de pose puis relevé rapide du système.
+   * `2` correspond au mode MICADO qui correspond à une version pose longue du système.
+ - `01_CAM_TIMELAPSE = 1` permet de permuter entre les modes vidéo ou photo.
+   * `1` génére des vidéos
+   * `2` génère des photos prises en rafale.
+ - `02_TEMPS_ENRGISTREMENT = 1600` correspond au temps d'enregistement en secondes (typiquement 1600 secondes) des séquences vidéos/rafale de photos. Si le système doit filmer plus longtemps que ce temps d'enregistrement, la vidéo sera découpée en plusieurs séquences. Ceci permet d'éviter la perte de données si un arrêt brutal se produit. 
+ - `03_TPS_FONCTIONNEMENT = 1800` règle le temps en secondes avant l'extinction automatique (mode STAVIRO) ou de la mise en veille (mode MICADO) du système.
+ - `04_TPS_VEILLE = 600` règle le temps de veille en mode MICADO. 
+
+<br>
+
+ - `05_MOTEUR = 1` déclenche `1` ou non `0` le fonctionnement du moteur et donc de la rotation.
+ - `06_SHUTDOWN = 1`  permet d'éteindre ou non la Rpi lorsque le bouton arrêt est pressé. 
+    * si `0` lors du shutdown le programme s'arrête mais la Rpi reste allumée (utiliser ce réglage pour le debug ou le développement software)
+    * si `1` lors du shutdown le programme s'éteint (privilégier ce mode sur le terrain)
+ - `07_HYDROPHONE = 0` déclenche `1` ou non `0` le fonctionnement de l'hydrophone.
+ - `08_STEREO = 0`  déclenche `1` ou non `0` la capture STEREO. A noter que le mode `1` n'est opérationnel que si deux caméras identiques sont détectées.
+ - `09_BUZZER = 0` déclenche `1` ou non `0` le buzzer (version 4).
+
+ - `38_picam_timestamp = 0` incruste ou non une horloge dans l'image
+    * si `0` pas d'incrustation
+    * si `1` incrustation
+ 
+  <br>
+  
+Pour le Kosmos V3, il est possible de régler les paramètres du moteur : 
+
+ - `13_MOTOR_vitesse_min = 1000` vitesse minimale du moteur utilisée lors de son armement (peut-être inutile...)
+ - `14_MOTOR_vitesse_favorite = 1350` vitesse nominale du moteur. A régler avant le départ en mission. Typiquement entre 1200 & 1600.
+ - `15_MOTOR_pause_time = 27`  temps de pause en secondes entre les rotations (typiquement 27 secondes pour le protocole STAVIRO)
+ - `16_MOTOR_inertie_time = 1000` temps en ms qui permet de décaler l'aimant d'asservissement du moteur suffisamment loin de l'ILS afin d'éviter son activation fortuite. A régler avant le départ en mission. Typiquement entre 500 et 2000.
+ - `17_MOTOR_timeout = 5` temps de sécurité en s d'arrêt du moteur s'il n'a pas détecté l'ILS d'asservissement. A régler avant le départ en mission. Typiquement entre 5 et 10.
+ - `18_motor_pressORrelease = 1`
+ - `19_motor_shift_time = 2000`
+
+Pour le KOSMOS V4, ces paramètres sont différents :
+- `10_motor_revolutions = 5`
+- `11_motor_vitesse = 50`
+- `12_motor_acceleration = 100`
+- `13_motor_pause_time = 30`
+- `14_motor_step_mode = 4`
+- `15_motor_i2c_communication_period = 1`
+
+#### Paramètres non modifiables sur le terrain
+
+Pour jouer sur ces paramètres, il faut donc ouvrir le fichier `kosmos_config.ini` et les modifier directement. Ceci dit, ces paramètres n'ont pas à être changés sauf modification hardware du système.
+Des paramètres sont communs aux version 3 et 4 :
+ - `33_PICAM_preview = 0` Affiche ce que voit la caméra pendant qu'elle enregistre
+    * si `0` pas d'aperçu (CHOISIR IMPERATIVEMENT CE MODE SUR LE TERRAIN)
+    * si `1` affiche un aperçu de ce qu'observe la caméra sur l'écran (utile pour le développement et le débug car ne fonctionne qu'avec un lancement de kosmos_main.py via la terminal)
+ - `34_PICAM_framerate = 24` nombre d'images enregistrées par seconde (typiquement 24)
+ - `36_PICAM_conversion_mp4 = 1`  
+    * si `0` ne convertit pas les fichiers vidéos en mp4 et les laisse en h264.
+    * si `1` convertit les fichiers vidéos en mp4 et supprime les h264
+ - `37_PICAM_awb = 2` permet de définir le mode de fonctionnement de l'Automatic White Balance (le mode `2` est préconisé)
+ 
+ - `20_CSV_step_time = 5` Temps d'échantillonnage en secondes des données CSV (heure, pression, T°)
+
+D'autres dépendent de la version du système. Pour la version 3, ces paramètres sont :
+ 
+ - `01_SYSTEM_record_button_gpio = 17` adresse gpio du bouton début/arrêt de l'enregistrement 
+ - `02_SYSTEM_stop_button_gpio = 23` adresse gpio du bouton d'arrêt du système
+ - `03_SYSTEM_led_b = 4` adresse gpio de la LED verte
+ - `04_SYSTEM_led_r = 18` adresse gpio de la LED rouge
+ - `10_MOTOR_esc_gpio = 22` adresse gpio de l'esc qui pilote le moteur (c'est un signal PWM)
+ - `11_MOTOR_power_gpio = 27` adresse gpio du relai qui alimente le moteur
+ - `12_MOTOR_button_gpio = 21` adresse gpio de l'ILS qui permet d'asservir la croix de Malte
+
+Pour la version 4 :
+
+- `01_system_record_button_gpio = 27` adresse gpio du bouton début/arrêt de l'enregistrement 
+- `02_system_stop_button_gpio = 13` adresse gpio du bouton d'arrêt du système
+- `03_system_led_b = 17` adresse gpio de la LED verte
+- `04_system_led_r = 6` adresse gpio de la LED rouge
+- `08_system_buzzer = 5` adresse gpio du buzzer
+- `09_system_wake_up_motor = 4` adresse gpio du moteur
+
+
+
+
+
+
+<!--
 ## Mode d'emploi
 
 ### Prise en main de l'Interface web
@@ -229,71 +320,11 @@ Un fichier javascript vient lire le fichier kosmos_config.ini.
 Puis il va créer une liste avec les différents noms des paramètres écrits dans le fichier kosmos_config.ini. Les noms des paramètres seront associés à un label et les valeurs des paramètres seront associées à un input. Par défaut l'input est en "readonly" c'est à dire qu'il n'est pas modifiable. Pour pouvoir le modifier il faut appuyer sur le bouton `Modify` entrer la nouvelle valeur puis la sauvegarder avec `Save`. Une fois la valeur sauvegardée le fichier kosmos_config.ini se mettra à jour.  
 Il est également possible de modifier les paramètres directement dans le fichier kosmos_config.ini.
 
- - `00_STAVIRO_MICADO = 1` permet de permuter entre les modes de fonctionnement du KOSMOS. `1` permet d'opter pour le mode STAVIRO, c'est-à-dire un fonctionnement de pose puis relevé rapide du système. `2` correspond au mode MICADO qui correspond à une version pose longue du système.
- - `01_CAM_TIMELAPSE = 1` permet de permuter entre les modes vidéo ou photo. `1` génére des vidéos, `2` génèrera des photos prises en rafale.
- - `02_TEMPS_ENRGISTREMENT = 1600` correspond au temps d'enregistement en secondes (typiquement 1600 secondes) des séquences vidéos/rafale de photos. Si le système doit filmer plus longtemps que ce temps d'enregistrement, la vidéo sera découpée en plusieurs séquences. Ceci permet d'éviter la perte de données si un arrêt brutal se produit.
- - `03_TPS_FONCTIONNEMENT = 1800` règle le temps en secondes avant l'extinction automatique (mode STAVIRO) ou de la mise en veille (mode MICADO) du système.
- - `04_TPS_VEILLE = 600` règle le temps de veille en mode MICADO. 
-
- - `05_MOTEUR = 1` déclenche `1` ou non `0` le fonctionnement du moteur et donc de la rotation.
-
- - `06_SHUTDOWN = 1`  permet d'éteindre ou non la Rpi lorsque le bouton arrêt est pressé. 
-    * si `0` lors du shutdown le programme s'arrête mais la Rpi reste allumée (utiliser ce réglage pour le debug ou le développement software)
-    * si `1` lors du shutdown le programme s'éteint (privilégier ce mode sur le terrain)
- - `07_HYDROPHONE = 0` déclenche `1` ou non `0` le fonctionnement de l'hydrophone.
- - `08_STEREO = 0`  déclenche `1` ou non `0` la capture STEREO. A noter que le mode `1` n'est opérationnel que si deux caméras identiques sont détectées.
-   
- - `01_SYSTEM_record_button_gpio = 17` adresse gpio du bouton début/arrêt de l'enregistrement 
- - `02_SYSTEM_stop_button_gpio = 23` adresse gpio du bouton d'arrêt du système
- - `03_SYSTEM_led_b = 4` adresse gpio de la LED verte
- - `04_SYSTEM_led_r = 18` adresse gpio de la LED rouge
- - `05_SYSTEM_shutdown = 1`  permet d'éteindre ou non la Rpi lorsque le bouton arrêt est pressé. 
-    * si `0` lors du shutdown le programme s'arrête mais la Rpi reste allumée (utiliser ce réglage pour le debug ou le développement software)
-    * si `1` lors du shutdown le programme s'éteint (privilégier ce mode sur le terrain)
- - `06_SYSTEM_moteur = 1`  Active ou désactive le moteur
-    * si `0` Moteur désactivé
-    * si `1` Moteur activé
- - `07_SYSTEM_tps_fonctionnement = 1800` 
 
 
- - `38_picam_timestamp = 0` incruste ou non une horloge dans l'image
-    * si `0` pas d'incrustation
-    * si `1` incrustation
-  
-*****************************************************
 
-
-   
-<br>
-
- - `10_MOTOR_esc_gpio = 22` adresse gpio de l'esc qui pilote le moteur (c'est un signal PWM)
- - `11_MOTOR_power_gpio = 27` adresse gpio du relai qui alimente le moteur
- - `12_MOTOR_button_gpio = 21` adresse gpio de l'ILS qui permet d'asservir la croix de Malte
- - `13_MOTOR_vitesse_min = 1000` vitesse minimale du moteur utilisée lors de son armement (peut-être inutile...)
- - `14_MOTOR_vitesse_favorite = 1350` vitesse nominale du moteur. A régler avant le départ en mission. Typiquement entre 1200 & 1600.
- - `15_MOTOR_pause_time = 27`  temps de pause en secondes entre les rotations (typiquement 27 secondes pour le protocole STAVIRO)
- - `16_MOTOR_inertie_time = 1000` temps en ms qui permet de décaler l'aimant d'asservissement du moteur suffisamment loin de l'ILS afin d'éviter son activation fortuite. A régler avant le départ en mission. Typiquement entre 500 et 2000.
- - `17_MOTOR_timeout = 5` temps de sécurité en s d'arrêt du moteur s'il n'a pas détecté l'ILS d'asservissement. A régler avant le départ en mission. Typiquement entre 5 et 10.
-
-<br>
-
- - `20_CSV_step_time = 5` Temps d'échantillonnage en secondes des données CSV (heure, pression, T°)
- - `21_CSV_file_name = CSV_Kosmos2` début du nom des fichiers csv
-<br>
-
- - `30_PICAM_file_name = Video_Kosmos2` début du nom des fichiers vidéos
- - `31_PICAM_resolution_x = 1920` résolution de l'image selon l'axe des x (typiquement 1920)
- - `32_PICAM_resolution_y = 1080` résolution de l'image selon l'axe des y (typiquement 1080)
- - `33_PICAM_preview = 0` Affiche ce que voit la caméra pendant qu'elle enregistre
-    * si `0` pas d'aperçu (CHOISIR IMPERATIVEMENT CE MODE SUR LE TERRAIN)
-    * si `1` affiche un aperçu de ce qu'observe la caméra sur l'écran (utile pour le développement et le débug car ne fonctionne qu'avec un lancement de kosmos_main.py via la terminal)
- - `34_PICAM_framerate = 24` nombre d'images enregistrées par seconde (typiquement 24)
- - `35_PICAM_record_time = 1600` temps d'enregistement en secondes (typiquement 1600 secondes) des séquences vidéos. Si le système doit filmer plus longtemps que ce temps d'enregistrement, la vidéo sera découpée en plusieurs séquences. Ceci permet d'éviter la perte de données si un arrêt brutal se produit.
- - `36_PICAM_conversion_mp4 = 1`  
-    * si `0` ne convertit pas les fichiers vidéos en mp4 et les laisse en h264.
-    * si `1` convertit les fichiers vidéos en mp4 et supprime les h264
- - `37_PICAM_awb = 0` permet de définir le mode de fonctionnement de l'Automatic White Balance (seul le mode 0 fonctionne pour le moment)
-
+D'autres paramètres sont réglables mais non accessibles via l'interface web. Il faut aller directement aller les changer dans le fichier kosmos_config.ini
+ 
 
 
 
@@ -308,3 +339,4 @@ Il est également possible de modifier les paramètres directement dans le fichi
 
 ### Processus de mise à l'eau
 Pour déployer KOSMOS en mer suivre le [guide de mise en service](https://kosmos.fish/index.php/deployer/).
+-->
