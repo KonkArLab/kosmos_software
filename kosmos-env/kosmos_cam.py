@@ -369,12 +369,14 @@ class KosmosCam(Thread):
                         magneto_x = ""
                         magneto_y = ""
                         magneto_z = ""
+                        compass = ""
                         if self._magneto_sensor_ok:
                             try:
-                                x,y,z = self.magneto_sensor.read()
+                                x,y,z,c = self.magneto_sensor.read()
                                 magneto_x = f"{x:.2f}"
                                 magneto_y = f"{y:.2f}"
                                 magneto_z = f"{z:.2f}"
+                                compass = f"{c:.0f}"
                             except:
                                 logging.debug("Erreur de récupération des données magneto")
     
@@ -458,7 +460,7 @@ class KosmosCam(Thread):
             infoStationDict["video"]["stationDict"]["increment"] = f'{self._Conf.system.getint(INCREMENT_SECTION,"increment")-1:04}'
             
             # On sauvegarde date et heure venant de l'OS, même si on conservera aussi date et heure provenant du smartphone
-            infoStationDict["video"]["hourDict"]["ymdOS"] = self._Conf.get_date_d()+"/"+self._Conf.get_date_m()+"/"+self._Conf.get_date_Y()
+            infoStationDict["video"]["hourDict"]["ymdOS"] = "20"+self._Conf.get_date_Y()+"-"+self._Conf.get_date_m()+"-"+self._Conf.get_date_d()
             infoStationDict["video"]["hourDict"]["HMSOS"] = self._Conf.get_date_H()+":"+self._Conf.get_date_M()+":"+self._Conf.get_date_S()
                  
             # From sensors
@@ -475,11 +477,10 @@ class KosmosCam(Thread):
             try:
                 ma = self.PT()
                 depth = (ma[0]-ma[1])/(1029*9.80665)
-                infoStationDict["video"]["ctdDict"]["depth"] = depth
+                infoStationDict["video"]["ctdDict"]["depth"] = int(depth*100)/100
                 infoStationDict["video"]["ctdDict"]["temperature"] = ma[2]
                 infoStationDict["video"]["meteoAirDict"]["atmPress"] = ma[1]
                 infoStationDict["video"]["meteoAirDict"]["tempAir"] = ma[3]
-                #print(depth, ma[2],ma[1],ma[3])
             except:
                 infoStationDict["video"]["ctdDict"]["depth"] = None
                 infoStationDict["video"]["ctdDict"]["temperature"] = None
@@ -502,12 +503,12 @@ class KosmosCam(Thread):
                 y = np.array(columns['TempC'])#, dtype=float)
                 a = pd.to_numeric(x,errors='coerce')
                 b = pd.to_numeric(x,errors='coerce')
-                Pfond = np.nanmax(x)
-                Psurf = np.nanmin(x)
-                IndFond = np.argnanmax(x)
-                IndSurf = np.argnanmin(x)
-                Tfond = y[IndFond]
-                Tsurf = y[IndSurf]
+                Pfond = np.nanmax(a)
+                Psurf = np.nanmin(a)
+                IndFond = np.nanargmax(a)
+                IndSurf = np.nanargmin(a)
+                Tfond = np.float64(y[IndFond])
+                Tsurf = np.float64(y[IndSurf])
                 ma = Pfond,Psurf,Tfond,Tsurf
         except:
             ma = None, None, None, None

@@ -70,7 +70,7 @@ class KosmosConfig:
             logging.info("Absence de clé usb ou clé usb fantome -> Ecriture en Local")
             subprocess.run(["sudo", "mkdir", "-p", ROOT_PATH + "kosmos_local_sd"])
             USB_INSIDE_PATH = ROOT_PATH + "kosmos_local_sd/"
-            subprocess.run(["sudo", "chown", os.listdir("/home")[0]+":"+os.listdir("/home")[0] , ROOT_PATH+"kosmos_local_sd"])
+            subprocess.run(["sudo", "chown", "-R", os.listdir("/home")[0]+":"+os.listdir("/home")[0] , ROOT_PATH+"kosmos_local_sd"])
 
             
         if self.systemVersion == "3.0":

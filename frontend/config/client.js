@@ -54,7 +54,14 @@ async function fetchConfig() {
       const rebootButton = document.createElement("button");
       rebootButton.setAttribute("id", "rebootButton");
       rebootButton.setAttribute("type", "button");
-      rebootButton.textContent = "Reboot";
+      rebootButton.textContent = "Reboot"; 
+      const response = await fetch(serverUrl + "/state");
+      const body = await response.json();
+      if (body.state.substr(body.state.length-7) === "STANDBY") {
+         rebootButton.disabled = false;
+      } else {
+        rebootButton.disabled = true; 
+      }
       buttonDiv.appendChild(rebootButton)
       configContainer.appendChild(buttonDiv);
     } else {
@@ -78,7 +85,7 @@ fetchConfig();
 
 // Function to update the configuration on the server
 async function updateConfigOnServer(updatedConfig) {
-  try {
+  try { 
     const response = await fetch(serverUrl + "/changeConfig", {
       method: "POST",
       headers: {

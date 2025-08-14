@@ -19,8 +19,8 @@ label {
 }
 
 button {
-  font-size: var(--font-size-small);
-  width: var(--element-size-large);
+  font-size: var(--font-size-xsmall);
+  width: 15%;
   padding: var(--padding-space-xsmall) var(--padding-space-xsmall);
   line-height: var(--line-space-xsmall);
   display: inline-block;
@@ -43,7 +43,7 @@ h4{
   margin: var(--margin-space-xsmall);
   vertical-align: middle;
   line-height: var(--line-space-xsmall);
-
+  font-size: var(--font-size-small);
 }
 
 #configTitle {

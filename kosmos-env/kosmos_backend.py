@@ -94,12 +94,9 @@ class Server:
     def magneto(self):
         try:
             #if self.myMain.thread_camera.magneto_sensor.read():
-            x, y, z = self.myMain.thread_camera.magneto_sensor.read()
-            magneto_x = f"{x:.2f}"
-            magneto_y = f"{y:.2f}"
-            magneto_z = f"{z:.2f}"
-            MAGNETO = magneto_x + ' ' + magneto_y + ' ' + magneto_z
-            #print('toto')
+            x, y, z, c = self.myMain.thread_camera.magneto_sensor.read()
+            magneto_compass = f"{c:.0f}"
+            MAGNETO = magneto_compass + ' deg'
         except:
             MAGNETO = "ERR"
         return{

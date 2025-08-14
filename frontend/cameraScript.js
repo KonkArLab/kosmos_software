@@ -17,6 +17,8 @@ const shutdownButton = document.getElementById("shutdown");
 stopButton.disabled = true;
 stopLiveButton.disabled = true;
 shutdownButton.disabled = false;
+startButton.disabled = false;
+startLiveButton.disabled = false;
 
 majStateButton();
 
@@ -69,11 +71,11 @@ async function stop() {
     const response = await fetch(serverUrl + "/stop");
     const body = await response.json();
     /////////////
-    //localStorage.setItem("metaData", JSON.stringify(body.metadata));
+    localStorage.setItem("metaData", JSON.stringify(body.metadata));
     //window.location.href = "./metadata/metadata.html";
     //localStorage.setItem("metaData", JSON.stringify(body.metadata));
-    //console.log("toto")
-    //submitForm()
+    console.log("toto")
+    submitForm()
   } catch (error) {
     console.error("Error stopping the camera:", error);
   } finally {

@@ -280,25 +280,29 @@ function submitForm() {//event) {
 
   //event.preventDefault();
   
-  // Chargement des Metadata déjà présentes
+  //Chargement des Metadata déjà présentes
+  //const MetaData = JSON.parse(localStorage.getItem("metaData"));
+  //dataFinal.video = MetaData.video;
+
+  const metaDataFromStorage = loadMetaData();
+  dataFinal["system"] = metaDataFromStorage.system;
+  dataFinal.campaign = JSON.parse(localStorage.getItem("campaignData"));
   const MetaData = JSON.parse(localStorage.getItem("metaData"));
   dataFinal.video = MetaData.video;
-
+  
   // Modification des Metadata grâce à l'appliWeb 
   dataFinal.video.stationDict.codestation = document.getElementById('codestation')?.value;
-
-  let time = document.getElementById('hour')?.value;
-  if (time) {
-    dataFinal.video.hourDict.hour = parseInt(time.substr(0,2));
-    dataFinal.video.hourDict.minute =  parseInt(time.substr(3,2));
-    dataFinal.video.hourDict.second =  0;
-  }
   
-  dataFinal.video.gpsDict.site = document.getElementById('site')?.value || null;
-  dataFinal.video.gpsDict.latitude = parseFloat(document.getElementById('latitude')?.value);
-  dataFinal.video.gpsDict.longitude = parseFloat(document.getElementById('longitude')?.value);
+  const now = new Date().toTimeString().split(" ")[0];
+  dataFinal.video.hourDict.hour = now.split(":")[0]
+  dataFinal.video.hourDict.minute =  now.split(":")[1];
+  dataFinal.video.hourDict.second =  now.split(":")[2];
   
-  dataFinal.video.ctdDict.depth = parseFloat(document.getElementById('depth')?.value);
+  //dataFinal.video.gpsDict.site = document.getElementById('site')?.value || null;
+  //dataFinal.video.gpsDict.latitude = parseFloat(document.getElementById('latitude')?.value);
+  //dataFinal.video.gpsDict.longitude = parseFloat(document.getElementById('longitude')?.value);
+  
+  //dataFinal.video.ctdDict.depth = parseFloat(document.getElementById('depth')?.value);
   
   dataFinal.video.astroDict.moon = document.getElementById('moon')?.value || null;
   dataFinal.video.astroDict.tide = document.getElementById('tide')?.value || null;
@@ -312,6 +316,7 @@ function submitForm() {//event) {
   dataFinal.video.meteoMerDict.swell = parseInt(document.getElementById('swell')?.value);
 
   sendToBack(dataFinal);
+  
   // Erreur si longitude et latitude non renseignées
   /*
   if ((isNaN(dataFinal.video.gpsDict.latitude) || isNaN(dataFinal.video.gpsDict.longitude)) || 
@@ -339,6 +344,7 @@ async function sendToBack(data) {
       },
       body: JSON.stringify(data),
     });
+    /*
     if (response.ok) {
       Swal.fire({
         title: 'Success',
@@ -357,6 +363,7 @@ async function sendToBack(data) {
       });
       return;
     }
+    */
   } catch (e) {
     Swal.fire({
       title: 'Error',
@@ -366,6 +373,7 @@ async function sendToBack(data) {
     });
     return;
   }
+  
 }
 
 //document.addEventListener("DOMContentLoaded", generateTable);

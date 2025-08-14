@@ -56,8 +56,7 @@ class kosmosMotor(Thread):
         # en s
         self.step_mode = aConf.config.getint(CONFIG_SECTION, "14_MOTOR_step_mode")
         # 1 pour full_step, 2 pour 1/2 microstep, 4 pour 1/4 microstep, 16 pour 1/16 microstep etc
-        self.i2c_period = aConf.config.getint(CONFIG_SECTION, "15_MOTOR_i2c_communication_period")
-        # en s
+        self.i2c_period = 1 # en s
 
     def power_on(self):
         # déclencher une interruption pour réveiller l'arduino si elle est en mode deep sleep

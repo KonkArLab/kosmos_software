@@ -23,7 +23,7 @@
 
 /* Global input styling */
 input {
-  width: 70%; /* Inputs take full width of their container */
+  width: 65%; /* Inputs take full width of their container */
   padding: var(--padding-space-xsmall); /* Add small padding inside the input */
   border-width: var(--border-thin); /* Thin border around the input */
   border-radius: var(--border-thick); /* Rounded corners for inputs */

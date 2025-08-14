@@ -29,6 +29,7 @@ class magnetoSensor:
             gX = geomagnetic[0]
             gY = geomagnetic[1]
             gZ = geomagnetic[2]
-            return gX, gY, gZ
+            compass = self.sensor.get_compass_degree()
+            return gX, gY, gZ, compass
         except:
             return
