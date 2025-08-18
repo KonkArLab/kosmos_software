@@ -62,17 +62,23 @@ class KosmosConfig:
 
         # Init clé usb ou carte sd
         USB_ROOT_PATH = "/media/"+(os.listdir("/home")[0])
-        if len(os.listdir(USB_ROOT_PATH)) == 1:
-            logging.info("Présence d'une seule clé usb")
-            USB_NAME = os.listdir(USB_ROOT_PATH)[0]
-            USB_INSIDE_PATH = USB_ROOT_PATH+"/"+USB_NAME+"/"
-        else :
+        try:            
+            if len(os.listdir(USB_ROOT_PATH)) == 1 :
+                logging.info("Présence d'une seule clé usb")
+                USB_NAME = os.listdir(USB_ROOT_PATH)[0]
+                USB_INSIDE_PATH = USB_ROOT_PATH+"/"+USB_NAME+"/"
+                self.sauvegarde = "sur la clé usb"
+            else:
+                raise ValueError('toto')
+        except:
             logging.info("Absence de clé usb ou clé usb fantome -> Ecriture en Local")
             subprocess.run(["sudo", "mkdir", "-p", ROOT_PATH + "kosmos_local_sd"])
             USB_INSIDE_PATH = ROOT_PATH + "kosmos_local_sd/"
             subprocess.run(["sudo", "chown", "-R", os.listdir("/home")[0]+":"+os.listdir("/home")[0] , ROOT_PATH+"kosmos_local_sd"])
-
+            self.sauvegarde = "en local"
             
+        
+        
         if self.systemVersion == "3.0":
             subprocess.run(["sudo", "cp", "-n", GIT_PATH+CONF_FILE_TEMPLATE_V3,USB_INSIDE_PATH+CONF_FILE])
             logging.info("Version 3.0")

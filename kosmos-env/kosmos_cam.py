@@ -80,7 +80,7 @@ class KosmosCam(Thread):
             #algo["sensitivity_r"] = 1.05
         elif self._CAM1_SENSOR == 'imx477':
             self._X_RESOLUTION = 2028
-            self._Y_RESOLUTION = 1080#1520
+            self._Y_RESOLUTION = 1080#1520 impossible 
             #tuning = Picamera2.load_tuning_file("imx477.json")          
         elif self._CAM1_SENSOR == 'ov5647':
             self._X_RESOLUTION = 1920
@@ -181,7 +181,6 @@ class KosmosCam(Thread):
         except Exception as e:
             logging.error("Erreur d'initialisation du magnetomètre")
         
-    
         # Definition Thread Hydrophone
         self.PRESENCE_HYDRO = self._Conf.config.getint(CONFIG_SECTION,"07_HYDROPHONE") # Fonctionnement hydrophone si 1
         if self.PRESENCE_HYDRO==1:
@@ -205,18 +204,21 @@ class KosmosCam(Thread):
         if self._CONVERSION == 1:
             #Conversion h264 vers mp4 puis effacement du .h264
             wav_file = os.path.splitext(input_file)[0] + '.wav'
+            #output_file2 = os.path.splitext(input_file)[0] + '_avecson.mp4'
             output_file = os.path.splitext(input_file)[0] + '.mp4'
-            
+
             try:
                 if self.PRESENCE_HYDRO == 1 and self._Conf.get_RPi_model().split(' ')[2] == '4':
-                    #subprocess.run(['sudo', 'ffmpeg', '-probesize','2G','-r', str(self._FRAMERATE), '-i', input_file, '-c', 'copy', output_file, '-loglevel', 'warning'])
-                    # décommenter ci dessous sin on veut merger son vidéo
-                    subprocess.run(['sudo', 'ffmpeg', '-probesize','2G','-r', str(self._FRAMERATE), '-i', input_file, '-i', wav_file, '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k', output_file, '-loglevel', 'warning'])
+                    # On ne merge pas avec le son tant que je n'ai pas réglé les problèmes de synchronisation
+                    #subprocess.run(['sudo', 'ffmpeg', '-probesize','2G','-r', str(self._FRAMERATE), '-i', input_file, '-i', wav_file, '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k', output_file2, '-loglevel', 'warning'])
+                    # Code sans synchronisation audio
+                    subprocess.run(['sudo', 'ffmpeg', '-probesize','2G','-r', str(self._FRAMERATE), '-i', input_file, '-c', 'copy', output_file, '-loglevel', 'warning'])
                 else:
                     subprocess.run(['sudo', 'ffmpeg', '-probesize','2G','-r', str(self._FRAMERATE), '-i', input_file, '-c', 'copy', output_file, '-loglevel', 'warning'])
                 logging.info("Conversion video 1 successful !")
                 os.remove(input_file)
                 logging.debug(f"Deleted input H.264 file: {input_file}")                
+                
                 # Ajouter la métadonnée personnalisée
                 #custom_value = "KOSMOS_TEST"  # Test 
                 #self.add_metadata(output_file, custom_value)
@@ -308,7 +310,17 @@ class KosmosCam(Thread):
                 # Bloc d'enregistrement/encodage à proprement parler
                 event_line = self._Conf.get_date_HMS()  + ";START ENCODER;" + self._output
                 self._Conf.add_line(EVENT_FILE,event_line)
+                
+                if self.PRESENCE_HYDRO == 1:
+                    start_event = Event()
+                    self.thread_hydrophone.set_start_event(start_event)
+                    self.thread_hydrophone.restart()
+                    
                 self._camera.start_encoder(self._encoder,self._output,pts = self._file_name+'.txt')
+
+                if self.PRESENCE_HYDRO == 1:
+                    start_event.set()
+
                 if self.STEREO:
                     self._camera2.start_encoder(self._encoder2,self._output2,pts = self._file_name+'_stereo.txt')
                 
@@ -408,14 +420,15 @@ class KosmosCam(Thread):
                             time.sleep(paas)
                     else: # Ajustement auto ou fixé, càd self._AWB = 0 ou 1               
                         time.sleep(paas)
-                                        
+                
+                if self.PRESENCE_HYDRO == 1:
+                   self.thread_hydrophone.pause()
+                   time.sleep(0.1)  # To modify 
+                   self.thread_hydrophone.save_audio(self._file_name + '.wav')
                 # Fin de l'encodage
                 self._camera.stop_encoder()
                 if self.STEREO:
                     self._camera2.stop_encoder()
-                if self.PRESENCE_HYDRO == 1:
-                    self.thread_hydrophone.pause()
-                    self.thread_hydrophone.save_audio(self._file_name + '.wav')
                 
                 
                 event_line = self._Conf.get_date_HMS() + ";END ENCODER;" + self._output
@@ -503,13 +516,16 @@ class KosmosCam(Thread):
                 y = np.array(columns['TempC'])#, dtype=float)
                 a = pd.to_numeric(x,errors='coerce')
                 b = pd.to_numeric(x,errors='coerce')
-                Pfond = np.nanmax(a)
-                Psurf = np.nanmin(a)
-                IndFond = np.nanargmax(a)
-                IndSurf = np.nanargmin(a)
-                Tfond = np.float64(y[IndFond])
-                Tsurf = np.float64(y[IndSurf])
-                ma = Pfond,Psurf,Tfond,Tsurf
+                if any(~np.isnan(a)):
+                    Pfond = np.nanmax(a)
+                    Psurf = np.nanmin(a)
+                    IndFond = np.nanargmax(a)
+                    IndSurf = np.nanargmin(a)
+                    Tfond = np.float64(y[IndFond])
+                    Tsurf = np.float64(y[IndSurf])
+                    ma = Pfond,Psurf,Tfond,Tsurf
+                else:
+                    ma = None, None, None, None
         except:
             ma = None, None, None, None
         return ma 
@@ -601,7 +617,6 @@ class KosmosCam(Thread):
         #    self.thread_hydrophone.stop_thread()   
         #    if self.thread_hydrophone.is_alive():
         #        self.thread_hydrophone.join() 
-        
         
         """Arrêt définitif de la caméra"""
         self._end = True

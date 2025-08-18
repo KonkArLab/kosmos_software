@@ -31,11 +31,9 @@ class Server:
         self.app.add_url_rule("/changeConfig", view_func=self.changeConfig,methods=['POST'])
         self.app.add_url_rule("/getConfig", view_func=self.getConfig)
         self.app.add_url_rule("/frame", view_func=self.image)
-        self.app.add_url_rule("/gps", view_func=self.position)
-        self.app.add_url_rule("/tp", view_func=self.TP)
-        self.app.add_url_rule("/rgb", view_func=self.RGB)
-        self.app.add_url_rule("/magneto", view_func=self.magneto)
         self.app.add_url_rule("/updateMetadata",view_func=self.update_metadata, methods=['POST']) 
+        self.app.add_url_rule("/sensors", view_func=self.sensors)
+        self.app.add_url_rule("/save", view_func=self.save)
 
 
     def run(self) :
@@ -48,20 +46,20 @@ class Server:
             "state" : self.myMain._conf.systemName + " state is " + str(self.myMain.state).split('.')[1]
         }
     
-    def position(self):
+    def save(self):
+        return {
+            "status" : "ok",
+            "save" : "Stockage des vidéos " + self.myMain._conf.sauvegarde 
+        }
+    
+    def sensors(self):
         try:
             LAT = str(self.myMain.thread_camera.gps.get_latitude())
             LONG = str(self.myMain.thread_camera.gps.get_longitude())
         except:
             LAT = "ERR"
             LONG = "ERR"
-        return{
-            "status" : "ok",
-            "latitude" : LAT,
-            "longitude" : LONG
-        }
-    
-    def TP(self):
+        '''
         try:
             if self.myMain.thread_camera.pressure_sensor.read():
                 press = self.myMain.thread_camera.pressure_sensor.pressure()
@@ -71,13 +69,6 @@ class Server:
         except:
             PRESSURE = "ERR"
             TEMPERATURE = "ERR"
-        return{
-            "status" : "ok",
-            "pression" : PRESSURE,
-            "temperature" : TEMPERATURE
-        }
-
-    def RGB(self):
         try:
             r, g, b = self.myMain.thread_camera.light_sensor.read()
             lux_r = f"{r}"
@@ -86,12 +77,6 @@ class Server:
             LUX = lux_r + ' ' + lux_b + ' ' + lux_b
         except:
             LUX = "ERR"
-        return{
-            "status" : "ok",
-            "RGB" : LUX
-        }
-    
-    def magneto(self):
         try:
             #if self.myMain.thread_camera.magneto_sensor.read():
             x, y, z, c = self.myMain.thread_camera.magneto_sensor.read()
@@ -99,11 +84,17 @@ class Server:
             MAGNETO = magneto_compass + ' deg'
         except:
             MAGNETO = "ERR"
+        '''
         return{
             "status" : "ok",
-            "magneto" : MAGNETO
-        }
-      
+            "latitude" : LAT,
+            "longitude" : LONG,
+            #"pression" : PRESSURE,
+            #"temperature" : TEMPERATURE,
+            #"magneto" : MAGNETO,
+            #"RGB" : LUX
+        }    
+        
     def start(self):
         if(self.myMain.state==KState.STANDBY):   
             self.myMain.record_event.set() 
