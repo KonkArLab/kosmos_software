@@ -101,8 +101,7 @@ WAKE_ON_GPIO=0
 - Sauvegarder les modifications en appuyant sur `Ctrl + Shift + o`
 - Quitter le fichier en appuyant sur `Ctrl + Shift + x`
 
-### Activation du port Serial pour le GPS
-#### [Rpi4 seulement]
+### [Rpi4 seulement] Configuration de la RPi pour l'utilisation des ports RX TX pour le GPS
 Modification du fichier config.txt
 
 - Dans un terminal taper la commande suivante pour ouvrir le fichier config.txt:
@@ -118,7 +117,7 @@ dtoverlay=disable-bt
 - Sauvegarder les modifications en appuyant sur `Ctrl + Shift + o`
 - Quitter le fichier en appuyant sur `Ctrl + Shift + x`
 
-#### [Rpi5 & Rpi4]
+### Activation des ports Serial et du VNC
 
 - Aller dans le menu principal (icone avec la framboise en haut à gauche de l'écran)
 - Cliquer sur `Préférence` puis `Configuration du Raspberry Pi`
