@@ -149,7 +149,7 @@ Si des questions apparaissent  dans le terminal:
 
 > Souhaitez-vous continuer ?[O/n]
 
-Taper `0` et appuyer sur `Entrée` pour finir l'exécution
+Taper `O` et appuyer sur `Entrée` pour finir l'exécution
 
 
 ### Mise-à-jour du fichier kosmos_system.ini
