@@ -34,7 +34,7 @@ sudo python3 kosmos_main.py" >> lancement_kosmos.sh
 #Rendre le lancement.sh executable
 sudo chmod 755 lancement_kosmos.sh
 
-#Activation de i2c (capteur pression température) et du vnc (communication)
+#Activation de i2c (capteurs), serial (GPS) et du vnc (communication)
 sudo raspi-config nonint do_i2c 0
 sudo raspi-config nonint do_vnc 0
 sudo raspi-config nonint do_serial_hw 0
@@ -43,7 +43,7 @@ sudo raspi-config nonint do_serial_cons 1
 
 #Ajout de la ligne de commande dans crontab qui permet le lancement au demarrage et création d'un dossier log
 mkdir -p /home/$USER/logfile_kosmos
-(sudo crontab -l; echo @reboot sudo bash -c '/home/kosmos/lancement_kosmos.sh >> "/home/kosmos/logfile_kosmos/$(date +\%Y-\%m-\%d_\%Hh\%Mm\%Ss).log" 2>&1';) | uniq - | sudo crontab
+(sudo crontab -l; echo @reboot sudo bash -c '/home/'"$USER"'/lancement_kosmos.sh >> "/home/'"$USER"'/logfile_kosmos/$(date +\%Y-\%m-\%d_\%Hh\%Mm\%Ss).log" 2>&1';) | uniq - | sudo crontab
 sudo crontab -l
 
 exit 0
