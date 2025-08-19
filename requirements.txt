@@ -3,5 +3,5 @@ python3-smbus2
 python3-flask-cors
 python3-pandas
 libimage-exiftool-perl
-
+python3-pyaudio
 
