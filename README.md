@@ -117,6 +117,8 @@ dtoverlay=disable-bt
 - Sauvegarder les modifications en appuyant sur `Ctrl + Shift + o`
 - Quitter le fichier en appuyant sur `Ctrl + Shift + x`
 
+
+<!--
 ### Activation des ports Serial et du VNC
 
 - Aller dans le menu principal (icone avec la framboise en haut à gauche de l'écran)
@@ -126,6 +128,8 @@ dtoverlay=disable-bt
 - Passer le `Port serial` à `Enable`
 - Passer le `Serial Console` à `Disable`
 - Redémarrer enfin la Rpi.
+-->
+
 
 ### Importation du dossier software
 Dans un terminal taper les commandes suivantes:  
@@ -140,11 +144,13 @@ git checkout dev_stereo_merge_imt
 sudo chmod 755 install.sh		//Rend exécutable le fichier install.sh
 source install.sh				//Lance le fichier install.sh
 ```  
-<br>
-Une question apparaît dans le terminal:  
 
-> Souhaitez-vous continuer ?[O/n]  
-> - Appuyer sur `Entrée` pour continuer et finir l'exécution de la commande précédente
+Si des questions apparaissent  dans le terminal:  
+
+> Souhaitez-vous continuer ?[O/n]
+
+Taper `0` et appuyer sur `Entrée` pour finir l'exécution
+
 
 ### Mise-à-jour du fichier kosmos_system.ini
 Ouvrir le fichier `kosmos_system.ini` qui se trouve au même niveau que le dossier `kosmos_software`.
