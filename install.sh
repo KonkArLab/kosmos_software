@@ -37,8 +37,8 @@ sudo chmod 755 lancement_kosmos.sh
 #Activation de i2c (capteur pression température) et du vnc (communication)
 sudo raspi-config nonint do_i2c 0
 sudo raspi-config nonint do_vnc 0
-#[RPI5] sudo raspi-config nonint do_serial_hw 0
-#[RPI5] sudo raspi-config nonint do_serial_cons 0
+sudo raspi-config nonint do_serial_hw 0
+sudo raspi-config nonint do_serial_cons 1
 
 
 #Ajout de la ligne de commande dans crontab qui permet le lancement au demarrage et création d'un dossier log
