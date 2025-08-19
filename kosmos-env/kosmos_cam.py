@@ -307,25 +307,23 @@ class KosmosCam(Thread):
                         self._camera2.stop_preview() #éteint le Preview.NULL
                         self._camera2.start_preview(Preview.QTGL, x=100+X_preview,y=300,width=X_preview,height=Y_preview)    
                 
-                # Bloc d'enregistrement/encodage à proprement parler
-                event_line = self._Conf.get_date_HMS()  + ";START ENCODER;" + self._output
-                self._Conf.add_line(EVENT_FILE,event_line)
-                
+                # Préparation Hydrophone
                 if self.PRESENCE_HYDRO == 1:
                     start_event = Event()
                     self.thread_hydrophone.set_start_event(start_event)
                     self.thread_hydrophone.restart()
-                    
+                
+                # Bloc d'enregistrement/encodage à proprement parler
+                event_line = self._Conf.get_date_HMS()  + ";START ENCODER;" + self._output
+                self._Conf.add_line(EVENT_FILE,event_line)
+                   
                 self._camera.start_encoder(self._encoder,self._output,pts = self._file_name+'.txt')
-
-                if self.PRESENCE_HYDRO == 1:
-                    start_event.set()
-
                 if self.STEREO:
                     self._camera2.start_encoder(self._encoder2,self._output2,pts = self._file_name+'_stereo.txt')
                 
                 if self.PRESENCE_HYDRO == 1:
-                    self.thread_hydrophone.restart()
+                    start_event.set()
+                    #self.thread_hydrophone.restart()
                 
                 #Création CSV
                 ligne = "HMS;Lat;Long;Pression;TempC;RLux;GLux;BLux;XMagneto;YMagneto;ZMagneto;TempCPU;Delta(s);TStamp;ExpTime;AnG;DiG;Lux;RedG;BlueG;Bright"
@@ -423,13 +421,13 @@ class KosmosCam(Thread):
                 
                 if self.PRESENCE_HYDRO == 1:
                    self.thread_hydrophone.pause()
-                   time.sleep(0.1)  # To modify 
+                   time.sleep(0.01)  # To modify 
                    self.thread_hydrophone.save_audio(self._file_name + '.wav')
+                
                 # Fin de l'encodage
                 self._camera.stop_encoder()
                 if self.STEREO:
                     self._camera2.stop_encoder()
-                
                 
                 event_line = self._Conf.get_date_HMS() + ";END ENCODER;" + self._output
                 self._Conf.add_line(EVENT_FILE,event_line)

@@ -33,6 +33,7 @@ async function majStateButton() {
       shutdownButton.disabled = true;
     } else {
       resetButtonState()
+      console.log('tutu')
     }
   } finally {}
 }
@@ -74,7 +75,6 @@ async function stop() {
     localStorage.setItem("metaData", JSON.stringify(body.metadata));
     //window.location.href = "./metadata/metadata.html";
     //localStorage.setItem("metaData", JSON.stringify(body.metadata));
-    console.log("toto")
     submitForm()
   } catch (error) {
     console.error("Error stopping the camera:", error);
@@ -98,6 +98,8 @@ async function shutdown() {
   } finally {
     // Enable shutdown only after shutdown completes
     shutdownButton.disabled = false;
+    startButton.disabled = false;
+    startLiveButton.disabled = false;
   }
 }
 
