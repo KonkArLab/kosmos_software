@@ -87,7 +87,7 @@ Plusieurs fenêtres vont s'afficher:
 - Cocher `Connect Automatically with priority`, cela vous permettra de vous reconnecter directement lorsque le système effectuera un reboot  
 - Cliquer sur `Enregistrer`
 
-### Opération pour préparer la Rpi au mode de consommation minimale pour le mode MICADO
+### [RPi 4 seulement] Opération pour préparer la Rpi au mode de consommation minimale pour le mode MICADO
 
 - Dans un terminal taper la commande suivante:
 ```
@@ -102,7 +102,7 @@ WAKE_ON_GPIO=0
 - Quitter le fichier en appuyant sur `Ctrl + Shift + x`
 
 ### Activation du port Serial pour le GPS
-#### Sur Rpi4 seulement
+#### [Rpi4 seulement]
 Modification du fichier config.txt
 
 - Dans un terminal taper la commande suivante pour ouvrir le fichier config.txt:
@@ -118,7 +118,7 @@ dtoverlay=disable-bt
 - Sauvegarder les modifications en appuyant sur `Ctrl + Shift + o`
 - Quitter le fichier en appuyant sur `Ctrl + Shift + x`
 
-#### Sur Rpi5 & Rpi4
+#### [Rpi5 & Rpi4]
 
 - Aller dans le menu principal (icone avec la framboise en haut à gauche de l'écran)
 - Cliquer sur `Préférence` puis `Configuration du Raspberry Pi`
