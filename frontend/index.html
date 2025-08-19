@@ -26,15 +26,13 @@
       </ul>
     </nav>
   </header>
-
-  <section>
-    <div class="container">
-            
-      <h3>KOSMOS state</h3>
-      <p><span id="etat">Unknown</span></h3></p>
-      <h3>GPS position</h3>
-      <p>Latitude : <span id="latitude"> </span> </p>
-      <p>Longitude : <span id="longitude"> </span></p>
+  
+  <section>	  
+	<br> 
+	<h3><span id="etat">Unknown KOSMOS state</span></h3> 
+    <div class="container">         
+      <h3>Camera control</h3>
+      <p>GPS position : <span id="latitude"></span>   <span id="longitude"> </span> </p>
       <!--
       <p>Pression : <span id="pression"> </span></p>
       <p>Temperature : <span id="temperature"> </span></p>
@@ -46,14 +44,15 @@
       <button id="startCamera" onClick="start()">Start</button>
       <button id="stopCamera" onClick="stop()">Stop</button>
 
+	  <h3 class="titleCamera">Shutdown KOSMOS</h3>
+      <button id="shutdown" onClick="shutdown()">Shutdown</button>
+
       <h3 class="titleCamera">Live video</h3>
       <button id="startLive" onClick="setLive(true)">Start Live</button>
       <button id="stopLive" onClick="setLive(false)">Stop Live</button>
 
       <img id="frame">
-
-      <h3 class="titleCamera">Shutdown KOSMOS</h3>
-      <button id="shutdown" onClick="shutdown()">Shutdown</button>
+       
     </div>
   </section>
 

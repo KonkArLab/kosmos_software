@@ -58,6 +58,8 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // Add "Save" and "Reset" buttons to the form
+    const lignevide = document.createElement("h4");
+    form.appendChild(lignevide)
     
     const ligneH3button = document.createElement("h3");
     const saveButton = document.createElement("button");

@@ -121,7 +121,9 @@ button:hover {
 
 h3 {
   font-size: var(--font-size-big);
-  margin-bottom: var(--margin-space-small);  
+  margin-bottom: var(--margin-space-small); 
+  margin-top: var(--margin-space-small);
+
 }
 
 #cameraContainer {
@@ -133,7 +135,7 @@ h3 {
 }
 
 .titleCamera {
-  margin-top: var(--margin-space-normal);
+  margin-top: var(--margin-space-small);
 }
 
 #frame {
@@ -154,7 +156,7 @@ h3 {
 */
   @media (min-width: 340px)  {
   .container {
-    margin: var(--margin-space-large);
+    margin: var(--margin-space-xsmall);
     padding: var(--padding-space-small);
   }
 
