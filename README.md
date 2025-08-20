@@ -9,8 +9,7 @@
 </details>
 <br>
 
-## Installation
-### Installation du système d'exploitation (OS) de la Raspberry  
+## Installation du système d'exploitation (OS) de la Raspberry  
 Sur un PC :  
  - Installer [l'imageur Raspberry Pi](https://www.raspberrypi.com/software/)  
  - Choisir le modèle de carte : Raspberry Pi 4 (ou 5 selon le modèle)
@@ -35,7 +34,7 @@ Plusieurs fenêtres vont apparaître:
 [comment]: <Toujours sur un PC,  >
 [comment]: < - Remplacer le fichier config.txt du boot de la carte SD par celui présent dans le fichier kosmos_software du Github.>
 
-### Premier démarrage de la RPi.  
+## Configuration générale de la RPi.  
 Une connexion ethernet filaire plutôt que Wifi est recommandée.
   
  - Démarrer la Raspberry Pi avec la carte SD, la carte RPi est allumée lorsque les petites leds de la carte clignotent. Le démarrage peut prendre un peu de temps.  
@@ -67,7 +66,7 @@ Plusieurs fenêtres vont s'afficher:
 > - Cliquer sur `Restart`  
 
 
-### Création d'un point Hotspot pour l'application KosmosWeb
+## Création d'un point Hotspot pour l'application KosmosWeb
 [comment]: <Une fois la RPi redémarrée,>   
 - Aller dans l'onglet Wifi (icone avec deux flèches de sens inversées) pour créer un Hotspot Wifi :
 - Aller dans `Advanced Options`  
@@ -103,10 +102,9 @@ WAKE_ON_GPIO=0
 - Quitter le fichier en appuyant sur `Ctrl + Shift + x`
 -->
 
-### [Rpi4 seulement] Configuration de la RPi pour l'utilisation des ports RX TX pour le GPS
-Modification du fichier config.txt
+## [Rpi4 seulement] Configuration de la RPi pour l'utilisation des ports RX TX pour le GPS
 
-- Dans un terminal taper la commande suivante pour ouvrir le fichier config.txt:
+- Dans un terminal taper la commande suivante pour ouvrir le fichier `config.txt`:
 ```
 sudo nano /boot/firmware/config.txt
 ```
@@ -132,8 +130,7 @@ dtoverlay=disable-bt
 - Redémarrer enfin la Rpi.
 -->
 
-
-### Importation du dossier software
+## Importation et installation du logiciel KOSMOS depuis le Github 
 Dans un terminal taper les commandes suivantes:  
 ```
 git clone https://github.com/KonkArLab/kosmos_software.git		//Clone le dossier kosmos_software depuis le git
@@ -145,7 +142,7 @@ git checkout dev_stereo_merge_imt
 ```
 sudo chmod 755 install.sh		//Rend exécutable le fichier install.sh
 source install.sh				//Lance le fichier install.sh
-```  
+```
 
 Si des questions apparaissent  dans le terminal:  
 
@@ -153,8 +150,7 @@ Si des questions apparaissent  dans le terminal:
 
 Taper `O` et appuyer sur `Entrée` pour finir l'exécution
 
-
-### Mise-à-jour du fichier kosmos_system.ini
+## Mise-à-jour du fichier kosmos_system.ini
 Ouvrir le fichier `kosmos_system.ini` qui se trouve au même niveau que le dossier `kosmos_software`.
 
 Dans la section `[KOSMOS-system]` renseigner les champs suivants :
@@ -162,10 +158,17 @@ Dans la section `[KOSMOS-system]` renseigner les champs suivants :
 - `version` pour la version du système, typiquement `3.0` ou `4.0`
 
 Si besoin, mettre également à jour l'`increment`.  Si c'est le premier usage du système, il doit être à 1. Si le système a déjà été utilisé remettre l'incrément + 1 de la dernière vidéo. A noter que cet incrément doit être remis à 1 à chaque nouvelle année.  
-  
-### Stockage des données
 
- - Deux choix s'ouvrent à vous : un stockage sur la carte SD ou sur une clé USB. Si une clé USB est branchée, elle sera prioritaire. Si aucune clé usb n'est branchée, les fichiers seront stockées dans `/home/kosmos/kosmos_local_sd`.
+## Stockage des données
+
+Pour le stockage des données, deux choix s'ouvrent à vous : soit un stockage en local sur la carte SD, soit sur une clé USB. Si une clé USB est branchée, elle sera prioritaire. Si aucune clé usb n'est branchée, les fichiers seront stockées dans `/home/kosmos/kosmos_local_sd`.
+
+<br>
+
+**Le système est désormais opérationnel !** Pour le faire fonctionner, il suffit de redémarrer la Raspberry Pi ! Le logiciel kosmos va se lancer automatiquement et il sera possible d'interagir avec le système via la Wifi et l'interface Web. Son utilisation sera explicitée dans la section **Mode d'emploi**.
+
+
+<!--
 
  - Il peut arriver que la clé USB (si ce système de stockage est choisi), contienne déjà des vidéos ainsi qu'un fichier de configuration kosmos_config.ini. Nous recommandons de renommer ce dernier fichier (en kosmos_config_old.ini) pour éviter des bugs de compatibilité entre les versions du soft. Par ailleurs, il faudra veiller à ce que la clé propose assez de places pour accueillir les nouvelles vidéos. Typiquement prévoir 10Go par journée de campagne. 
   
@@ -273,7 +276,7 @@ Pour la version 4 :
 
 
 
-<!--
+
 ## Mode d'emploi
 
 ### Prise en main de l'Interface web
