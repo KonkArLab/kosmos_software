@@ -152,11 +152,11 @@ class kosmos_main():
             if self.BUZZER_ENABLED == 1:
                 playMelody(self._buzzer, STANDBY_MELODY)
                 time.sleep(0.1)
-                
-        # Mode MICADO démarrage immédiat d'une vidéo
-        if self.MODE == 2 and self.bool_micado == 1:
+
+        # Gestion des modes MICADO/STAVIRO
+        if self.MODE == 2 and self.bool_micado == 1: # Mode MICADO sans intervention de l'opérateur via bouton 'stop record' 
             self.state = KState.WORKING
-        else: # Mode STAVIRO         
+        else: # Mode STAVIRO ou MODE MICADO avec arrêt via bouton 'stop record'      
             self.button_event.wait()
             if myMain.stop_event.is_set():
                 self.state = KState.SHUTDOWN
@@ -237,7 +237,7 @@ class kosmos_main():
         
         if self._extinction == False:
             # On s'est arrêté via un bouton, on retourne donc en stand by
-            if self.MODE==2: #En mode MICADO, on veut relancer la video automatiquement
+            if self.MODE==2: #En mode MICADO, si on est passé par un arrêt via bouton, la vidéo ne doit pas se lancer
                 self.bool_micado = 0
             self.state = KState.STANDBY
             event_line = self._conf.get_date_HMS()  + "; SORTIE BOUTON"
