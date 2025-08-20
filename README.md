@@ -87,6 +87,7 @@ Plusieurs fenêtres vont s'afficher:
 - Cocher `Connect Automatically with priority`, cela vous permettra de vous reconnecter directement lorsque le système effectuera un reboot  
 - Cliquer sur `Enregistrer`
 
+<!--
 ### [RPi 4 seulement] Opération pour préparer la Rpi au mode de consommation minimale pour le mode MICADO
 
 - Dans un terminal taper la commande suivante:
@@ -100,6 +101,7 @@ WAKE_ON_GPIO=0
 ```
 - Sauvegarder les modifications en appuyant sur `Ctrl + Shift + o`
 - Quitter le fichier en appuyant sur `Ctrl + Shift + x`
+-->
 
 ### [Rpi4 seulement] Configuration de la RPi pour l'utilisation des ports RX TX pour le GPS
 Modification du fichier config.txt
