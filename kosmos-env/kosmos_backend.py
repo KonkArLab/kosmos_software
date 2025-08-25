@@ -34,6 +34,7 @@ class Server:
         self.app.add_url_rule("/updateMetadata",view_func=self.update_metadata, methods=['POST']) 
         self.app.add_url_rule("/sensors", view_func=self.sensors)
         self.app.add_url_rule("/save", view_func=self.save)
+        self.app.add_url_rule("/checkConversion", view_func=self.checkConversion)
 
 
     def run(self) :
@@ -44,6 +45,23 @@ class Server:
         return {
             "status" : "ok",
             "state" : self.myMain._conf.systemName + " state is " + str(self.myMain.state).split('.')[1]
+        }
+    
+    def checkConversion(self):
+        try:
+            incrementt = self.myMain._conf.system.getint(INCREMENT_SECTION,"increment")-1
+            str1 = self.myMain._conf.CAMPAGNE_PATH +f'{incrementt:04}'+"/"+f'{incrementt:04}'+".mp4" 
+            str2 = self.myMain._conf.CAMPAGNE_PATH +f'{incrementt:04}'+"/"+f'{incrementt:04}'+".h264"  
+            if os.path.exists(str1) and os.path.exists(str2):
+                checkConv = "Conversion en cours."
+            else:
+                checkConv = "Pas de conversion en cours"
+        except:
+            checkConv = "Pas de conversion en cours"
+            
+        return {
+            "status" : "ok",
+            "checkConversion" : checkConv 
         }
     
     def save(self):
