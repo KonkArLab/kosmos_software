@@ -53,7 +53,7 @@ class Server:
             str1 = self.myMain._conf.CAMPAGNE_PATH +f'{incrementt:04}'+"/"+f'{incrementt:04}'+".mp4" 
             str2 = self.myMain._conf.CAMPAGNE_PATH +f'{incrementt:04}'+"/"+f'{incrementt:04}'+".h264"  
             if os.path.exists(str1) and os.path.exists(str2):
-                checkConv = "Conversion en cours."
+                checkConv = "Conversion en cours"
             else:
                 checkConv = "Pas de conversion en cours"
         except:

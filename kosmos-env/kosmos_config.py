@@ -77,8 +77,6 @@ class KosmosConfig:
             subprocess.run(["sudo", "chown", "-R", os.listdir("/home")[0]+":"+os.listdir("/home")[0] , ROOT_PATH+"kosmos_local_sd"])
             self.sauvegarde = "en local"
             
-        
-        
         if self.systemVersion == "3.0":
             subprocess.run(["sudo", "cp", "-n", GIT_PATH+CONF_FILE_TEMPLATE_V3,USB_INSIDE_PATH+CONF_FILE])
             logging.info("Version 3.0")

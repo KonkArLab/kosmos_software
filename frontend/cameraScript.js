@@ -90,9 +90,21 @@ async function stop() {
 async function shutdown() {
   disableAllButtons();
   try {
-    const response = await fetch(serverUrl + "/shutdown");
-    const body = await response.json();
-    console.log(body);
+    const response2 = await fetch(serverUrl + "/checkConversion");
+    const body2 = await response2.json();
+    if (body2.checkConversion === "Conversion en cours") {
+      Swal.fire({
+          title: 'Error',
+          text: 'Conversion en cours, veuillez attendre avant le SHUTDOWN',
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+      return;
+    } else {
+      const response = await fetch(serverUrl + "/shutdown");
+      const body = await response.json();
+      console.log(body);
+    }
   } catch (error) {
     console.error("Error shutting down:", error);
   } finally {

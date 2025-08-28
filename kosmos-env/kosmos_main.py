@@ -7,6 +7,7 @@ import threading
 from gpiozero import LED, Button, TonalBuzzer,DigitalOutputDevice
 import os
 import json
+import glob
 
 #Le programme est divisé en deux threads donc on a besoind du bibliotheque Thread
 from threading import Thread
@@ -295,22 +296,36 @@ class kosmos_main():
         
         # Arret des threads du systeme
         self.arretThreads()
-
-        # Extinction
-        logging.info("EXTINCTION")
-        #Arrêt du logging
-        logging.shutdown()
-        
+   
         if self.MODE == 2 and self.bool_micado == 1: #Mode MICADO avec temps écoulé
+            logging.info("MISE EN VEILLE PROFONDE")
+            self.copyLog()
+            logging.shutdown()
             os.system("echo +"+str(self.tps_veille)+" | sudo tee /sys/class/rtc/rtc0/wakealarm")
             os.system("sudo halt")
         else: # Mode STAVIRO ou Mode MICADO avec arrêt par bouton
-        # Commande de stop au choix arrêt du programme ou du PC
+            # Commande de stop au choix arrêt du programme ou du PC
             if self._conf.config.getint(CONFIG_SECTION,"06_SHUTDOWN") != 0 :
+                logging.info("EXTINCTION DU KOSMOS")
+                self.copyLog()
+                logging.shutdown()
                 os.system("sudo shutdown -h now")
             else :
+                # Pas de copie du log si simple arret du soft. Car il est possible d'aller le voir directement sur la carte SD. 
+                logging.info("ARRET DU SOFT KOSMOS")
+                logging.shutdown()
                 os._exit(0)
 
+    def copyLog(self):
+        # Copie du log dans le dossier Campagne
+        try:
+            logging.info("Copie du LOG")
+            LAST_LOG = max(glob.iglob(LOG_PATH + "*.log"),key=os.path.getctime).split('/')[-1]
+            subprocess.run(["sudo", "cp", "-n", LOG_PATH+LAST_LOG,self._conf.CAMPAGNE_PATH+LAST_LOG])
+        except:
+            logging.info("Erreur de copie du LOG")
+    
+    
     def modeRotatif(self):
         """programme principal du mode rotatif"""
         while True:
