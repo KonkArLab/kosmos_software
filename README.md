@@ -130,6 +130,15 @@ dtoverlay=disable-bt
 - Redémarrer enfin la Rpi.
 -->
 
+## Test de la caméra
+En tout premier lieu, on peut tester si la caméra fonctionne correctement. Pour ce faire, taper dans la console:
+```
+rpicam-hello --timeout 10
+```
+Une fenêtre s'affichera normalement et contiendra le flux vidéo, et ce, pendant 10 secondes. À noter que si vous avez oté le filtre IR de la caméra, il se peut que la teinte de l'image soit rouge/orangée. 
+
+Si aucune vidéo ne s'affiche, vérifier les branchements de la caméra. Redémarrer la RPi et recommencer ce test. 
+
 ## Importation et installation du logiciel KOSMOS depuis le Github 
 Dans un terminal taper les commandes suivantes:  
 ```
@@ -137,7 +146,8 @@ git clone https://github.com/KonkArLab/kosmos_software.git		//Clone le dossier k
 cd kosmos_software							//Ouvre le dossier kosmos_software
 git checkout dev_stereo_merge_imt
 ```
-<br>
+
+puis
 
 ```
 sudo chmod 755 install.sh		//Rend exécutable le fichier install.sh
