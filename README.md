@@ -133,9 +133,9 @@ dtoverlay=disable-bt
 ## Test de la caméra
 En tout premier lieu, on peut tester si la caméra fonctionne correctement. Pour ce faire, taper dans la console:
 ```
-rpicam-hello --timeout 10
+rpicam-hello --timeout 2000
 ```
-Une fenêtre s'affichera normalement et contiendra le flux vidéo, et ce, pendant 10 secondes. À noter que si vous avez oté le filtre IR de la caméra, il se peut que la teinte de l'image soit rouge/orangée. 
+Une fenêtre s'affichera normalement et contiendra le flux vidéo, et ce, pendant 2 secondes. À noter que si vous avez oté le filtre IR de la caméra, il se peut que la teinte de l'image soit rouge/orangée. 
 
 Si aucune vidéo ne s'affiche, vérifier les branchements de la caméra. Redémarrer la RPi et recommencer ce test. 
 
