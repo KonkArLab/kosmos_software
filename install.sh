@@ -6,7 +6,7 @@ sudo apt upgrade
 sudo apt autoremove
 
 #Installation des packages python necessaires 
-sudo apt install `cat requirements.txt`
+sudo apt install -y `cat requirements.txt`
 sudo pip install sounddevice --break-system-package
 
 #Desactivation du bluetooth (raisons énergétiques)
