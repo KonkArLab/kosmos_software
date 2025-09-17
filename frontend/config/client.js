@@ -55,6 +55,7 @@ async function fetchConfig() {
       rebootButton.setAttribute("id", "rebootButton");
       rebootButton.setAttribute("type", "button");
       rebootButton.textContent = "Reboot"; 
+      /*
       const response = await fetch(serverUrl + "/state");
       const body = await response.json();
       if (body.state.substr(body.state.length-7) === "STANDBY") {
@@ -62,6 +63,7 @@ async function fetchConfig() {
       } else {
         rebootButton.disabled = true; 
       }
+      */
       buttonDiv.appendChild(rebootButton)
       configContainer.appendChild(buttonDiv);
     } else {
@@ -86,24 +88,36 @@ fetchConfig();
 // Function to update the configuration on the server
 async function updateConfigOnServer(updatedConfig) {
   try { 
-    const response = await fetch(serverUrl + "/changeConfig", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updatedConfig),
-    });
+    const response2 = await fetch(serverUrl + "/state");
+    const body2 = await response2.json();
+    if (body2.state.substr(body2.state.length-7) === "STANDBY") {
+      const response = await fetch(serverUrl + "/changeConfig", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedConfig),
+      });
 
-    const data = await response.json();
+      const data = await response.json();
 
-    // Assuming the response structure is { status: "ok" }
-    if (data.status === "ok") {
-      console.log("Configuration updated on the server");
+      // Assuming the response structure is { status: "ok" }
+      if (data.status === "ok") {
+        console.log("Configuration updated on the server");
+      } else {
+        console.error(
+          "Failed to update configuration on the server:",
+          data.status
+        );
+      }
     } else {
-      console.error(
-        "Failed to update configuration on the server:",
-        data.status
-      );
+      Swal.fire({
+          title: 'Error',
+          text: "Le Reboot n'est possible que dans l'état STANDBY",
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+        return;
     }
   } catch (error) {
     console.error("Error updating configuration on the server:", error);

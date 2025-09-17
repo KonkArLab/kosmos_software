@@ -133,7 +133,7 @@ class MagpiCam(Thread):
         
         # A clarifier
         self._AWB = aConf.config.getint(DEBUG_SECTION,"37_PICAM_AWB")
-        self._record_time = aConf.config.getint(CONFIG_SECTION,"02_TPS_ENREGISTREMENT")
+        self._record_time = np.inf#aConf.config.getint(CONFIG_SECTION,"02_TPS_ENREGISTREMENT")
 
         # Booléens pour les évènements
         self._end = False
