@@ -1,5 +1,5 @@
 # Kosmos Software
-
+<!--
 <details open>
  <summary> Sommaire </summary>
  
@@ -8,7 +8,7 @@
     
 </details>
 <br>
-
+-->
 ## Installation du système d'exploitation (OS) de la Raspberry  
 Sur un PC :  
  - Installer [l'imageur Raspberry Pi](https://www.raspberrypi.com/software/)  
