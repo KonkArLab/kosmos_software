@@ -1,0 +1,42 @@
+@import url('../styles.css');
+
+.container {
+  width: 95%;
+}
+
+/* Table styling for records display */
+
+#fileTable {
+  width: 100%;
+  margin-top: var(--margin-space-normal);
+  margin-bottom: var(--margin-space-normal);
+  border-collapse: collapse;
+  overflow: auto;
+  /*display: block;*/
+  /*overflow: auto;*/
+  white-space: nowrap;
+ }
+
+/* Apply border and padding to table, header, and cell elements */
+#fileTable,td,th {
+  border: var(--border-thin) solid;
+  /*padding: var(--padding-space-normal);*/
+  text-align: left;
+  font-size: var(--font-size-small);
+}
+
+thead {
+  font-weight: var(--font-weight-bold);
+}
+
+th {
+  background-color: var(--color-complementary);
+}
+
+tr:nth-child(even) {
+  background-color: var(--color-secondary);
+}
+
+tr:hover {
+  background-color: var(--color-hover);
+}

@@ -1,292 +1,178 @@
-/* Your existing styles up to 450px width */
-body,
-h1,
-h2,
-h3,
-p,
-ul {
-  margin: 0;
-  padding: 0;
+:root {
+  --font-size-normal: 1.0rem;
+  --font-size-small: 0.8rem;
+  --font-size-xsmall: 0.7rem;
+  --font-size-big: 1.5rem;
+  --line-heigth-xsmall: 0.5rem;
+  --line-heigth-small: 1.3rem;
+  --line-heigth-normal: 1.5rem;
+  --line-heigth-large: 1.7rem;
+  --padding-space-large: 2rem;
+  --padding-space-normal: 1rem;
+  --padding-space-small: 0.5rem;
+  --padding-space-xsmall: 0.2rem;
+  --margin-space-large: 3rem;
+  --margin-space-normal: 2rem;
+  --margin-space-small: 1rem;
+  --margin-space-xsmall: 0.5rem;
+  --border-thin: 1px;
+  --border-normal: 3px;
+  --border-thick: 5px;
+  --font-family-style: "Arial", sans-serif;
+  --color-primary: #333;
+  --color-hover:#919090;
+  --color-secondary: #fff;
+  --color-light: #ddd;
+  --color-complementary: #ffd9ae;
+  --font-weight-light: 400;
+  --font-weight-bold: 600;
+  --element-size-large: 2.8rem;
+  --element-size-normal: 2rem;
+  --element-size-small: 1.5rem;
 }
 
-body {
-  font-family: "Arial", sans-serif;
-  line-height: 1.6;
+* {
+  box-sizing: border-box;
+  font-family: var(--font-family-style);
+  line-height: var(--line-heigth-normal);
 }
 
 header {
-  background-color: #333;
+  background-color: var(--color-primary);
   color: #fff;
-  padding: 10px;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  z-index: 10;
 }
 
-form {
-  border-style: solid;
-  border-width: 2px;
-  border-radius: 5px;
+.menu-toggle {
+  display: none;
+}
+
+.menu-icon {
+  margin: var(--padding-space-normal);
+  width: var(--font-size-big);
+  height: var(--font-size-big);
+  cursor: pointer;
+}
+
+.svg-icon {
+  width: 100%;
+  height: 100%;
 }
 
 nav ul {
   list-style-type: none;
+  gap: var(--padding-space-small);
+  /*display: none;*/
 }
 
-nav ul li {
+.menu-toggle:checked + .menu-icon + nav ul {
+  display: flex;
+  flex-direction: column;
+}
+
+nav ul li a {
   display: inline;
-  margin-right: 20px;
-}
-
-div.parameter {
-  margin-bottom: -5px;
-}
-
-a {
+  padding: var(--padding-space-xsmall);
   text-decoration: none;
-  color: #fff;
+  color: var(--color-secondary);
 }
 
-a:hover {
-  text-decoration: underline;
+section {
+  margin-top: var(--margin-space-large);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 20px;
-}
-
-table,
-th,
-td {
-  border: 1px solid #ddd;
-}
-
-th,
-td {
-  padding: 12px;
-  text-align: left;
-}
-
-th {
-  background-color: #007bff;
-  color: #fff;
-}
-
-tr:nth-child(even) {
-  background-color: #f2f2f2;
-}
-
-tr:hover {
-  background-color: #ddd;
-}
-
-h1 {
-  margin-left: 10px;
-}
-
-.reboot {
-  margin: auto;
-  display: flex;
-  margin-bottom: 10px;
-}
-
-.parameter {
-  margin-bottom: 15px;
-  display: flex;
-}
-
-.parameter-element {
-  margin: 10px;
-  align-items: center;
-  vertical-align: middle;
-}
-#frame {
-  max-width: 100%;
-  height: auto;
-  margin-top: 10px; /* Adjust margin for consistency with other page */
-}
-
-label {
-  min-width: 200px;
-  align-items: center;
-  font-weight: bold;
-}
-
-input {
-  width: 100%;
-  padding: 8px;
-  box-sizing: border-box;
-  margin-bottom: 10px;
+  border: var(--border-thin) solid black;
+  border-radius: var(--border-thick);
+  padding: var(--padding-space-small);
+  margin: var(--margin-space-small);
+  width: 95%;
 }
 
 button {
-  padding: 10px;
-  background-color: #333;
-  color: #fff;
+  padding: var(--padding-space-small) var(--padding-space-small);
+  background-color: var(--color-primary);
+  color: var(--color-secondary);
   border: none;
   cursor: pointer;
-  border-radius: 5px;
+  border-radius: var(--border-thick);
+}
+
+button:disabled,
+button[disabled] {
+  background-color: var(--color-hover);
+  color: var(--color-primary);
+  cursor: unset;
 }
 
 button:hover {
-  background-color: #555;
+  background-color: var(--color-hover);
 }
 
-#rebootButton {
-  margin-top: 10px;
-  background-color: #4ca3af;
+h3 {
+  font-size: var(--font-size-big);
+  margin-bottom: var(--margin-space-small); 
+  margin-top: var(--margin-space-small);
+
 }
 
-#rebootButton:hover {
-  background-color: #45a049;
+#cameraContainer {
+  width: 95%;
 }
 
-/* Media Query for screens under 450px */
-@media (max-width: 450px) {
-  /* Reset some default styles to ensure consistency across browsers */
-  body,
-  h1,
-  h2,
-  h3,
-  p,
-  ul {
-    margin: 0;
-    padding: 0;
-  }
+#cameraContainer button {
+  padding: var(--padding-space-small) var(--padding-space-normal);
+}
 
-  body {
-    font-family: "Arial", sans-serif;
-    line-height: 1.6;
-  }
+.titleCamera {
+  margin-top: var(--margin-space-small);
+}
 
-  header {
-    background-color: #333;
-    color: #fff;
-    padding: 10px;
-  }
+#frame {
+  display: block;
+  width: 100%;
+  margin-top: var(--margin-space-normal);
+}
 
-  form {
-    border-style: solid;
-    border-width: 2px;
-    border-radius: 5px;
-  }
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 10px;
-  }
+/*
+@media (min-width: 480px) and (max-width: 767px) {
 
-  th,
-  td {
-    padding: 8px;
-    text-align: left;
+  .container {
+    margin: var(--margin-space-normal);
+    padding: var(--padding-space-normal);
   }
-
-  th {
-    background-color: #007bff;
-    color: #fff;
-  }
-
-  tr:nth-child(even) {
-    background-color: #f2f2f2;
-  }
-
-  tr:hover {
-    background-color: #ddd;
+}
+*/
+  @media (min-width: 340px)  {
+  .container {
+    margin: var(--margin-space-xsmall);
+    padding: var(--padding-space-small);
   }
 
   nav ul {
-    list-style-type: none;
-  }
-
-  nav ul li {
-    display: inline;
-    margin-right: 10px; /* Adjust the margin for smaller screens */
-  }
-
-  div.parameter {
-    margin-bottom: -5px;
-  }
-
-  label {
-    font-size: 0.7em;
-  }
-
-  a {
-    text-decoration: none;
-    color: #fff;
-  }
-
-  a:hover {
-    text-decoration: underline;
-  }
-
-  .container {
-    max-width: 450px; /* Set a maximum width for smaller screens */
-    margin: 0 auto;
-    padding: 10px; /* Adjust padding for smaller screens */
-  }
-
-  h1 {
-    margin-left: 5px; /* Adjust margin for smaller screens */
-    font-size: 1.2em; /* Adjust font size for smaller screens */
-  }
-
-  .reboot {
-    margin: auto;
     display: flex;
-    margin-bottom: 5px; /* Adjust margin for smaller screens */
+    flex-direction: row;
+    gap: var(--margin-space-xsmall);
+    padding: var(--padding-space-xsmall);
   }
 
-  .parameter {
-    margin-bottom: 10px; /* Adjust margin for smaller screens */
-    display: flex;
+  nav ul li a:hover {
+    background-color: var(--color-hover);
   }
 
-  .parameter-element {
-    margin: 5px; /* Adjust margin for smaller screens */
-  }
-
-  label {
-    min-width: 150px; /* Adjust min-width for smaller screens */
-    align-items: center;
-    font-weight: bold;
-  }
-
-  input {
-    width: calc(100% - 16px); /* Adjust width for smaller screens */
-    padding: 6px; /* Adjust padding for smaller screens */
-    margin-bottom: 5px; /* Adjust margin for smaller screens */
-  }
-
-  button {
-    padding: 8px; /* Adjust padding for smaller screens */
-    background-color: #333;
-    color: #fff;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px;
-  }
-
-  button:hover {
-    background-color: #555;
-  }
-
-  #rebootButton {
-    margin-top: 5px; /* Adjust margin for smaller screens */
-    background-color: #4ca3af;
-  }
-
-  #rebootButton:hover {
-    background-color: #45a049;
-  }
-  #frame {
-    margin-top: 5px;
+  .menu-icon {
+    display: none;
   }
 }
+

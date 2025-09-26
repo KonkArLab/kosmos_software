@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Include external CSS files for Choices.js and SweetAlert libraries -->
+    <link rel="stylesheet" href="../libs/choices/choices.min.css">
+    <link rel="stylesheet" href="../libs/sweetAlert/sweetAlert.min.css">
+    <link rel="stylesheet" type="text/css" href="campaign.css">  
+    <title>Kosmos</title>
+  </head>
+  <body>
+    <header>
+      <!-- Create a toggle menu for navigation adapted to small screens -->
+      <!--<input type="checkbox" id="menuToggle" class="menu-toggle">
+
+      <label for="menuToggle" class="menu-icon">
+        <img src="../icons/menu.svg" class="svg-icon" alt="Menu Icon">
+      </label>-->
+      <!-- Navigation menu with links to other application pages -->
+      <nav>
+        <ul>
+          <li><a href="../campaign/campaign.html">Campaign</a></li>
+          <li><a href="../config/config.html">Configuration</a></li>
+          <li><a href="../index.html">Camera</a></li>
+          <li><a href="../records/records.html">Records</a></li>    
+          <!-- <li><a href="../checklist/checklist.html">Checklist</a></li> -->
+        </ul>
+      </nav>
+    </header>
+    <section>
+	  <br> 
+	  <h3> Campaign information </h3>
+      <div class="container">
+        <!-- Main form for collecting campaign information -->
+        <form id="campaignForm">
+        </form>
+      </div>
+    </section>
+    <!-- Include external JS files for Choices.js and SweetAlert libraries -->
+    <script src="../libs/choices/choices.min.js"></script>
+    <script src="../libs/sweetAlert/sweetAlert.min.js"></script>
+    <script src="campaign.js"></script>
+  </body>
+</html>
