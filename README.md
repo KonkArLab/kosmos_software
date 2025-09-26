@@ -49,9 +49,11 @@ Plusieurs fenêtres vont s'afficher:
 > Create User  
 > - Compléter les informations demandées. Mettre pour username `kosmos` et pour mot de passe `kosmos` 
 > - Cliquer sur `Next`
-  
+
+<!--
 > Set up Screen  
 > - Cliquer sur `Next`
+-->
   
 > Select Wifi Network  
 > - Cliquer sur `Next`  
