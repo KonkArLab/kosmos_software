@@ -224,8 +224,8 @@ class KosmosCam(Thread):
                 #self.add_metadata(output_file, custom_value)
                 
                 if self.STEREO == 1:
-                    input_file2 = os.path.splitext(input_file)[0]+'_STEREO.h264'
-                    output_file2 = os.path.splitext(input_file)[0] +'_STEREO.mp4'
+                    input_file2 = os.path.splitext(input_file)[0]+'_stereo.h264'
+                    output_file2 = os.path.splitext(input_file)[0] +'_stereo.mp4'
                     subprocess.run(['sudo', 'ffmpeg', '-probesize','2G','-r', str(self._FRAMERATE), '-i', input_file2, '-c', 'copy', output_file2, '-loglevel', 'warning'])
                     logging.info("Conversion video 2 successful !")
                     os.remove(input_file2)
