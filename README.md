@@ -89,7 +89,9 @@ Plusieurs fenêtres vont s'afficher:
 - Cliquer sur `Enregistrer`
 
 
-### Opération pour préparer la Rpi au mode de consommation minimale pour le mode MICADO
+### [Rpi5 seulement] Opération pour préparer la Rpi au mode de consommation minimale pour le mode MICADO
+
+#### Activation du mode veille profonde
 
 - Dans un terminal taper la commande suivante:
 ```
@@ -103,6 +105,18 @@ WAKE_ON_GPIO=0
 - Sauvegarder les modifications en appuyant sur `Ctrl + Shift + o`
 - Quitter le fichier en appuyant sur `Ctrl + Shift + x`
 
+#### Activation de la recharge de la batterie
+
+- Dans un terminal taper la commande suivante pour ouvrir le fichier `config.txt`:
+```
+sudo nano /boot/firmware/config.txt
+```
+- Ajouter à la fin du fichier les lignes suivantes:
+```
+dtparam=rtc_bbat_vchg=3000000
+```
+- Sauvegarder les modifications en appuyant sur `Ctrl + Shift + o`
+- Quitter le fichier en appuyant sur `Ctrl + Shift + x`
 
 ## [Rpi4 seulement] Configuration de la RPi pour l'utilisation des ports RX TX pour le GPS
 
