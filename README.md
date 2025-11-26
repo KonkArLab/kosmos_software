@@ -104,6 +104,7 @@ WAKE_ON_GPIO=0
 ```
 - Sauvegarder les modifications en appuyant sur `Ctrl + Shift + o`
 - Quitter le fichier en appuyant sur `Ctrl + Shift + x`
+- Taper sur `Entrée`
 
 #### Activation de la recharge de la batterie
 
@@ -117,6 +118,7 @@ dtparam=rtc_bbat_vchg=3000000
 ```
 - Sauvegarder les modifications en appuyant sur `Ctrl + Shift + o`
 - Quitter le fichier en appuyant sur `Ctrl + Shift + x`
+- Taper sur `Entrée`
 
 ## [Rpi4 seulement] Configuration de la RPi pour l'utilisation des ports RX TX pour le GPS
 
@@ -132,6 +134,7 @@ dtoverlay=disable-bt
 ```
 - Sauvegarder les modifications en appuyant sur `Ctrl + Shift + o`
 - Quitter le fichier en appuyant sur `Ctrl + Shift + x`
+- Taper sur `Entrée`
 
 
 <!--
@@ -147,7 +150,12 @@ dtoverlay=disable-bt
 -->
 
 ## Test de la caméra
-En tout premier lieu, on peut tester si la caméra fonctionne correctement. Pour ce faire, taper dans la console:
+Brancher la nappe à la RPI et à la caméra puis effectuer un redémarrage de la Rpi:
+```
+sudo reboot
+```
+
+On teste maintenant si la caméra fonctionne correctement. Pour ce faire, taper dans la console:
 ```
 rpicam-hello --timeout 2000
 ```
