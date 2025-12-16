@@ -12,6 +12,13 @@ sudo pip install sounddevice --break-system-package
 #Desactivation du bluetooth (raisons énergétiques)
 sudo systemctl disable bluetooth
 
+# Configuration IP statique
+sudo nmcli connection modify "Wired connection 1" \
+ipv4.addresses 192.168.10.2/24 \
+ipv4.gateway 192.168.10.1 \
+ipv4.dns 192.168.10.1 \
+ipv4.method manual
+
 # Copier du fichier kosmos_system.ini
 sudo cp -n /home/$USER/kosmos_software/kosmos_system_template.ini /home/$USER/kosmos_system.ini 
 sudo chown $USER:$USER /home/$USER/kosmos_system.ini
@@ -39,7 +46,7 @@ sudo raspi-config nonint do_i2c 0
 sudo raspi-config nonint do_vnc 0
 sudo raspi-config nonint do_serial_hw 0
 sudo raspi-config nonint do_serial_cons 1
-
+sudo raspi-config nonint do_ssh 0
 
 #Ajout de la ligne de commande dans crontab qui permet le lancement au demarrage et création d'un dossier log
 mkdir -p /home/$USER/logfile_kosmos
