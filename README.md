@@ -204,24 +204,3 @@ Pour le stockage des données, deux choix s'ouvrent à vous : soit un stockage e
 
 
 
-## Configuration à faire sur l'ordinateur avant le téléchargement des fichiers
-Étape 1 : Accéder aux Propriétés Réseau
-- Allez dans Paramètres (Settings).
-- Cliquez sur Réseau et Internet (Network & Internet).
-- Cliquez sur Paramètres réseau avancés (Advanced Network settings).
-- Localisez votre adaptateur (Ethernet) et cliquez sur Afficher les propriétés supplémentaires (View additional properties).
-##
-Étape 2 : Modifier les Paramètres IPv4
-- Dans la section "Propriétés Ethernet", vous verrez l'Adresse IP (IPv4 address) et le Masque de sous-réseau (IPv4 mask) actuels.
-- Cliquez sur le bouton Modifier (Edit) à côté de la section "Attribution d'IP" (IP assignment).
-- Changez le mode d'attribution d'IP de Automatique (DHCP) à Manuel (Manual).
-#
-Étape 3 : Saisir les Paramètres Manuels
-- Activez le bouton bascule IPv4.
-- Remplissez le champ Adresse IP (IP address) avec 192.168.10.1
-- Remplissez le champ Masque de sous-réseau (Subnet mask) avec 255.255.255.0
-- Passerelle (Gateway) : laisser vide
-- DNS préféré (Preferred DNS) : laisser vide
-- Cliquez sur Enregistrer (Save)
-
-
