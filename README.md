@@ -163,6 +163,7 @@ Une fenêtre s'affichera normalement et contiendra le flux vidéo, et ce, pendan
 
 Si aucune vidéo ne s'affiche, vérifier les branchements de la caméra. Redémarrer la RPi et recommencer ce test. 
 
+
 ## Importation et installation du logiciel KOSMOS depuis le Github 
 Dans un terminal taper les commandes suivantes:  
 ```
@@ -201,6 +202,27 @@ Pour le stockage des données, deux choix s'ouvrent à vous : soit un stockage e
 <br>
 
 **Le système est désormais opérationnel !** Pour le faire fonctionner, il suffit de redémarrer la Raspberry Pi ! Le logiciel kosmos va se lancer automatiquement et il sera possible d'interagir avec le système via la Wifi et l'interface Web. Son utilisation sera explicitée dans la section **Mode d'emploi**.
+
+## Procédure de mise au point de la caméra
+
+- Nettoyer toutes les surfaces avec un chiffon microfibre puis remonter l'objectif Edmund sur le capteur. Ré-assembler enfin ce module optique sur le système.
+- Pour faire la mise au point de la caméra, le système ne sera pas placé dans le caisson. On branchera par ailleurs un écran à la Raspberry pour visualiser ce que filme la caméra.
+- Une fois l'écran branché, on allumera le système et on attendra que le système KOSMOS soit en STAND BY.
+- Dans l'interface WEB, modifier le paramètre `06_shutdown` pour le mettre à `0` et effectuer un `Reboot`. Aller ensuite dans la page `Camera` et arrêter le système KOSMOS en appuyant sur `Shutdown`. (Cette manipulation permet d'arrêter le script KOSMOS sans éteindre la Rpi. La caméra peut ainsi être utilisée.)
+  
+- Dans le terminal taper  
+```
+cd kosmos_software
+python3 kosmosCamFocus.py
+```
+- Deux fenêtres apparaissent. Agrandir l'image correspond au champ de vue de la caméra.  
+- Placer une mire à 7.5 m de la caméra. Ouvrir à fond l'objectif (le petit point blanc devant 1.8) pour avoir une profondeur de champ minimale.
+- Sur la fenêtre de la caméra, cliquer pour tracer un trait de part et d'autre du damier. Réaliser le focus sur la mire avec la bague en essayant d'avoir les bords les plus francs possible.
+- Bloquer la bague de focus solidement. Fermer enfin l'objectif à moitié (le petit point blanc sur 2.8) pour récupérer une meilleure profondeur de champ. Bloquer la bague d'ouverture dans cette position. Vérifier que le focus est toujours bon (le fait de serrer les bagues peut parfois les faire bouger.)
+- (Effectuer éventuellement cette opération sur la deuxième caméra (mode stéréo), en basculantde vue grâce au curseur en bas de la fenêtre vidéo.)
+- Quitter l'interface de mise au point en fermant la console puis redémarrer la Raspberry Pi. Le soft kosmos va se remettre en route. Dans l'interface web, remettre le paramètre  `06_shutdown` sur 1. Effectuer un `Reboot` puis éteindre le système avec un `Shutdown`.
+
+## Procédure de mise-à-jour du logiciel
 
 
 
