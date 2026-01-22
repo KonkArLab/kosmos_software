@@ -39,7 +39,7 @@ class kosmosMotor(Thread):
         self.wakeUp_GPIO = DigitalOutputDevice(aConf.config.getint(DEBUG_SECTION, "09_SYSTEM_wake_up_motor"))
         self.wakeUp_GPIO.off()
       
-        self._address = 0x04#0x08
+        self._address = 0x08#0x04
         self._state = 1
         self._sleep_mode = 0
         
