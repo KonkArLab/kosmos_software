@@ -480,7 +480,7 @@ class DFRobot_bmm150(object):
       @return Compass degree (0° - 360°)  0° = North, 90° = East, 180° = South, 270° = West.
     '''
     geomagnetic = self.get_geomagnetic()
-    compass = math.atan2(geomagnetic[0], geomagnetic[1])
+    compass = math.atan2(geomagnetic[0], geomagnetic[2]) # car capteur orienté sur la tranche
     if compass < 0:
       compass += 2 * self.PI
     if compass > 2 * self.PI:

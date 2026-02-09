@@ -60,8 +60,18 @@ class kosmos_main():
         self._ledB = LED(self._conf.config.getint(DEBUG_SECTION,"03_SYSTEM_led_b"))
         self._ledR = LED(self._conf.config.getint(DEBUG_SECTION,"04_SYSTEM_led_r"))
         self._ledB.on()
-        self._ledR.off()        
-
+        self._ledR.off()
+        
+        # LIGHT
+        self.LIGHT_ENABLED = self._conf.config.getint(CONFIG_SECTION, "10_LIGHT")
+        self.threshold_lux = self._conf.config.getint(DEBUG_SECTION,"10_system_threshold_light")
+        self.bool_light = False
+        if self.LIGHT_ENABLED == 1:
+            self._light = LED(self._conf.config.getint(DEBUG_SECTION,"09_system_lumen"))
+            logging.info("LIGHT demandé !")
+        else:
+            logging.info("LIGHT non demandé...")
+                
         # Buzzer
         if self._conf.systemVersion == "4.0":
             self.BUZZER_ENABLED = self._conf.config.getint(CONFIG_SECTION, "09_BUZZER")
@@ -87,8 +97,6 @@ class kosmos_main():
             # Chargement du temps de veille entre deux prises de vue
             self.tps_veille =  self._conf.config.getint(CONFIG_SECTION,"04_TPS_VEILLE")#temps de veille en seconde
         self.bool_micado = 1 # init du booléen micado
-
-        
 
         # Temps total de fonctionnement de l'appareil (pour éviter des crashs batteries)
         self.tps_total_acquisition = self._conf.config.getint(CONFIG_SECTION,"03_TPS_FONCTIONNEMENT")         
@@ -134,9 +142,23 @@ class kosmos_main():
         if self._conf.systemVersion == "4.0":
             if self.BUZZER_ENABLED == 1:
                 playMelody(self._buzzer, STARTING_MELODY)
-        
+                
+        # Light si demandé
+        if self.LIGHT_ENABLED == 1:
+            if self.thread_camera.get_flux() < self.threshold_lux: 
+                self._light.on()
+                self.bool_light = True
+                logging.info("LIGHT ON, flux total " + str(self.thread_camera.get_flux()))
+                time.sleep(0.5)
+                
         self.thread_camera.initialisation_awb()
         
+        if self.LIGHT_ENABLED == 1:
+            if self.bool_light == True:
+                self._light.off()
+                logging.info("LIGHT OFF")
+                self.bool_light = False
+
         if self.PRESENCE_MOTEUR == 1:
             self.motorThread.autoArm()       
         
@@ -197,6 +219,15 @@ class kosmos_main():
             # Run thread moteur
             self.motorThread.restart()
         
+        # Light si demandé & nécessaire vu le flux
+        if self.LIGHT_ENABLED == 1:
+            if self.thread_camera.get_flux() < self.threshold_lux:
+                event_line = self._conf.get_date_HMS()  + "; ALLUMAGE LIGHT" + "; " + str(self.thread_camera.get_flux())
+                self._conf.add_line(EVENT_FILE,event_line)
+                time.sleep(0.5)
+                self._light.on()
+                self.bool_light = True
+        
         # Run thread camera
         self.thread_camera.restart()
         
@@ -228,10 +259,18 @@ class kosmos_main():
         if self._conf.systemVersion == "4.0" :
             if self.BUZZER_ENABLED == 1:
                 playMelody(self._buzzer, STOPPING_MELODY)
-        
+                
         # Demander la fin de l'enregistrement
         self.thread_camera.stopCam()
         
+        # Extinction de la ligth si demandée
+        if self.LIGHT_ENABLED == 1: 
+            if self.bool_light == True:
+                self._light.off()
+                self.bool_light = False
+                event_line = self._conf.get_date_HMS()  + "; EXTINCTION LIGHT"
+                self._conf.add_line(EVENT_FILE,event_line)
+            
         if self.PRESENCE_MOTEUR==1:
             # Pause Moteur
             self.motorThread.pause()
@@ -289,6 +328,12 @@ class kosmos_main():
         self._ledR.off()
         self._ledR.close()
         self._ledB.close()
+        
+        # Arrt light
+        if self._conf.systemVersion == "4.0" :
+            if self.LIGHT_ENABLED == 1:
+                self._light.off()
+                self._light.close()
         
             
     def shutdown(self):

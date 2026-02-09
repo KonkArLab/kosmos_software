@@ -280,7 +280,16 @@ class KosmosCam(Thread):
             if self._AWB == 2:
                 logging.info('Gains AWB ajustés par Algo Maison')
                 self.adjust_awb(1,1,0.2)
-            
+    
+    def get_flux(self):
+        if self._light_sensor_ok:
+            try:
+                r, g, b = self.light_sensor.read()
+                return r + g + b
+            except:
+                return 1000 # à la moindre erreur, on renvoie le max du capteur autrement dit, le phare ne s'allumera pas
+    
+    
     def run(self):       
         while not self._end:
             i=0            
