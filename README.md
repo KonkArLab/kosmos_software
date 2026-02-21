@@ -88,36 +88,6 @@ Plusieurs fenêtres vont s'afficher:
 - Cocher `Connect Automatically with priority`, cela vous permettra de vous reconnecter directement lorsque le système effectuera un reboot  
 - Cliquer sur `Enregistrer`
 
-## Importation et installation du logiciel KOSMOS depuis le Github 
-Dans un terminal taper les commandes suivantes:  
-```
-git clone https://github.com/KonkArLab/kosmos_software.git		//Clone le dossier kosmos_software depuis le git
-cd kosmos_software							//Ouvre le dossier kosmos_software
-```
-
-puis
-
-<!-- sudo chmod 755 install.sh		//Rend exécutable le fichier install.sh -->
-
-```
-source install.sh				//Lance le fichier install.sh
-```
-
-Si des questions apparaissent  dans le terminal:  
-
-> Souhaitez-vous continuer ?[O/n]
-
-Taper `O` et appuyer sur `Entrée` pour finir l'exécution
-
-## Mise-à-jour du fichier kosmos_system.ini
-Ouvrir le fichier `kosmos_system.ini` qui se trouve au même niveau que le dossier `kosmos_software`.
-
-Dans la section `[KOSMOS-system]` renseigner les champs suivants :
-- `system` pour le nom du système, typiquement `K5` ou `KIMT`, etc.
-- `version` pour la version du système, typiquement `3.0` ou `4.0`
-
-Si besoin, mettre également à jour l'`increment`.  Si c'est le premier usage du système, il doit être à 1. Si le système a déjà été utilisé remettre l'incrément + 1 de la dernière vidéo. A noter que cet incrément doit être remis à 1 à chaque nouvelle année.  
-
 
 ## [Rpi5 seulement] Opération pour préparer la Rpi au mode de consommation minimale pour le mode MICADO
 
@@ -125,6 +95,7 @@ Si besoin, mettre également à jour l'`increment`.  Si c'est le premier usage d
 
 - Dans un terminal taper la commande suivante:
 ```
+sudo rpi-eeprom-update -a
 sudo -E rpi-eeprom-config --edit
 ```
 - Ajouter/modifier les lignes de telle sorte qu'il y ait:
@@ -192,6 +163,41 @@ rpicam-hello --timeout 10000
 Une fenêtre s'affichera normalement et contiendra le flux vidéo, et ce, pendant 2 secondes. À noter que si vous avez oté le filtre IR de la caméra, il se peut que la teinte de l'image soit rouge/orangée. 
 
 Si aucune vidéo ne s'affiche, vérifier les branchements de la caméra. Redémarrer la RPi et recommencer ce test. 
+
+
+
+## Importation et installation du logiciel KOSMOS depuis le Github 
+Dans un terminal taper les commandes suivantes:  
+```
+git clone https://github.com/KonkArLab/kosmos_software.git		//Clone le dossier kosmos_software depuis le git
+cd kosmos_software							//Ouvre le dossier kosmos_software
+```
+
+puis
+
+<!-- sudo chmod 755 install.sh		//Rend exécutable le fichier install.sh -->
+
+```
+source install.sh				//Lance le fichier install.sh
+```
+
+Si des questions apparaissent  dans le terminal:  
+
+> Souhaitez-vous continuer ?[O/n]
+
+Taper `O` et appuyer sur `Entrée` pour continuer l'exécution. 
+
+
+
+## Mise-à-jour du fichier kosmos_system.ini
+Ouvrir le fichier `kosmos_system.ini` qui se trouve au même niveau que le dossier `kosmos_software`.
+
+Dans la section `[KOSMOS-system]` renseigner les champs suivants :
+- `system` pour le nom du système, typiquement `K5` ou `KIMT`, etc.
+- `version` pour la version du système, typiquement `3.0` ou `4.0`
+
+Si besoin, mettre également à jour l'`increment`.  Si c'est le premier usage du système, il doit être à 1. Si le système a déjà été utilisé remettre l'incrément + 1 de la dernière vidéo. A noter que cet incrément doit être remis à 1 à chaque nouvelle année.  
+
 
 ## Stockage des données
 
