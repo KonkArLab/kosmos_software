@@ -88,10 +88,40 @@ Plusieurs fenêtres vont s'afficher:
 - Cocher `Connect Automatically with priority`, cela vous permettra de vous reconnecter directement lorsque le système effectuera un reboot  
 - Cliquer sur `Enregistrer`
 
+## Importation et installation du logiciel KOSMOS depuis le Github 
+Dans un terminal taper les commandes suivantes:  
+```
+git clone https://github.com/KonkArLab/kosmos_software.git		//Clone le dossier kosmos_software depuis le git
+cd kosmos_software							//Ouvre le dossier kosmos_software
+```
 
-### [Rpi5 seulement] Opération pour préparer la Rpi au mode de consommation minimale pour le mode MICADO
+puis
 
-#### Activation du mode veille profonde
+<!-- sudo chmod 755 install.sh		//Rend exécutable le fichier install.sh -->
+
+```
+source install.sh				//Lance le fichier install.sh
+```
+
+Si des questions apparaissent  dans le terminal:  
+
+> Souhaitez-vous continuer ?[O/n]
+
+Taper `O` et appuyer sur `Entrée` pour finir l'exécution
+
+## Mise-à-jour du fichier kosmos_system.ini
+Ouvrir le fichier `kosmos_system.ini` qui se trouve au même niveau que le dossier `kosmos_software`.
+
+Dans la section `[KOSMOS-system]` renseigner les champs suivants :
+- `system` pour le nom du système, typiquement `K5` ou `KIMT`, etc.
+- `version` pour la version du système, typiquement `3.0` ou `4.0`
+
+Si besoin, mettre également à jour l'`increment`.  Si c'est le premier usage du système, il doit être à 1. Si le système a déjà été utilisé remettre l'incrément + 1 de la dernière vidéo. A noter que cet incrément doit être remis à 1 à chaque nouvelle année.  
+
+
+## [Rpi5 seulement] Opération pour préparer la Rpi au mode de consommation minimale pour le mode MICADO
+
+### Activation du mode veille profonde
 
 - Dans un terminal taper la commande suivante:
 ```
@@ -106,7 +136,7 @@ WAKE_ON_GPIO=0
 - Quitter le fichier en appuyant sur `Ctrl + Shift + x`
 - Taper sur `Entrée`
 
-#### Activation de la recharge de la batterie
+### Activation de la recharge de la batterie
 
 - Dans un terminal taper la commande suivante pour ouvrir le fichier `config.txt`:
 ```
@@ -163,38 +193,6 @@ Une fenêtre s'affichera normalement et contiendra le flux vidéo, et ce, pendan
 
 Si aucune vidéo ne s'affiche, vérifier les branchements de la caméra. Redémarrer la RPi et recommencer ce test. 
 
-
-## Importation et installation du logiciel KOSMOS depuis le Github 
-Dans un terminal taper les commandes suivantes:  
-```
-git clone https://github.com/KonkArLab/kosmos_software.git		//Clone le dossier kosmos_software depuis le git
-cd kosmos_software							//Ouvre le dossier kosmos_software
-git checkout dev_ifremer
-```
-
-puis
-
-<!-- sudo chmod 755 install.sh		//Rend exécutable le fichier install.sh -->
-
-```
-source install.sh				//Lance le fichier install.sh
-```
-
-Si des questions apparaissent  dans le terminal:  
-
-> Souhaitez-vous continuer ?[O/n]
-
-Taper `O` et appuyer sur `Entrée` pour finir l'exécution
-
-## Mise-à-jour du fichier kosmos_system.ini
-Ouvrir le fichier `kosmos_system.ini` qui se trouve au même niveau que le dossier `kosmos_software`.
-
-Dans la section `[KOSMOS-system]` renseigner les champs suivants :
-- `system` pour le nom du système, typiquement `K5` ou `KIMT`, etc.
-- `version` pour la version du système, typiquement `3.0` ou `4.0`
-
-Si besoin, mettre également à jour l'`increment`.  Si c'est le premier usage du système, il doit être à 1. Si le système a déjà été utilisé remettre l'incrément + 1 de la dernière vidéo. A noter que cet incrément doit être remis à 1 à chaque nouvelle année.  
-
 ## Stockage des données
 
 Pour le stockage des données, deux choix s'ouvrent à vous : soit un stockage en local sur la carte SD, soit sur une clé USB. Si une clé USB est branchée, elle sera prioritaire. Si aucune clé usb n'est branchée, les fichiers seront stockées dans `/home/kosmos/kosmos_local_sd`.
@@ -202,7 +200,3 @@ Pour le stockage des données, deux choix s'ouvrent à vous : soit un stockage e
 <br>
 
 **Le système est désormais opérationnel !** Pour le faire fonctionner, il suffit de redémarrer la Raspberry Pi ! Le logiciel kosmos va se lancer automatiquement et il sera possible d'interagir avec le système via la Wifi et l'interface Web. Son utilisation sera explicitée dans la section **Mode d'emploi**.
-
-
-
-
