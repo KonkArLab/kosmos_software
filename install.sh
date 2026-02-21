@@ -4,7 +4,6 @@
 sudo apt update
 sudo apt upgrade
 sudo apt autoremove
-sudo rpi-eeprom-update -a
 
 #Installation des packages python necessaires 
 sudo apt install -y `cat requirements.txt`
