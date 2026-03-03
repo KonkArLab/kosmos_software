@@ -135,16 +135,50 @@ class KosmosCam(Thread):
             self._encoder2=H264Encoder(framerate=self._FRAMERATE, bitrate=10000000)            
         
         # Initialisation Capteur TP        
-        self._press_sensor_ok = False
-        try:
-            self.pressure_sensor = ms5837.MS5837_30BA()        
-            if self.pressure_sensor.init():
-                self._press_sensor_ok = True
-            logging.info("Capteur de pression OK")
-        except Exception as e:
-            logging.error("Erreur d'initialisation du capteur de pression ")
         
-        #Initialisation GPS
+        
+        #Initialisation capteurs
+        self.init_tp()    
+        self.init_gps()
+        self.init_lux()
+        self.init_magneto()
+   
+        # Definition Thread Hydrophone
+        self.PRESENCE_HYDRO = self._Conf.config.getint(CONFIG_SECTION,"07_HYDROPHONE") # Fonctionnement hydrophone si 1
+        if self.PRESENCE_HYDRO==1:
+            self.thread_hydrophone = KHydro.KosmosHydro(self._Conf)
+            logging.info("Hydrophone démarré")
+        else:
+            logging.info("Hydrophone non démarré")
+    
+    def init_lux(self):        
+        self._light_sensor_ok = False
+        try:
+            self.light_sensor = isl29125.RGBSensor()
+            if self.light_sensor.init():
+                self._light_sensor_ok = True
+                logging.info("Capteur de lumière OK")
+                return "Luxmètre initialisé"
+            else:
+                logging.error("Port série lumière OK mais non fonctionnel")
+                return "Luxmètre non fonctionnel"
+        except Exception as e:
+            logging.error("Erreur d'initialisation du capteur de lumière")
+            return "Luxmètre non fonctionnel"
+        
+    def init_magneto(self):
+        self._magneto_sensor_ok = False
+        try:
+            self.magneto_sensor = bmm150.magnetoSensor()
+            if self.magneto_sensor.init():
+                self._magneto_sensor_ok = True
+                logging.info("Magnétomètre OK")
+            else:
+                logging.error("Port série magnétomètre OK mais non fonctionnel")
+        except Exception as e:
+            logging.error("Erreur d'initialisation du magnetomètre")
+            
+    def init_gps(self):
         self._gps_ok = False
         try:
             self.gps = GPS()
@@ -156,39 +190,18 @@ class KosmosCam(Thread):
                 logging.error("Port Serie GPS OK mais non fonctionnel")
         except:    
             logging.error("Erreur d'initialisation du GPS")
-            
-        # Initialisation Capteur lumière        
-        self._light_sensor_ok = False
+    
+    def init_tp(self):
+        self._press_sensor_ok = False
         try:
-            self.light_sensor = isl29125.RGBSensor()
-            if self.light_sensor.init():
-                self._light_sensor_ok = True
-                logging.info("Capteur de lumière OK")
-            else:
-                logging.error("Port série lumière OK mais non fonctionnel")
+            self.pressure_sensor = ms5837.MS5837_30BA()        
+            if self.pressure_sensor.init():
+                self._press_sensor_ok = True
+            logging.info("Capteur de pression OK")
         except Exception as e:
-            logging.error("Erreur d'initialisation du capteur de lumière")
+            logging.error("Erreur d'initialisation du capteur de pression ")
             
-        # Initialisation Capteur magneto        
-        self._magneto_sensor_ok = False
-        try:
-            self.magneto_sensor = bmm150.magnetoSensor()
-            if self.magneto_sensor.init():
-                self._magneto_sensor_ok = True
-                logging.info("Magnétomètre OK")
-            else:
-                logging.error("Port série magnétomètre OK mais non fonctionnel")
-        except Exception as e:
-            logging.error("Erreur d'initialisation du magnetomètre")
-        
-        # Definition Thread Hydrophone
-        self.PRESENCE_HYDRO = self._Conf.config.getint(CONFIG_SECTION,"07_HYDROPHONE") # Fonctionnement hydrophone si 1
-        if self.PRESENCE_HYDRO==1:
-            self.thread_hydrophone = KHydro.KosmosHydro(self._Conf)
-            logging.info("Hydrophone démarré")
-        else:
-            logging.info("Hydrophone non démarré")
-                        
+            
     def apply_timestamp(self,request):
         #Time stamp en haut à gauche de la video
         timestamp = time.strftime("%Y-%m-%d %X")

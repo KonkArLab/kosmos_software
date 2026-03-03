@@ -14,7 +14,6 @@ from threading import Thread
 
 #Tous les methodes de l'API sont dans le fichier kosmos_backend.py
 import kosmos_backend as KBackend
-from kosmos_melody import *
 
 #Isolation du class KState dans le fichier kosmos_state.py
 from kosmos_state import KState
@@ -26,9 +25,8 @@ import kosmos_config as KConf
 import kosmos_cam as KCam
 import magpi_cam as MCam
 
-# Import des classes moteur pour les v 3 et 4
-import kosmos_motor_V3 as KMotor3
-import kosmos_motor_V4 as KMotor4
+# Import des classes moteur
+import kosmos_motor as KMotor
 
 import sys
 import ms5837
@@ -71,18 +69,7 @@ class kosmos_main():
             logging.info("LIGHT demandé !")
         else:
             logging.info("LIGHT non demandé...")
-                
-        # Buzzer
-        if self._conf.systemVersion == "4.0":
-            self.BUZZER_ENABLED = self._conf.config.getint(CONFIG_SECTION, "09_BUZZER")
-            if self.BUZZER_ENABLED == 1:
-                self._buzzer = TonalBuzzer(self._conf.config.getint(DEBUG_SECTION, "08_SYSTEM_buzzer"), octaves = 3)
-                logging.info("BUZZER demandé !")
-            else:
-                logging.info("BUZZER non demandé")    
-        else:
-            self.BUZZER_ENABLED = 0
-            logging.info("BUZZER non demandé")    
+                    
         
         # Boutons
         self.Button_Stop = Button(self._conf.config.getint(DEBUG_SECTION,"02_SYSTEM_stop_button_gpio"))
@@ -104,12 +91,7 @@ class kosmos_main():
         # Definition Thread Moteur
         self.PRESENCE_MOTEUR = self._conf.config.getint(CONFIG_SECTION,"05_MOTEUR") # Fonctionnement moteur si 1
         if self.PRESENCE_MOTEUR==1:
-            if self._conf.systemVersion == "4.0":
-                self.motorThread = KMotor4.kosmosMotor(self._conf)
-            if self._conf.systemVersion == "3.0":
-                self.motorThread = KMotor3.kosmosEscMotor(self._conf)
-            else:
-                logging.info("Moteur demandé mais non initialisé")
+            self.motorThread = KMotor.kosmosMotor(self._conf)
         
         # Instructions visiblement essentielles au bon fonctionnement du TP quand le moteur ne marche pas
         if self.PRESENCE_MOTEUR == 0 and self._conf.systemVersion == "4.0":
@@ -137,20 +119,20 @@ class kosmos_main():
         logging.info("STARTING : Kosmos en train de démarrer")
         
         self._ledB.blink()
-        
-        # Buzzer si version 4
-        if self._conf.systemVersion == "4.0":
-            if self.BUZZER_ENABLED == 1:
-                playMelody(self._buzzer, STARTING_MELODY)
                 
         # Light si demandé
         if self.LIGHT_ENABLED == 1:
-            if self.thread_camera.get_flux() < self.threshold_lux: 
-                self._light.on()
-                self.bool_light = True
-                logging.info("LIGHT ON, flux total " + str(self.thread_camera.get_flux()))
-                time.sleep(0.5)
-                
+            try: 
+                if self.thread_camera.get_flux() < self.threshold_lux: 
+                    self._light.on()
+                    self.bool_light = True
+                    logging.info("LIGHT ON pour calcul des gains, flux total " + str(self.thread_camera.get_flux()))
+                    time.sleep(0.5)
+                else:
+                    logging.info("LIGHT OFF pour calcul des gains, flux total " + str(self.thread_camera.get_flux()))
+            except:
+                logging.error("Erreur Luxmètre pour déclenchement LIGHT lors du calcul des gains")
+                        
         self.thread_camera.initialisation_awb()
         
         if self.LIGHT_ENABLED == 1:
@@ -169,12 +151,6 @@ class kosmos_main():
         self._extinction = False 
         self._ledR.off()
         self._ledB.on()
-        
-        # Buzzer si version 4
-        if self._conf.systemVersion == "4.0" :
-            if self.BUZZER_ENABLED == 1:
-                playMelody(self._buzzer, STANDBY_MELODY)
-                time.sleep(0.1)
 
         # Gestion des modes MICADO/STAVIRO
         if self.MODE == 2 and self.bool_micado == 1: # Mode MICADO sans intervention de l'opérateur via bouton 'stop record' 
@@ -210,23 +186,21 @@ class kosmos_main():
       
         self._ledB.off()
         
-        # Buzzer si version 4
-        if self._conf.systemVersion == "4.0" :
-            if self.BUZZER_ENABLED == 1:
-                playMelody(self._buzzer, WORKING_MELODY)
-        
         if self.PRESENCE_MOTEUR == 1:
             # Run thread moteur
             self.motorThread.restart()
         
         # Light si demandé & nécessaire vu le flux
         if self.LIGHT_ENABLED == 1:
-            if self.thread_camera.get_flux() < self.threshold_lux:
-                event_line = self._conf.get_date_HMS()  + "; ALLUMAGE LIGHT" + "; " + str(self.thread_camera.get_flux())
-                self._conf.add_line(EVENT_FILE,event_line)
-                time.sleep(0.5)
-                self._light.on()
-                self.bool_light = True
+            try: 
+                if self.thread_camera.get_flux() < self.threshold_lux:
+                    event_line = self._conf.get_date_HMS()  + "; ALLUMAGE LIGHT" + "; " + str(self.thread_camera.get_flux())
+                    self._conf.add_line(EVENT_FILE,event_line)
+                    time.sleep(0.5)
+                    self._light.on()
+                    self.bool_light = True
+            except:
+                logging.error("Erreur Luxmètre pour déclenchement LIGHT lors de l'enregistrement")
         
         # Run thread camera
         self.thread_camera.restart()
@@ -255,11 +229,6 @@ class kosmos_main():
         self._ledB.off()
         self._ledR.blink()
         
-        # Buzzer si version 4
-        if self._conf.systemVersion == "4.0" :
-            if self.BUZZER_ENABLED == 1:
-                playMelody(self._buzzer, STOPPING_MELODY)
-                
         # Demander la fin de l'enregistrement
         self.thread_camera.stopCam()
         
@@ -298,13 +267,6 @@ class kosmos_main():
         self.Button_Stop.close() 
         self.Button_Record.close()
         
-        # Buzzer si version 4
-        if self._conf.systemVersion == "4.0" :
-            if self.BUZZER_ENABLED == 1:
-                playMelody(self._buzzer, SHUTDOWN_MELODY)
-                self._buzzer.stop()
-                self._buzzer.close()
-    
         if self.PRESENCE_MOTEUR==1:
             self.motorThread.stop_thread()
             self.motorThread.power_off()       
@@ -312,7 +274,7 @@ class kosmos_main():
                 self.motorThread.join()
             del self.motorThread
             
-        if self.PRESENCE_MOTEUR == 0 and self._conf.systemVersion == "4.0":
+        if self.PRESENCE_MOTEUR == 0 :#and self._conf.systemVersion == "4.0":
                 self.wakeUp_GPIO.off()
                 self.wakeUp_GPIO.close()   
          
@@ -329,11 +291,10 @@ class kosmos_main():
         self._ledR.close()
         self._ledB.close()
         
-        # Arrt light
-        if self._conf.systemVersion == "4.0" :
-            if self.LIGHT_ENABLED == 1:
-                self._light.off()
-                self._light.close()
+        # Arret light
+        if self.LIGHT_ENABLED == 1:
+            self._light.off()
+            self._light.close()
         
             
     def shutdown(self):

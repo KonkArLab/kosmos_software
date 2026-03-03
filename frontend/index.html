@@ -21,6 +21,7 @@
         <li><a href="./campaign/campaign.html">Campaign</a></li>
         <li><a href="./config/config.html">Configuration</a></li>
         <li><a href="index.html">Camera</a></li>
+        <li><a href="./sensors/sensors.html">Sensors</a></li>
         <li><a href="./records/records.html">Records</a></li>
         <!--<li><a href="./checklist/checklist.html">Checklist</a></li>-->
       </ul>
@@ -30,29 +31,16 @@
   <section>	  
 	<br> 
 	<h3><span id="etat">Unknown KOSMOS state</span></h3> 
-    <div class="container">         
-      <h3>Camera control</h3>
-      <p>GPS position : <span id="latitude"></span>   <span id="longitude"> </span> </p>
-      <!--
-      <p>Pression : <span id="pression"> </span></p>
-      <p>Temperature : <span id="temperature"> </span></p>
-      <p>RGB : <span id="RGB"> </span></p>
-      <p>Compas : <span id="magneto"> </span></p>
-      -->
-
-      <h3 class="titleCamera">Buttons to record</h3>
+    <div class="container">
+               
+      <h3 class="titleCamera">Recording</h3>
       <button id="startCamera" onClick="start()">Start</button>
       <button id="stopCamera" onClick="stop()">Stop</button>
 
-	  <h3 class="titleCamera">Shutdown KOSMOS</h3>
+	  <h3 class="titleCamera">Shutdown</h3>
       <p><span id="checkConversion">Pas de conversion en cours</span></p>
       <button id="shutdown" onClick="shutdown()">Shutdown</button>
 
-      <h3 class="titleCamera">Live video</h3>
-      <button id="startLive" onClick="setLive(true)">Start Live</button>
-      <button id="stopLive" onClick="setLive(false)">Stop Live</button>
-
-      <img id="frame">
        
     </div>
   </section>
@@ -60,7 +48,6 @@
   <script src="./libs/sweetAlert/sweetAlert.min.js"></script>
   <script src="cameraScript.js"></script>
   <script src="./config/state.js"></script>
-  <script src="./config/sensors.js"></script>
   <script src="./config/metadata2.js"></script>
   <script src="./config/checkConversion.js"></script>
 

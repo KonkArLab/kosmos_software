@@ -71,21 +71,21 @@ class kosmosMotor(Thread):
 
         self._state = 0
         self._sleep_mode = 1
-        self.send_data()
+        self.send_data(self.motor_revolutions)
         self._bus.close()
 
-    def send_data(self):
-        i2c_Data = [self._state + 1, self.motor_revolutions, self.motor_vitesse, self.motor_accel, self._sleep_mode + 1, self.step_mode]
+    def send_data(self, motor_revolutions):
+        i2c_Data = [self._state + 1, motor_revolutions, self.motor_vitesse, self.motor_accel, self._sleep_mode + 1, self.step_mode]
         # self.step_mode paramètre à enlever de la transmission à l'avenir
         try:
                 self._bus.write_i2c_block_data(self._address, 0x00, i2c_Data)
         except:
                 logging.error('Erreur moteur : transmission Arduino i2c impossible')
-
+          
     def autoArm(self): 
         '''activation de la rotation moteur 1 fois pour témoigner de son fonctionnement à l'allumage'''
         self.power_on()
-        self.send_data()
+        self.send_data(self.motor_revolutions)
         
         logging.info('Moteur prêt !')
     
@@ -96,7 +96,7 @@ class kosmosMotor(Thread):
                 while not self._pause_event.isSet():
                 
                     self._state = True
-                    self.send_data()
+                    self.send_data(self.motor_revolutions)
                     rotation_done = False
                     #écriture dans évènement
                     event_line = self._Conf.get_date_HMS()  + ";START MOTEUR; " 
@@ -116,7 +116,6 @@ class kosmosMotor(Thread):
                             time.sleep(0.1)
             else:
                 self._state = 0
-                self.send_data()
                 event_line =  self._Conf.get_date_HMS()  + ";END MOTEUR; " 
                 self._Conf.add_line(EVENT_FILE,event_line)
                 

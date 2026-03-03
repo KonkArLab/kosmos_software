@@ -17,8 +17,7 @@ GIT_PATH = ROOT_PATH+"kosmos_software/"
 WORK_PATH = GIT_PATH+"kosmos-env/"
 
 #  Sections config, campagne, et debug 
-CONF_FILE_TEMPLATE_V3 = "kosmos_config_template_V3.ini"
-CONF_FILE_TEMPLATE_V4 = "kosmos_config_template_V4.ini"
+CONF_FILE_TEMPLATE= "kosmos_config_template.ini"
 
 CONF_FILE = "kosmos_config.ini"
 CONFIG_SECTION = "KOSMOS-config"
@@ -77,15 +76,11 @@ class KosmosConfig:
             subprocess.run(["sudo", "chown", "-R", os.listdir("/home")[0]+":"+os.listdir("/home")[0] , ROOT_PATH+"kosmos_local_sd"])
             self.sauvegarde = "en local"
             
-        if self.systemVersion == "3.0":
-            subprocess.run(["sudo", "cp", "-n", GIT_PATH+CONF_FILE_TEMPLATE_V3,USB_INSIDE_PATH+CONF_FILE])
-            logging.info("Version 3.0")
-        elif self.systemVersion == "4.0":
-            subprocess.run(["sudo", "cp", "-n", GIT_PATH+CONF_FILE_TEMPLATE_V4,USB_INSIDE_PATH+CONF_FILE])
-            logging.info("Version 4.0")
-        else:
-            logging.error("Version de Kosmos non spécifiée (3.0 ou 4.0), arrêt du programme")
-            os._exit(0)
+        subprocess.run(["sudo", "cp", "-n", GIT_PATH+CONF_FILE_TEMPLATE,USB_INSIDE_PATH+CONF_FILE])
+        logging.info("Version " + self.systemVersion)
+        
+            
+        
         self._config_path=USB_INSIDE_PATH+CONF_FILE
         self.config = configparser.ConfigParser()
         self.config.read(self._config_path)

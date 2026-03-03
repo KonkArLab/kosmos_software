@@ -32,9 +32,17 @@ class Server:
         self.app.add_url_rule("/getConfig", view_func=self.getConfig)
         self.app.add_url_rule("/frame", view_func=self.image)
         self.app.add_url_rule("/updateMetadata",view_func=self.update_metadata, methods=['POST']) 
+        
         self.app.add_url_rule("/sensors", view_func=self.sensors)
+        self.app.add_url_rule("/initSensors", view_func=self.initSensors)
+
+        self.app.add_url_rule("/motorPlus", view_func=self.rotatePlus)
+        self.app.add_url_rule("/motorMinus", view_func=self.rotateMinus)
+        
         self.app.add_url_rule("/save", view_func=self.save)
         self.app.add_url_rule("/checkConversion", view_func=self.checkConversion)
+        self.app.add_url_rule("/testLumen", view_func=self.testLumen)
+
 
 
     def run(self) :
@@ -70,49 +78,98 @@ class Server:
             "save" : "Stockage des vidéos " + self.myMain._conf.sauvegarde 
         }
     
-    def sensors(self):
+    def testLumen(self):
         try:
-            LAT = str(self.myMain.thread_camera.gps.get_latitude())
-            LONG = str(self.myMain.thread_camera.gps.get_longitude())
+            if self.myMain.LIGHT_ENABLED == 1:
+                self.myMain._light.on()
+                time.sleep(1)
+                self.myMain._light.off()
+                return{
+                "light" : "",
+                }
+            else:
+                return{
+                "light" : "Eclairage non activé",
+                }
+        except:
+            return{
+            "light" : "Eclairage défectueux",
+            }
+    
+    # Moteur
+    def rotatePlus(self):
+        if self.myMain.PRESENCE_MOTEUR == 1:
+            self.myMain.motorThread.send_data(5)
+            return{
+                "motor" : "Avance"
+            }
+        else:
+            return{
+                "motor" : "Moteur non activé"
+            }
+        
+    def rotateMinus(self):
+        if self.myMain.PRESENCE_MOTEUR == 1:
+            self.myMain.motorThread.send_data(5)
+            return{
+                "motor" : "Recul"
+            }
+        else:
+            return{
+                "motor" : "Moteur non activé"
+            }     
+    
+            
+    def initSensors(self):
+        self.myMain.thread_camera.init_lux()
+        self.myMain.thread_camera.init_gps()
+        self.myMain.thread_camera.init_tp()
+        self.myMain.thread_camera.init_magneto()
+        return {"init" : "Initialisation effectuée"}
+
+    def sensors(self):
+        # GPS
+        try:
+            LAT = self.myMain.thread_camera.gps.get_latitude()
+            LONG = self.myMain.thread_camera.gps.get_longitude()
         except:
             LAT = "ERR"
             LONG = "ERR"
-        '''
+        # TP
         try:
-            if self.myMain.thread_camera.pressure_sensor.read():
-                press = self.myMain.thread_camera.pressure_sensor.pressure()
-                PRESSURE = f'{press:.1f}'
-                temp = self.myMain.thread_camera.pressure_sensor.temperature()  # Default is degrees C (no arguments)
-                TEMPERATURE = f'{temp:.1f}'
+            press = self.myMain.thread_camera.pressure_sensor.pressure()
+            PRESSURE = f'{press:.1f}'
+            temp = self.myMain.thread_camera.pressure_sensor.temperature()  # Default is degrees C (no arguments)
+            TEMPERATURE = f'{temp:.1f}'
         except:
             PRESSURE = "ERR"
             TEMPERATURE = "ERR"
+        # Magneto
+        try:
+            x, y, z, c = self.myMain.thread_camera.magneto_sensor.read()
+            magneto_compass = f"{c:.0f}"
+            MAGNETO = magneto_compass
+        except:
+            MAGNETO = "ERR"
+        # LUX
         try:
             r, g, b = self.myMain.thread_camera.light_sensor.read()
             lux_r = f"{r}"
             lux_g = f"{g}"
             lux_b = f"{b}"
-            LUX = lux_r + ' ' + lux_b + ' ' + lux_b
+            LUX = 'R ' +lux_r + ' G ' + lux_b + ' B ' + lux_b
         except:
-            LUX = "ERR"
-        try:
-            #if self.myMain.thread_camera.magneto_sensor.read():
-            x, y, z, c = self.myMain.thread_camera.magneto_sensor.read()
-            magneto_compass = f"{c:.0f}"
-            MAGNETO = magneto_compass + ' deg'
-        except:
-            MAGNETO = "ERR"
-        '''
+            LUX = "ERR"   
         return{
-            "status" : "ok",
             "latitude" : LAT,
             "longitude" : LONG,
-            #"pression" : PRESSURE,
-            #"temperature" : TEMPERATURE,
-            #"magneto" : MAGNETO,
-            #"RGB" : LUX
-        }    
-        
+            "pression" : PRESSURE,
+            "temperature" : TEMPERATURE,
+            "magneto" : MAGNETO,
+            "RGB" : LUX
+        }
+    
+    
     def start(self):
         if(self.myMain.state==KState.STANDBY):   
             self.myMain.record_event.set() 

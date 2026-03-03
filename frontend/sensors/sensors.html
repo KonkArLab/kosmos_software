@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../libs/sweetAlert/sweetAlert.min.css">
+  <link rel="stylesheet" type="text/css" href="../styles.css">
+  <title>Kosmos</title>
+</head>
+
+<body>
+  <header>
+    <!--    <input type="checkbox" id="menuToggle" class="menu-toggle">
+
+    <label for="menuToggle" class="menu-icon">
+      <img src="./icons/menu.svg" class="svg-icon" alt="Menu Icon">
+    </label>    -->
+    <nav>
+      <ul>
+        <li><a href="../campaign/campaign.html">Campaign</a></li>
+        <li><a href="../config/config.html">Configuration</a></li>
+        <li><a href="../index.html">Camera</a></li>
+        <li><a href="./sensors.html">Sensors</a></li>
+        <li><a href="../records/records.html">Records</a></li>
+        <!--<li><a href="./checklist/checklist.html">Checklist</a></li>-->
+      </ul>
+    </nav>
+  </header>
+  
+  <section>	  
+	<br> 
+	<h3><span id="etat">Unknown KOSMOS state</span></h3> 
+    <div class="container">         
+      <h3 class="titleCamera">Live video</h3>
+      
+      <button id="startLive" onClick="setLive(true)">Start Live</button>
+      <button id="stopLive" onClick="setLive(false)">Stop Live</button>
+      <img id="frame">
+      
+      <h3 class="titleCamera">Moteur</h3>
+      
+      <p> <button id="motorPlus"> Avance </button> <button id="motorMinus"> Recul </button> <span id="motor"> </span> </p>
+            
+      <h3 class="titleCamera"> Capteurs </h3>
+      <p> <button id="testSensors"> Test </button> <button id="initSensors"> Init </button> <span id="init"> </span> </p>
+      <p> <b>Luxmètre : </b> <span id="RGB"> </span> </p> 
+      <p> <b>Capteur TP : </b> <span id="tp"> </span> </p> 
+      <p> <b>GPS : </b> <span id="gps"> </span> </p> 
+      <p> <b>Compas : </b><span id="magneto"> </span> </p> 
+      
+      <h3 class="titleCamera">Eclairage</h3>
+      
+      <p> <button id="testLumen" onClick="lumen()">Test Lumiere</button> <span id="light"> </span> </p>
+
+    </div>
+  </section>
+
+  <script src="../libs/sweetAlert/sweetAlert.min.js"></script>
+  <script src="sensors.js"></script>
+  <script src="../config/state.js"></script>
+
+</body>
+
+</html>

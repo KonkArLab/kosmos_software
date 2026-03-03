@@ -3,22 +3,15 @@ let serverUrl = "http://10.42.0.1:5000";
 // Alternative server URL (commented out)
 // let serverUrl = "http://10.29.225.198:5000";
 
-// This variable tracks the state of live video streaming
-let live = false;
-
 // Element references
 const startButton = document.getElementById("startCamera");
 const stopButton = document.getElementById("stopCamera");
-const startLiveButton = document.getElementById("startLive");
-const stopLiveButton = document.getElementById("stopLive");
 const shutdownButton = document.getElementById("shutdown");
 
 // Initial setup: disable stop buttons and enable shutdown
 stopButton.disabled = true;
-stopLiveButton.disabled = true;
 shutdownButton.disabled = false;
 startButton.disabled = false;
-startLiveButton.disabled = false;
 
 majStateButton();
 
@@ -29,11 +22,9 @@ async function majStateButton() {
     if (body.state.substr(body.state.length-7) === "WORKING") {
       stopButton.disabled = false;
       startButton.disabled = true;
-      startLiveButton.disabled = true;
       shutdownButton.disabled = true;
     } else {
       resetButtonState()
-      console.log('tutu')
     }
   } finally {}
 }
@@ -81,7 +72,6 @@ async function stop() {
   } finally {
     // Enable only start buttons and shutdown after stop
     startButton.disabled = false;
-    startLiveButton.disabled = false;
     shutdownButton.disabled = false;
   }
 }
@@ -111,68 +101,20 @@ async function shutdown() {
     // Enable shutdown only after shutdown completes
     shutdownButton.disabled = false;
     startButton.disabled = false;
-    startLiveButton.disabled = false;
   }
 }
 
-// Function to set the live streaming state based on camera state
-async function setLive(state) {
-  disableAllButtons();
-  try {
-    const response = await fetch(serverUrl + "/state");
-    const body = await response.json();
-
-    if (state) {
-      console.log(body.state.substr(body.state.length-7))
-      if (body.state.substr(body.state.length-7) === "STANDBY") {
-        live = true;
-        frameLoop();
-        stopLiveButton.disabled = false; // Enable only the stop live button
-      } else {
-        alert(
-          "Cannot start live video while the camera is not in STANDBY state."
-        );
-        resetButtonState();
-      }
-    } else {
-      live = false;
-      resetButtonState();
-    }
-  } catch (error) {
-    console.error("Error fetching camera state:", error);
-  }
-}
-
-// Function to fetch an image from the server and display it
-async function getImage() {
-  const response = await fetch(serverUrl + "/frame");
-  const imageBlob = await response.blob();
-  const imageObjectURL = URL.createObjectURL(imageBlob);
-  const image = document.getElementById("frame");
-  image.src = imageObjectURL;
-}
-
-// Function to continuously fetch and display frames in a loop
-async function frameLoop() {
-  while (live) {
-    await getImage();
-  }
-}
 
 // Helper function to disable all buttons
 function disableAllButtons() {
   startButton.disabled = true;
   stopButton.disabled = true;
-  startLiveButton.disabled = true;
-  stopLiveButton.disabled = true;
   shutdownButton.disabled = true;
 }
 
 // Helper function to reset buttons to their initial state
 function resetButtonState() {
   startButton.disabled = false;
-  startLiveButton.disabled = false;
   stopButton.disabled = true;
-  stopLiveButton.disabled = true;
   shutdownButton.disabled = false;
 }
