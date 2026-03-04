@@ -13,7 +13,7 @@
 Sur un PC :  
  - Installer [l'imageur Raspberry Pi](https://www.raspberrypi.com/software/)  
  - Choisir le modèle de carte : Raspberry Pi 4 (ou 5 selon le modèle)
- - Choisir le système d'exploitation : Raspberry Pi OS (64 bit), Debian Bookworm
+ - Choisir le système d'exploitation : Raspberry Pi OS (64 bit), Debian Trixie
  - Choisir pour emplacement de stockage votre carte SD  
 <br>
 
@@ -35,7 +35,7 @@ Plusieurs fenêtres vont apparaître:
 [comment]: < - Remplacer le fichier config.txt du boot de la carte SD par celui présent dans le fichier kosmos_software du Github.>
 
 ## Configuration générale de la RPi.  
-Une connexion ethernet filaire plutôt que Wifi est recommandée.
+L'idéal est de réaliser cette première configuration sur une Raspberry Pi qui n'est pas intégrée dans le caisson vidéo du KOSMOS. De cette façon on peut lui brancher facilement clavier, souris, écran, ethernet (d'ailleurs préférable au Wifi)...
   
  - Démarrer la Raspberry Pi avec la carte SD, la carte RPi est allumée lorsque les petites leds de la carte clignotent. Le démarrage peut prendre un peu de temps.  
 Plusieurs fenêtres vont s'afficher:   
@@ -50,11 +50,6 @@ Plusieurs fenêtres vont s'afficher:
 > - Compléter les informations demandées. Mettre pour username `kosmos` et pour mot de passe `kosmos` 
 > - Cliquer sur `Next`
 
-<!--
-> Set up Screen  
-> - Cliquer sur `Next`
--->
-  
 > Select Wifi Network  
 > - Cliquer sur `Next`  
   
@@ -139,20 +134,7 @@ dtoverlay=disable-bt
 - Quitter le fichier en appuyant sur `Ctrl + Shift + x`
 - Taper sur `Entrée`
 
-
-<!--
-### Activation des ports Serial et du VNC
-
-- Aller dans le menu principal (icone avec la framboise en haut à gauche de l'écran)
-- Cliquer sur `Préférence` puis `Configuration du Raspberry Pi`
-- Dans l'onglet `Interface`
-- Passer le `VNC` à `Enable`
-- Passer le `Port serial` à `Enable`
-- Passer le `Serial Console` à `Disable`
-- Redémarrer enfin la Rpi.
--->
-
-## Test de la caméra
+## Test de la caméra (optionnel)
 Brancher la nappe à la RPI et à la caméra puis effectuer un redémarrage de la Rpi:
 ```
 sudo reboot
@@ -165,8 +147,6 @@ rpicam-hello --timeout 10000
 Une fenêtre s'affichera normalement et contiendra le flux vidéo, et ce, pendant 2 secondes. À noter que si vous avez oté le filtre IR de la caméra, il se peut que la teinte de l'image soit rouge/orangée. 
 
 Si aucune vidéo ne s'affiche, vérifier les branchements de la caméra. Redémarrer la RPi et recommencer ce test. 
-
-
 
 ## Importation et installation du logiciel KOSMOS depuis le Github 
 Dans un terminal taper les commandes suivantes:  
@@ -189,8 +169,6 @@ Si des questions apparaissent  dans le terminal:
 > Souhaitez-vous continuer ?[O/n]
 
 Taper `O` et appuyer sur `Entrée` pour continuer l'exécution. 
-
-
 
 ## Mise-à-jour du fichier kosmos_system.ini
 Ouvrir le fichier `kosmos_system.ini` qui se trouve au même niveau que le dossier `kosmos_software`.
