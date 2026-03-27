@@ -110,7 +110,7 @@ class Server:
         
     def rotateMinus(self):
         if self.myMain.PRESENCE_MOTEUR == 1:
-            self.myMain.motorThread.send_data(-5)
+            self.myMain.motorThread.send_data(5)
             return{
                 "motor" : "Recul"
             }
