@@ -94,7 +94,7 @@ class kosmos_main():
             self.motorThread = KMotor.kosmosMotor(self._conf)
         
         # Instructions visiblement essentielles au bon fonctionnement du TP quand le moteur ne marche pas
-        if self.PRESENCE_MOTEUR == 0 and self._conf.systemVersion == "4.0":
+        if self.PRESENCE_MOTEUR == 0:# and self._conf.systemVersion == "4.0":
             self.wakeUp_GPIO = DigitalOutputDevice(self._conf.config.getint(DEBUG_SECTION, "09_SYSTEM_wake_up_motor"))
             self.wakeUp_GPIO.off()
                 
