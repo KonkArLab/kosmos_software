@@ -6,6 +6,7 @@ sudo apt upgrade
 sudo apt autoremove
 
 #Installation des packages python necessaires 
+sudo dpkg --configure -a
 sudo apt install -y `cat requirements.txt`
 sudo pip install sounddevice --break-system-package
 
