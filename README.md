@@ -65,7 +65,7 @@ Plusieurs fenêtres vont s'afficher:
 
 ## Création d'un point Hotspot pour l'application KosmosWeb
 [comment]: <Une fois la RPi redémarrée,>   
-- Aller dans l'onglet Wifi (icone avec deux flèches de sens inversées) pour créer un Hotspot Wifi :
+- Aller dans l'onglet Réseau (icone avec deux flèches de sens inversées) pour créer un Hotspot Wifi :
 - Aller dans `Advanced Options`  
 - Cliquer sur `Create Wifi Hospot`  
 - Lui donner un nom `KosmosWeb2` où 2 est un numéro permettant de distinguer les systèmes kosmos entre eux 
@@ -74,7 +74,7 @@ Plusieurs fenêtres vont s'afficher:
  
  Modification des paramètres de connexion par défaut afin que le hotspot se lance automatiquement au démarrage de la Rpi. 
  
-- Retourner dans l'onglet Wifi
+- Retourner dans l'onglet Réseau
 - Aller dans `Advanced options`  
 - Aller dans `Modifier les connexions`    
 - Choisir le réseau Hotspot  
@@ -83,6 +83,9 @@ Plusieurs fenêtres vont s'afficher:
 - Cocher `Connect Automatically with priority`, cela vous permettra de vous reconnecter directement lorsque le système effectuera un reboot  
 - Cliquer sur `Enregistrer`
 
+## Modification du nom de la connexion filaire
+- Toujours dans `Advanced options` et `Modifier les connexions`, ouvrir les paramètres de la connexion Ethernet
+- Modifier le `Nom de la connexion' pour qu'il soit :`EthernetPort`
 
 ## [Rpi5 seulement] Opération pour préparer la Rpi au mode de consommation minimale pour le mode MICADO
 
