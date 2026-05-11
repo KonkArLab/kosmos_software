@@ -85,7 +85,8 @@ Plusieurs fenêtres vont s'afficher:
 
 ## Modification du nom de la connexion filaire
 - Toujours dans `Advanced options` et `Modifier les connexions`, ouvrir les paramètres de la connexion Ethernet
-- Modifier le `Nom de la connexion' pour qu'il soit :`EthernetPort`
+- Modifier le `Nom de la connexion` pour qu'il soit :`EthernetPort`
+- Cliquer sur `Enregistrer`
 
 ## [Rpi5 seulement] Opération pour préparer la Rpi au mode de consommation minimale pour le mode MICADO
 
