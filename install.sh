@@ -14,7 +14,7 @@ sudo pip install sounddevice --break-system-package
 sudo systemctl disable bluetooth
 
 # Configuration IP statique
-sudo nmcli connection modify "Wired connection 1" \
+sudo nmcli connection modify "EthernetPort" \
 ipv4.addresses 192.168.10.2/24 \
 ipv4.gateway 192.168.10.1 \
 ipv4.dns 192.168.10.1 \
