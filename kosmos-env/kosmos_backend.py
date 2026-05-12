@@ -6,7 +6,9 @@ import io
 import os
 import json
 import time
-
+import subprocess
+import re
+from datetime import datetime
 
 import logging
 log = logging.getLogger('werkzeug')
@@ -42,7 +44,9 @@ class Server:
         self.app.add_url_rule("/save", view_func=self.save)
         self.app.add_url_rule("/checkConversion", view_func=self.checkConversion)
         self.app.add_url_rule("/testLumen", view_func=self.testLumen)
-
+        
+        self.app.add_url_rule("/testIP", view_func=self.testIP)
+        self.app.add_url_rule("/changeIP", view_func=self.changeIP)
 
 
     def run(self) :
@@ -59,8 +63,10 @@ class Server:
         try:
             incrementt = self.myMain._conf.system.getint(INCREMENT_SECTION,"increment")-1
             str1 = self.myMain._conf.CAMPAGNE_PATH +f'{incrementt:04}'+"/"+f'{incrementt:04}'+".mp4" 
-            str2 = self.myMain._conf.CAMPAGNE_PATH +f'{incrementt:04}'+"/"+f'{incrementt:04}'+".h264"  
-            if os.path.exists(str1) and os.path.exists(str2):
+            str2 = self.myMain._conf.CAMPAGNE_PATH +f'{incrementt:04}'+"/"+f'{incrementt:04}'+".h264"
+            str3 = self.myMain._conf.CAMPAGNE_PATH +f'{incrementt:04}'+"/"+f'{incrementt:04}'+"_stereo.mp4" 
+            str4 = self.myMain._conf.CAMPAGNE_PATH +f'{incrementt:04}'+"/"+f'{incrementt:04}'+"_stereo.h264"
+            if (os.path.exists(str1) and os.path.exists(str2)) or (os.path.exists(str3) and os.path.exists(str4)):
                 checkConv = "Conversion en cours"
             else:
                 checkConv = "Pas de conversion en cours"
@@ -160,13 +166,34 @@ class Server:
             LUX = 'R ' +lux_r + ' G ' + lux_b + ' B ' + lux_b
         except:
             LUX = "ERR"   
+        # Batterie RTC
+        try:
+            result = subprocess.check_output(
+                ["vcgencmd", "pmic_read_adc", "BATT_V"],
+                text=True
+            )
+            RTC = str(result)
+        except:
+            RTC = "ERR"
+        # Heure Rpi
+        try:
+            maintenant = datetime.now()
+            heure = maintenant.strftime("%H:%M:%S")
+            date = maintenant.strftime("%d/%m/%Y")
+            time = date + " " + heure
+        except:
+            time = "ERR"   
+            
+        
         return{
             "latitude" : LAT,
             "longitude" : LONG,
             "pression" : PRESSURE,
             "temperature" : TEMPERATURE,
             "magneto" : MAGNETO,
-            "RGB" : LUX
+            "RGB" : LUX,
+            "rtc": RTC,
+            "time": time
         }
     
     
@@ -328,3 +355,58 @@ class Server:
                 "message": f"Failed to save metadata: {str(e)}"
             })
        
+    def testIP(self):
+        try:
+            result = subprocess.check_output(
+                ["nmcli", "-g", "ipv4.method", "connection", "show", "EthernetPort"],
+                text=True
+            )
+            print(result)
+            if result == "manual\n":
+                return{
+                "ip" : "Transfert de données actif",
+                }
+            elif result == "auto\n":
+                return{
+                "ip" : "Internet actif",
+                }
+            else:
+                return{
+                "ip" : "ERR",
+                }
+        except:
+            return{
+            "ip" : "ERR",
+            }
+    
+    def changeIP(self):
+        try:
+            result = subprocess.check_output(
+                ["nmcli", "-g", "ipv4.method", "connection", "show", "EthernetPort"],
+                text=True
+            )
+            if result == "manual\n":
+                subprocess.run(["sh", "/home/"+os.listdir("/home")[0]+"/kosmos_software/InternetActif.sh"])
+                print('sh internet')
+                return{
+                "ip" : "Internet activé",
+                }
+            elif result == "auto\n":
+                subprocess.run(["sh", "/home/"+os.listdir("/home")[0]+"/kosmos_software/TransfertDonneesActif.sh"])
+                print('sh transfert')
+                return{
+                "ip" : "Transfert de données activé",
+                }
+            else:
+                return{
+                "ip" : "ERR",
+                }
+        except:
+            return{
+            "ip" : "ERR",
+            }
+        
+    
+      
+                
+    

@@ -9,6 +9,9 @@ let live = false;
 // Element references
 const testLumenButton = document.getElementById("testLumen");
 
+const testIPButton = document.getElementById("testIP");
+const changeIPButton = document.getElementById("changeIP");
+
 const startLiveButton = document.getElementById("startLive");
 const stopLiveButton = document.getElementById("stopLive");
 
@@ -111,6 +114,44 @@ async function lumen() {
   } finally {}
 }
 
+// Test de l'ip
+document.getElementById("testIP").addEventListener("click", IP);
+async function IP() {
+  try {
+    const response = await fetch(serverUrl + "/state");
+    const body = await response.json();
+    if (body.state.substr(body.state.length-7) === "STANDBY") {
+        const ipresponse = await fetch(serverUrl + "/testIP");
+        const ipbody = await ipresponse.json();
+        document.getElementById("ip").textContent = ipbody.ip;
+        setTimeout(() => {
+          document.getElementById("ip").textContent = "";
+        }, 2000);
+    } else {
+      resetButtonState()
+    }
+  } finally {}
+}
+
+// Changement de l'ip
+document.getElementById("changeIP").addEventListener("click", changeIP);
+async function changeIP() {
+  try {
+    const response = await fetch(serverUrl + "/state");
+    const body = await response.json();
+    if (body.state.substr(body.state.length-7) === "STANDBY") {
+        const cipresponse = await fetch(serverUrl + "/changeIP");
+        const cipbody = await cipresponse.json();
+        document.getElementById("ip").textContent = cipbody.ip;
+        setTimeout(() => {
+          document.getElementById("ip").textContent = "";
+        }, 2000);
+    } else {
+      resetButtonState()
+    }
+  } finally {}
+}
+
 // Test des capteurs
 document.getElementById("testSensors").addEventListener("click", sensors);
 async function sensors() {
@@ -124,11 +165,16 @@ async function sensors() {
       document.getElementById("tp").textContent = "Pression " + Body.pression + " hPa  Température" + "   " + Body.temperature + " °C" ;
       document.getElementById("gps").textContent = "Latitude " + Body.latitude + "°  Longitude " + Body.longitude + "°" ;
       document.getElementById("magneto").textContent = "Cap " + Body.magneto ;
+      document.getElementById("RTC").textContent = Body.rtc ;
+      document.getElementById("time").textContent = Body.time ;
+
       setTimeout(() => {
         document.getElementById("RGB").textContent = "";
         document.getElementById("tp").textContent = "";
         document.getElementById("gps").textContent = "";
         document.getElementById("magneto").textContent = "";
+        document.getElementById("RTC").textContent = "";
+        document.getElementById("time").textContent = "";
       }, 7000);
     } else {
       resetButtonState();
