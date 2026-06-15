@@ -299,46 +299,18 @@ class MagpiCam(Thread):
     
     def writeJSON(self,cam_file):
         # Creation du json contenant les infostations
-        with open(GIT_PATH+'infoStationTemplate.json') as f:
-            
-            infoStationDict = json.load(f)
-            infoStationDict["system"]["system"] = self._Conf.systemName
-            infoStationDict["system"]["version"] = self._Conf.systemVersion
-            infoStationDict["system"]["model"]=self._Conf.get_RPi_model()
-            infoStationDict["system"]["camera"] = self._CAM1_SENSOR
-            
-            infoStationDict["video"]["stationDict"]["increment"] = f'{self._Conf.system.getint(INCREMENT_SECTION,"increment")-1:04}'
-            
-            # On sauvegarde date et heure venant de l'OS, même si on conservera aussi date et heure provenant du smartphone
-            infoStationDict["video"]["hourDict"]["ymdOS"] = self._Conf.get_date_d()+"/"+self._Conf.get_date_m()+"/"+self._Conf.get_date_Y()
-            infoStationDict["video"]["hourDict"]["HMSOS"] = self._Conf.get_date_H()+":"+self._Conf.get_date_M()+":"+self._Conf.get_date_S()
-            
-            '''
-            # From sensors
-            try:
-                infoStationDict["video"]["gpsDict"]["latitude"] = float(self.gps.get_latitude())
-                infoStationDict["video"]["gpsDict"]["longitude"] = float(self.gps.get_longitude())
-            except:
-                infoStationDict["video"]["gpsDict"]["latitude"] = None
-                infoStationDict["video"]["gpsDict"]["longitude"] = None
-                
-            infoStationDict["video"]["ctdDict"]["salinity"] = None
+        with open(GIT_PATH+'nouveau_template.json') as f:
 
-            try:
-                ma = self.PT()
-                depth = (ma[0]-ma[1])/(1029*9.80665)
-                infoStationDict["video"]["ctdDict"]["depth"] = depth
-                infoStationDict["video"]["ctdDict"]["temperature"] = ma[2]
-                infoStationDict["video"]["meteoAirDict"]["atmPress"] = ma[1]
-                infoStationDict["video"]["meteoAirDict"]["tempAir"] = ma[3]
-                #print(depth, ma[2],ma[1],ma[3])
-            except:
-                infoStationDict["video"]["ctdDict"]["depth"] = None
-                infoStationDict["video"]["ctdDict"]["temperature"] = None
-                infoStationDict["video"]["meteoAirDict"]["atmPress"] = None
-                infoStationDict["video"]["meteoAirDict"]["tempAir"] = None
-            '''
-            
+            infoStationDict = json.load(f)
+            infoStationDict["system"]["type_system"]["value"] = self._Conf.systemName
+            infoStationDict["system"]["system_version"]["value"] = self._Conf.systemVersion
+            infoStationDict["system"]["model_mcu"]["value"] = self._Conf.get_RPi_model()
+            infoStationDict["system"]["camera"]["value"] = self._CAM1_SENSOR
+
+            # On sauvegarde date et heure venant de l'OS
+            infoStationDict["survey"]["date"]["value"] = "20"+self._Conf.get_date_Y()+self._Conf.get_date_m()+self._Conf.get_date_d()
+            infoStationDict["video_observation"]["time"]["value"] = self._Conf.get_date_H()+":"+self._Conf.get_date_M()
+
             with open(cam_file + '.json',mode = 'w', encoding = "utf-8") as ff:
                 ff.write(json.dumps(infoStationDict, indent = 4))
     

@@ -6,16 +6,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="./libs/sweetAlert/sweetAlert.min.css">
   <link rel="stylesheet" type="text/css" href="styles.css">
-  <title>Kosmos</title>
+  <title>KOSMOS</title>
+  <script>if (window.self === window.top) window.location.replace('./app.html');</script>
+  <script src="./iframe-detect.js"></script>
 </head>
 
 <body>
   <header>
-    <!--    <input type="checkbox" id="menuToggle" class="menu-toggle">
-
-    <label for="menuToggle" class="menu-icon">
-      <img src="./icons/menu.svg" class="svg-icon" alt="Menu Icon">
-    </label>    -->
+    <div class="brand">
+      <img src="./img/logo_kosmos.png" alt="KOSMOS logo">
+      <span>KOSMOS</span>
+    </div>
     <nav>
       <ul>
         <li><a href="./campaign/campaign.html">Campaign</a></li>
@@ -28,20 +29,20 @@
     </nav>
   </header>
   
-  <section>	  
-	<br> 
-	<h3><span id="etat">Unknown KOSMOS state</span></h3> 
+  <section>
+    <h3><span id="etat">Unknown KOSMOS state</span></h3>
     <div class="container">
-               
-      <h3 class="titleCamera">Recording</h3>
-      <button id="startCamera" onClick="start()">Start</button>
-      <button id="stopCamera" onClick="stop()">Stop</button>
+      <h3>Recording</h3>
+      <div style="display:flex; gap:0.75rem; flex-wrap:wrap; margin-bottom:var(--sp-md)">
+        <button id="startCamera" onClick="start()">▶ Start</button>
+        <button id="stopCamera" onClick="stop()">■ Stop</button>
+      </div>
 
-	  <h3 class="titleCamera">Shutdown</h3>
-      <p><span id="checkConversion">Pas de conversion en cours</span></p>
-      <button id="shutdown" onClick="shutdown()">Shutdown</button>
-
-       
+      <h3>Shutdown</h3>
+      <p style="font-size:0.85rem; color:var(--c-text-muted); margin-bottom:var(--sp-sm)">
+        <span id="checkConversion">Pas de conversion en cours</span>
+      </p>
+      <button id="shutdown" onClick="shutdown()">⏻ Shutdown</button>
     </div>
   </section>
 

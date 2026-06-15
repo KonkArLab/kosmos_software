@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./styles.css">
+  <title>KOSMOS</title>
+  <style>
+    body { overflow: hidden; }
+
+    #app-frame {
+      position: fixed;
+      top: var(--header-h);
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      height: calc(100vh - var(--header-h));
+      border: none;
+      background: transparent;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <img src="./img/logo_kosmos.png" alt="KOSMOS logo">
+      <span>KOSMOS</span>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="#" onclick="navigate(event, 'campaign/campaign.html')">Campaign</a></li>
+        <li><a href="#" onclick="navigate(event, 'config/config.html')">Configuration</a></li>
+        <li><a href="#" onclick="navigate(event, 'index.html')" id="nav-camera" class="active">Camera</a></li>
+        <li><a href="#" onclick="navigate(event, 'sensors/sensors.html')">Sensors</a></li>
+        <li><a href="#" onclick="navigate(event, 'records/records.html')">Records</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <iframe id="app-frame" src="index.html" allowtransparency="true"></iframe>
+
+  <script src="./libs/vanta/three.min.js"></script>
+  <script src="./libs/vanta/vanta.waves.min.js"></script>
+  <script>
+    VANTA.WAVES({
+      el: document.body,
+      mouseControls: true,
+      touchControls: true,
+      gyroControls: false,
+      color: 0x20415D,
+      shininess: 40,
+      waveHeight: 18,
+      waveSpeed: 0.6,
+      zoom: 0.9
+    });
+
+    function navigate(e, url) {
+      e.preventDefault();
+      document.getElementById('app-frame').src = url;
+      document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+      e.currentTarget.classList.add('active');
+    }
+  </script>
+</body>
+</html>

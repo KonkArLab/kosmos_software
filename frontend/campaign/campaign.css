@@ -1,41 +1,72 @@
-/* Page style definition for the campaign section */
-
-/* Importing an external CSS file */
 @import url('../styles.css');
 
 .container {
-  width: 95%;
+  width: 100%;
+  max-width: 680px;
 }
 
+#campaignForm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-md);
+}
 
-/* Defining a specific font style for campaign form labels */
+/* Group label + input */
+#campaignForm .form-group,
+#campaignForm > div {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-xs);
+}
+
 #campaignForm label {
-  font-size: var(--font-size-small); /* Use a predefined small font size */
-  font-weight: bold; /* Make the label text bold */
-  display: inline-block;
-  width: 30%;  
+  font-family: var(--f-title);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--c-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-/* Adds left margin to the reset button for spacing */
+#campaignForm input,
+#campaignForm select {
+  width: 100%;
+  padding: var(--sp-sm) var(--sp-md);
+  border: 1.5px solid var(--c-border);
+  border-radius: var(--r-sm);
+  font-size: 0.95rem;
+  transition: border-color 0.18s, box-shadow 0.18s;
+}
+
+#campaignForm input:focus,
+#campaignForm select:focus {
+  border-color: var(--c-secondary);
+  box-shadow: 0 0 0 3px rgba(39,120,162,0.15);
+  outline: none;
+}
+
+.form-actions {
+  display: flex;
+  gap: var(--sp-md);
+  margin-top: var(--sp-sm);
+}
+
 #campaignResetButton {
-  margin-left: var(--margin-space-normal); /* Apply normal margin space on the left */
+  background-color: transparent;
+  color: var(--c-accent);
+  border: 2px solid var(--c-accent);
+  box-shadow: none;
 }
 
-/* Global input styling */
-input {
-  width: 65%; /* Inputs take full width of their container */
-  padding: var(--padding-space-xsmall); /* Add small padding inside the input */
-  border-width: var(--border-thin); /* Thin border around the input */
-  border-radius: var(--border-thick); /* Rounded corners for inputs */
-  margin-top: var(--margin-space-xsmall); /* Small margin above the input */
-  margin-bottom: var(--margin-space-xsmall); /* Small margin below the input */
+#campaignResetButton:hover:not(:disabled) {
+  background-color: var(--c-accent);
+  color: var(--c-white);
+  transform: translateY(-1px);
 }
 
-h3{
-  height:20px;
-}
-h4{
-  height:5px;
-  margin-top: var(--margin-space-xsmall);
-  margin-bottom: var(--margin-space-xsmall);
+h3 { height: auto; }
+h4 {
+  height: auto;
+  margin-top: var(--sp-sm);
+  margin-bottom: var(--sp-xs);
 }

@@ -1,42 +1,43 @@
 @import url('../styles.css');
 
 .container {
-  width: 95%;
+  width: 100%;
+  max-width: 800px;
+  overflow-x: auto;
 }
 
-/* Table styling for records display */
-
+/* ── RECORDS TABLE ───────────────────────────────────────── */
 #fileTable {
   width: 100%;
-  margin-top: var(--margin-space-normal);
-  margin-bottom: var(--margin-space-normal);
   border-collapse: collapse;
-  overflow: auto;
-  /*display: block;*/
-  /*overflow: auto;*/
   white-space: nowrap;
- }
+  font-size: 0.875rem;
+}
 
-/* Apply border and padding to table, header, and cell elements */
-#fileTable,td,th {
-  border: var(--border-thin) solid;
-  /*padding: var(--padding-space-normal);*/
+#fileTable th {
+  background-color: var(--c-primary);
+  color: var(--c-white);
+  font-family: var(--f-title);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: var(--sp-sm) var(--sp-md);
   text-align: left;
-  font-size: var(--font-size-small);
 }
 
-thead {
-  font-weight: var(--font-weight-bold);
+#fileTable td {
+  padding: var(--sp-sm) var(--sp-md);
+  border-bottom: 1px solid var(--c-border);
+  font-family: var(--f-body);
+  color: var(--c-text);
 }
 
-th {
-  background-color: var(--color-complementary);
+#fileTable tr:nth-child(even) td {
+  background-color: #F5F9FC;
 }
 
-tr:nth-child(even) {
-  background-color: var(--color-secondary);
-}
-
-tr:hover {
-  background-color: var(--color-hover);
+#fileTable tr:hover td {
+  background-color: var(--c-accent-light);
+  cursor: default;
 }

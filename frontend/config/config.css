@@ -1,61 +1,80 @@
 @import url('../styles.css');
 
-/* Style for each parameter container */
-.parameter {
-  margin-bottom: var(--margin-space-xsmall);
-  margin-left:var(--margin-space-xsmall);
-}
-
 .container {
-  width: 95%;
-  line-height: var(--line-space-xsmall);
+  width: 100%;
+  max-width: 680px;
 }
 
-label {
-  font-size: var(--font-size-xsmall);
-  line-height: var(--line-space-xsmall);
-  display: inline-block;
-  width:50%;
+/* ── CONFIG FORM ─────────────────────────────────────────── */
+#configForm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-xs);
 }
 
-button {
-  font-size: var(--font-size-xsmall);
-  width: 15%;
-  padding: var(--padding-space-xsmall) var(--padding-space-xsmall);
-  line-height: var(--line-space-xsmall);
-  display: inline-block;
- 
-}
-#rebootButton {
-  margin-top: var(--margin-space-xsmall);
-  font-size: var(--font-size-small);
-  padding: var(--padding-space-small) var(--padding-space-small);
-  width: 20%; 
-  float: left;
+.parameter {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-sm);
+  padding: var(--sp-sm) 0;
+  border-bottom: 1px solid var(--c-border);
 }
 
-h4{
-  margin-left: 0;
-  height: 20px;
+.parameter:last-of-type {
+  border-bottom: none;
+}
+
+.parameter label {
+  font-family: var(--f-title);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--c-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  flex: 1 0 50%;
 }
 
 .parameter-element {
-  margin: var(--margin-space-xsmall);
+  flex: 1;
+  font-size: 0.875rem;
   vertical-align: middle;
-  line-height: var(--line-space-xsmall);
-  font-size: var(--font-size-small);
 }
 
-#configTitle {
-  margin-top: var(--margin-space-small);
+.parameter input {
+  width: 100%;
+  padding: var(--sp-xs) var(--sp-sm);
+  border: 1.5px solid var(--c-border);
+  border-radius: var(--r-sm);
+  font-size: 0.875rem;
+  font-family: var(--f-body);
 }
 
-input {
-  width: 15%; /* Inputs take full width of their container */
-  padding: var(--padding-space-xsmall); /* Add small padding inside the input */
-  border-width: var(--border-thin);  /*Thin border around the input */
-  border-radius: var(--border-thick); /* Rounded corners for inputs */
-  font-size: var(--font-size-small);
-  line-height: var(--line-space-xsmall);
-  display: inline-block;
+.parameter input:focus {
+  outline: none;
+  border-color: var(--c-secondary);
+  box-shadow: 0 0 0 3px rgba(39,120,162,0.15);
+}
+
+.parameter button {
+  font-size: 0.8rem;
+  padding: var(--sp-xs) var(--sp-sm);
+  min-width: unset;
+}
+
+h4 {
+  height: auto;
+  margin-top: var(--sp-md);
+  padding-bottom: var(--sp-xs);
+  border-bottom: 2px solid var(--c-accent-light);
+}
+
+#rebootButton {
+  margin-top: var(--sp-lg);
+  background-color: var(--c-accent);
+  padding: var(--sp-sm) var(--sp-xl);
+  font-size: 0.95rem;
+}
+
+#rebootButton:hover:not(:disabled) {
+  background-color: #b73d28;
 }

@@ -483,44 +483,38 @@ class KosmosCam(Thread):
     def writeJSON(self,cam_file):
         # Creation du json contenant les infostations
         with open(GIT_PATH+'infoStationTemplate.json') as f:
-            
+
             infoStationDict = json.load(f)
-            infoStationDict["system"]["system"] = self._Conf.systemName
-            infoStationDict["system"]["version"] = self._Conf.systemVersion
-            infoStationDict["system"]["model"]=self._Conf.get_RPi_model()
-            infoStationDict["system"]["camera"] = self._CAM1_SENSOR
-            
-            infoStationDict["video"]["stationDict"]["increment"] = f'{self._Conf.system.getint(INCREMENT_SECTION,"increment")-1:04}'
-            
-            # On sauvegarde date et heure venant de l'OS, même si on conservera aussi date et heure provenant du smartphone
-            infoStationDict["video"]["hourDict"]["ymdOS"] = "20"+self._Conf.get_date_Y()+"-"+self._Conf.get_date_m()+"-"+self._Conf.get_date_d()
-            infoStationDict["video"]["hourDict"]["HMSOS"] = self._Conf.get_date_H()+":"+self._Conf.get_date_M()+":"+self._Conf.get_date_S()
-                 
+            infoStationDict["system"]["type_system"]["value"] = self._Conf.systemName
+            infoStationDict["system"]["system_version"]["value"] = self._Conf.systemVersion
+            infoStationDict["system"]["model_mcu"]["value"] = self._Conf.get_RPi_model()
+            infoStationDict["system"]["camera"]["value"] = self._CAM1_SENSOR
+
+            # On sauvegarde date et heure venant de l'OS
+            infoStationDict["survey"]["date"]["value"] = "20"+self._Conf.get_date_Y()+self._Conf.get_date_m()+self._Conf.get_date_d()
+            infoStationDict["video_observation"]["time"]["value"] = self._Conf.get_date_H()+":"+self._Conf.get_date_M()
+
             # From sensors
             try:
                 lalo = self.LatLong()
-                infoStationDict["video"]["gpsDict"]["latitude"] = lalo[0]#float(self.gps.get_latitude())
-                infoStationDict["video"]["gpsDict"]["longitude"] = lalo[1]#float(self.gps.get_longitude())
+                infoStationDict["video_observation"]["latitude"]["value"] = lalo[0]
+                infoStationDict["video_observation"]["longitude"]["value"] = lalo[1]
             except:
-                infoStationDict["video"]["gpsDict"]["latitude"] = None
-                infoStationDict["video"]["gpsDict"]["longitude"] = None
-                
-            infoStationDict["video"]["ctdDict"]["salinity"] = None
+                infoStationDict["video_observation"]["latitude"]["value"] = None
+                infoStationDict["video_observation"]["longitude"]["value"] = None
 
             try:
                 ma = self.PT()
                 depth = (ma[0]-ma[1])/(1029*9.80665)
-                infoStationDict["video"]["ctdDict"]["depth"] = int(depth*100)/100
-                infoStationDict["video"]["ctdDict"]["temperature"] = ma[2]
-                infoStationDict["video"]["meteoAirDict"]["atmPress"] = ma[1]
-                infoStationDict["video"]["meteoAirDict"]["tempAir"] = ma[3]
+                infoStationDict["video_observation"]["depth"]["value"] = int(depth*100)/100
+                infoStationDict["video_observation"]["water_temperature"]["value"] = ma[2]
+                infoStationDict["video_observation"]["airTemp"]["value"] = ma[3]
             except:
-                infoStationDict["video"]["ctdDict"]["depth"] = None
-                infoStationDict["video"]["ctdDict"]["temperature"] = None
-                infoStationDict["video"]["meteoAirDict"]["atmPress"] = None
-                infoStationDict["video"]["meteoAirDict"]["tempAir"] = None
-            
-            
+                infoStationDict["video_observation"]["depth"]["value"] = None
+                infoStationDict["video_observation"]["water_temperature"]["value"] = None
+                infoStationDict["video_observation"]["airTemp"]["value"] = None
+
+
             with open(cam_file + '.json',mode = 'w', encoding = "utf-8") as ff:
                 ff.write(json.dumps(infoStationDict, indent = 4))
     
