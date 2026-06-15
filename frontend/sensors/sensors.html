@@ -37,9 +37,11 @@
     <div class="container">
       <h3>Live video</h3>
       
-      <button id="startLive" onClick="setLive(true)">Start Live</button>
-      <button id="stopLive" onClick="setLive(false)">Stop Live</button>
-      <img id="frame">
+      <div style="display:flex; gap:0.75rem; flex-wrap:wrap; margin-bottom:var(--sp-sm)">
+        <button id="startLive" onClick="setLive(true)">Start Live</button>
+        <button id="stopLive" onClick="setLive(false)">Stop Live</button>
+      </div>
+      <img id="frame" style="display:none; max-width:240px; height:auto; border-radius:var(--r-sm); box-shadow:var(--shadow-sm); margin-bottom:var(--sp-sm);">
       
       <h3 class="titleCamera">Moteur</h3>
       

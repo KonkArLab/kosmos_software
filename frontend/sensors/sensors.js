@@ -215,9 +215,14 @@ async function setLive(state) {
       console.log(body.state.substr(body.state.length-7))
       if (body.state.substr(body.state.length-7) === "STANDBY") {
         live = true;
+        const frameEl = document.getElementById("frame");
+        frameEl.style.display = "block";
+        frameEl.style.maxWidth = "240px";
+        frameEl.style.height = "auto";
+        frameEl.style.borderRadius = "6px";
         frameLoop();
-        stopLiveButton.disabled = false; 
-        startLiveButton.disabled = true; 
+        stopLiveButton.disabled = false;
+        startLiveButton.disabled = true;
       } else {
         alert(
           "Cannot start live video while the camera is not in STANDBY state."
@@ -225,7 +230,8 @@ async function setLive(state) {
       }
     } else {
       live = false;
-      stopLiveButton.disabled = true; 
+      document.getElementById("frame").style.display = "none";
+      stopLiveButton.disabled = true;
       startLiveButton.disabled = false;
     }
   } catch (error) {

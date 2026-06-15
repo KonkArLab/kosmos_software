@@ -312,7 +312,7 @@ class MagpiCam(Thread):
             infoStationDict["video_observation"]["time"]["value"] = self._Conf.get_date_H()+":"+self._Conf.get_date_M()
 
             with open(cam_file + '.json',mode = 'w', encoding = "utf-8") as ff:
-                ff.write(json.dumps(infoStationDict, indent = 4))
+                ff.write(json.dumps(infoStationDict, indent=4, ensure_ascii=False))
     
     def stopCam(self):
         """
