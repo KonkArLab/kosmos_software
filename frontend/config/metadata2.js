@@ -56,7 +56,7 @@ function loadMetaData() {
 }
 
 function validateMetaData(data) {
-  return data && data.video;
+  return data && data.video_observation;
 }
 
 const sectionTitles = {
@@ -146,7 +146,16 @@ function generateTable() {
   dataFinal["system"] = metaDataFromStorage.system;
   dataFinal.campaign = JSON.parse(localStorage.getItem("campaignData"));
 
-  const metaDataValues = metaDataFromStorage.video || {};
+  const vo = metaDataFromStorage.video_observation || {};
+  const metaDataValues = {
+    stationDict: { codestation: vo.codeObs?.value, increment: null },
+    hourDict:    { hour: vo.time?.value },
+    gpsDict:     { site: vo.gps_waypoint?.value, latitude: vo.latitude?.value, longitude: vo.longitude?.value },
+    ctdDict:     { depth: vo.depth?.value, temperature: vo.water_temperature?.value, salinity: null },
+    astroDict:   { moon: vo.moon?.value, tide: vo.tide?.value, coefficient: vo.coefficient?.value },
+    meteoAirDict:{ sky: vo.weather?.value, wind: vo.wind?.value, direction: vo.wind_direction?.value, atmPress: null, tempAir: vo.airTemp?.value },
+    meteoMerDict:{ seaState: vo.seaState?.value, swell: vo.swell_height?.value },
+  };
   
   Object.entries(defaultMetaData.video).forEach(([sectionKey, sectionValue]) => {
     // Crear la fila del título de la sección
@@ -263,8 +272,7 @@ function createFormRow(container, field, value) {
     if (value && typeof value !== 'function') inputElement.value = value;
     if (field.id === "codestation") {
       const FormData = JSON.parse(localStorage.getItem("campaignData"));
-      const MetaData = JSON.parse(localStorage.getItem("metaData"));
-      inputElement.value = FormData.zoneDict.zone+FormData.dateDict.date.split('-')[0].split('20')[1]+MetaData.video.stationDict.increment;
+      inputElement.value = (FormData?.zoneDict?.zone || "") + (FormData?.dateDict?.date?.split('-')?.[0]?.split('20')?.[1] || "");
     }
   }
 
@@ -276,46 +284,42 @@ function createFormRow(container, field, value) {
   container.appendChild(row);
 }
 
-function submitForm() {//event) {
+function submitForm() {
 
-  //event.preventDefault();
-  
-  //Chargement des Metadata déjà présentes
-  //const MetaData = JSON.parse(localStorage.getItem("metaData"));
-  //dataFinal.video = MetaData.video;
+  const outputData = JSON.parse(localStorage.getItem("metaData")) || {};
 
-  const metaDataFromStorage = loadMetaData();
-  dataFinal["system"] = metaDataFromStorage.system;
-  dataFinal.campaign = JSON.parse(localStorage.getItem("campaignData"));
-  const MetaData = JSON.parse(localStorage.getItem("metaData"));
-  dataFinal.video = MetaData.video;
-  
-  // Modification des Metadata grâce à l'appliWeb 
-  dataFinal.video.stationDict.codestation = document.getElementById('codestation')?.value;
-  
-  const now = new Date().toTimeString().split(" ")[0];
-  dataFinal.video.hourDict.hour = now.split(":")[0]
-  dataFinal.video.hourDict.minute =  now.split(":")[1];
-  dataFinal.video.hourDict.second =  now.split(":")[2];
-  
-  //dataFinal.video.gpsDict.site = document.getElementById('site')?.value || null;
-  //dataFinal.video.gpsDict.latitude = parseFloat(document.getElementById('latitude')?.value);
-  //dataFinal.video.gpsDict.longitude = parseFloat(document.getElementById('longitude')?.value);
-  
-  //dataFinal.video.ctdDict.depth = parseFloat(document.getElementById('depth')?.value);
-  
-  dataFinal.video.astroDict.moon = document.getElementById('moon')?.value || null;
-  dataFinal.video.astroDict.tide = document.getElementById('tide')?.value || null;
-  dataFinal.video.astroDict.coefficient = parseInt(document.getElementById('coefficient')?.value);
-  
-  dataFinal.video.meteoAirDict.sky = document.getElementById('sky')?.value || null;
-  dataFinal.video.meteoAirDict.wind = parseInt(document.getElementById('wind')?.value);
-  dataFinal.video.meteoAirDict.direction = document.getElementById('direction')?.value || null;
-  
-  dataFinal.video.meteoMerDict.seaState = document.getElementById('seaState')?.value || null;
-  dataFinal.video.meteoMerDict.swell = parseInt(document.getElementById('swell')?.value);
+  // Remplir la section survey avec les données de campagne
+  const campaignData = JSON.parse(localStorage.getItem("campaignData"));
+  if (campaignData && outputData.survey) {
+    outputData.survey.survey_name.value = campaignData.zoneDict?.campaign || null;
+    outputData.survey.zone.value        = campaignData.zoneDict?.zone || null;
+    outputData.survey.site.value        = campaignData.zoneDict?.locality || null;
+    outputData.survey.boat_name.value   = campaignData.deploiementDict?.boat || null;
+    outputData.survey.pilot_name.value  = campaignData.deploiementDict?.pilot || null;
+    outputData.survey.crew_names.value  = campaignData.deploiementDict?.crew || null;
+  }
 
-  sendToBack(dataFinal);
+  // Mettre à jour les champs video_observation depuis le formulaire
+  if (outputData.video_observation) {
+    outputData.video_observation.codeObs.value = document.getElementById('codestation')?.value || null;
+
+    const now = new Date().toTimeString().split(" ")[0];
+    outputData.video_observation.time.value = now.split(":").slice(0,2).join(":");
+
+    outputData.video_observation.moon.value           = document.getElementById('moon')?.value || null;
+    outputData.video_observation.tide.value           = document.getElementById('tide')?.value || null;
+    const coef = parseInt(document.getElementById('coefficient')?.value);
+    outputData.video_observation.coefficient.value    = isNaN(coef) ? null : coef;
+    outputData.video_observation.weather.value        = document.getElementById('sky')?.value || null;
+    const wind = parseInt(document.getElementById('wind')?.value);
+    outputData.video_observation.wind.value           = isNaN(wind) ? null : wind;
+    outputData.video_observation.wind_direction.value = document.getElementById('direction')?.value || null;
+    outputData.video_observation.seaState.value       = document.getElementById('seaState')?.value || null;
+    const swell = parseFloat(document.getElementById('swell')?.value);
+    outputData.video_observation.swell_height.value   = isNaN(swell) ? null : swell;
+  }
+
+  sendToBack(outputData);
   
   // Erreur si longitude et latitude non renseignées
   /*

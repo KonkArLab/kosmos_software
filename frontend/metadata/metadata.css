@@ -1,78 +1,123 @@
 @import url('../styles.css');
 
 .container {
-  width: 95%;
+  width: 100%;
+  max-width: 680px;
 }
- 
-/* Styling for the metadata table */
+
+/* ── METADATA TABLE ──────────────────────────────────────── */
 #metadataTable {
   width: 100%;
-  margin-top: var(--margin-space-normal);
-  margin-bottom: var(--margin-space-normal);
+  margin-top: var(--sp-md);
+  margin-bottom: var(--sp-lg);
   border-collapse: collapse;
- }
-
- /* Add borders and padding to table elements */
-#metadataTable,
-th,
-td {
-  border: var(--border-thin) solid var(--color-light);
-  padding: var(--padding-space-small);
-  text-align: left;
 }
 
-/* Alternate row colors for better readability */
-th {
-  background-color: var(--color-complementary);
+#metadataTable td {
+  padding: var(--sp-sm) var(--sp-md);
+  border-bottom: 1px solid var(--c-border);
+  vertical-align: middle;
+  font-size: 0.875rem;
 }
 
-tr:nth-child(even) {
-  background-color: var(--color-secondary);
+#metadataTable td:first-child {
+  font-family: var(--f-title);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--c-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  width: 40%;
 }
 
-tr:hover {
-  background-color: var(--color-hover);
+#metadataTable tr:nth-child(even) td {
+  background-color: #F5F9FC;
 }
 
+#metadataTable tr:hover td {
+  background-color: var(--c-accent-light);
+}
+
+/* ── SECTION TITLE ROWS ──────────────────────────────────── */
 .section-title {
-  font-size: var(--font-size-normal);
-  font-weight: bold;
+  font-family: var(--f-title);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
   cursor: pointer;
-  color: #333;
-  background-color: #f0f0f0;
-  padding: 10px;
-  border: 1px solid #ccc;
+  color: var(--c-white);
+  background-color: var(--c-secondary);
+  padding: var(--sp-sm) var(--sp-md);
+  border-radius: var(--r-sm);
+  display: table-cell;
   position: relative;
-  display: none;
+  transition: background 0.18s;
 }
 
-/* Add a visual indicator for collapsible sections */
+.section-title:hover {
+  background-color: var(--c-primary);
+}
+
 .section-title::after {
   content: "▼";
   position: absolute;
-  right: var(--margin-space-small);
-  font-size: var(--font-size-normal);
+  right: var(--sp-md);
+  font-size: 0.7rem;
   transition: transform 0.3s;
 }
 
-/* Rotate arrow when section is collapsed */
 .section-title.collapsed::after {
   content: "▲";
 }
 
-/* Hide content for collapsed sections */
 .section-content.collapsed {
   display: none;
 }
 
-/* Input fields and dropdown styling */
-input, select {
+/* ── FORM INPUTS IN TABLE ────────────────────────────────── */
+.form-input {
   width: 100%;
-  padding: var(--padding-space-small) !important;
-  border-width: var(--border-thin) !important;
-  border-radius: var(--border-thick) !important;
+  padding: var(--sp-sm);
+  border: 1.5px solid var(--c-border);
+  border-radius: var(--r-sm);
+  font-size: 0.9rem;
+  font-family: var(--f-body);
+  background: var(--c-white);
+  transition: border-color 0.18s, box-shadow 0.18s;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--c-secondary);
+  box-shadow: 0 0 0 3px rgba(39,120,162,0.15);
+}
+
+/* ── SAVE BUTTON ─────────────────────────────────────────── */
+#formMetaData button[type="submit"] {
+  width: 100%;
+  padding: var(--sp-md);
+  font-size: 1rem;
+  font-weight: 600;
+  background-color: var(--c-secondary);
+  border-radius: var(--r-md);
+  margin-top: var(--sp-sm);
+}
+
+#formMetaData button[type="submit"]:hover {
+  background-color: var(--c-primary);
 }
 
 #setHour {
-  margin-top: var(--margin-space-small);
+  margin-top: var(--sp-sm);
+  font-size: 0.8rem;
+  padding: var(--sp-xs) var(--sp-sm);
+  background-color: var(--c-accent-light);
+  color: var(--c-primary);
+  border: 1px solid var(--c-border);
+}
+
+#setHour:hover {
+  background-color: var(--c-accent);
+  color: var(--c-white);
 }

@@ -316,7 +316,7 @@ class Server:
         return response    
 
     def get_metadata(self):
-        metadata_path = GIT_PATH + "infoStationTemplate.json"
+        metadata_path = GIT_PATH + "nouveau_template.json"
         
         try:
             with open(metadata_path, 'r', encoding='utf-8') as f:

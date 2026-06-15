@@ -6,7 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="../libs/sweetAlert/sweetAlert.min.css">
   <link rel="stylesheet" type="text/css" href="../styles.css">
-  <title>Kosmos</title>
+  <title>KOSMOS</title>
+  <script src="../iframe-detect.js"></script>
 </head>
 
 <body>
@@ -16,6 +17,10 @@
     <label for="menuToggle" class="menu-icon">
       <img src="./icons/menu.svg" class="svg-icon" alt="Menu Icon">
     </label>    -->
+    <div class="brand">
+      <img src="../img/logo_kosmos.png" alt="KOSMOS logo">
+      <span>KOSMOS</span>
+    </div>
     <nav>
       <ul>
         <li><a href="../campaign/campaign.html">Campaign</a></li>
@@ -23,16 +28,14 @@
         <li><a href="../index.html">Camera</a></li>
         <li><a href="./sensors.html">Sensors</a></li>
         <li><a href="../records/records.html">Records</a></li>
-        <!--<li><a href="./checklist/checklist.html">Checklist</a></li>-->
       </ul>
     </nav>
   </header>
   
-  <section>	  
-	<br> 
-	<h3><span id="etat">Unknown KOSMOS state</span></h3> 
-    <div class="container">         
-      <h3 class="titleCamera">Live video</h3>
+  <section>
+    <h3><span id="etat">Unknown KOSMOS state</span></h3>
+    <div class="container">
+      <h3>Live video</h3>
       
       <button id="startLive" onClick="setLive(true)">Start Live</button>
       <button id="stopLive" onClick="setLive(false)">Stop Live</button>
