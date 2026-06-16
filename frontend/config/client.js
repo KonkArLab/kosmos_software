@@ -17,36 +17,31 @@ async function fetchConfig() {
       const configContainer = document.getElementById("configForm");
       configsData = data.data;
 
-      // Loop through each configuration parameter and create corresponding form elements
-      for (const key in configsData) {
-        const parameterDiv = document.createElement("h4");
-        parameterDiv.classList.add("parameter");
+      configContainer.style.cssText = "display:grid; grid-template-columns:auto 1fr auto; gap:6px 12px; align-items:center;";
 
+      for (const key in configsData) {
         const label = document.createElement("label");
-        label.setAttribute("for", "param" + key);
-        label.classList.add("parameter-element");
+        label.setAttribute("for", key);
         label.textContent = key;
+        label.style.cssText = "font-size:0.78rem; font-weight:600; color:#5C7A93; text-transform:uppercase; letter-spacing:0.04em; white-space:nowrap; padding:4px 0;";
 
         const input = document.createElement("input");
         input.setAttribute("type", "text");
         input.setAttribute("id", key);
         input.setAttribute("readonly", "");
-        input.classList.add("parameter-element");
         input.value = configsData[key];
+        input.style.cssText = "padding:4px 8px; border:1.5px solid #C8D8E8; border-radius:6px; font-size:0.875rem; width:100%; box-sizing:border-box;";
 
         const button = document.createElement("button");
         button.setAttribute("type", "button");
         button.setAttribute("id", "but" + key);
-        button.classList.add("parameter-element");
         button.textContent = "Modify";
-        button.addEventListener("click", () =>
-          modifyParameter("but" + key, key)
-        );
+        button.style.cssText = "font-size:0.78rem; padding:4px 12px; white-space:nowrap;";
+        button.addEventListener("click", () => modifyParameter("but" + key, key));
 
-        parameterDiv.appendChild(label);
-        parameterDiv.appendChild(input);
-        parameterDiv.appendChild(button);
-        configContainer.appendChild(parameterDiv);
+        configContainer.appendChild(label);
+        configContainer.appendChild(input);
+        configContainer.appendChild(button);
       }
 
       // Add Reboot button after the parameter divs

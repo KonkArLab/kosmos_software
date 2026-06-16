@@ -7,13 +7,12 @@
 
 /* ── CONFIG FORM ─────────────────────────────────────────── */
 #configForm {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-xs);
+  display: block;
 }
 
 .parameter {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr) auto;
   align-items: center;
   gap: var(--sp-sm);
   padding: var(--sp-sm) 0;
@@ -26,22 +25,19 @@
 
 .parameter label {
   font-family: var(--f-title);
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 600;
   color: var(--c-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  flex: 1 0 50%;
-}
-
-.parameter-element {
-  flex: 1;
-  font-size: 0.875rem;
-  vertical-align: middle;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .parameter input {
   width: 100%;
+  min-width: 0;
   padding: var(--sp-xs) var(--sp-sm);
   border: 1.5px solid var(--c-border);
   border-radius: var(--r-sm);
@@ -56,9 +52,21 @@
 }
 
 .parameter button {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   padding: var(--sp-xs) var(--sp-sm);
   min-width: unset;
+  white-space: nowrap;
+}
+
+@media (max-width: 520px) {
+  .parameter {
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+  }
+  .parameter label {
+    grid-column: 1 / -1;
+    white-space: normal;
+  }
 }
 
 h4 {
