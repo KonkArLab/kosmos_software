@@ -179,6 +179,7 @@ document.addEventListener("DOMContentLoaded", function () {
         
         // Save the data to localStorage
         localStorage.setItem("campaignData", JSON.stringify(campaignFinal));
+
         Swal.fire({
             title: 'Success',
             text: 'Information saved',

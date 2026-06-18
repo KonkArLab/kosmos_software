@@ -169,10 +169,22 @@ class kosmos_main():
             #On remet le booléen à 1 pour que l'enregistrement suive la programmation automatique
             self.bool_micado = 1
         
-        increment = self._conf.system.getint(INCREMENT_SECTION,"increment")        
+        increment = self._conf.system.getint(INCREMENT_SECTION,"increment")
         # Création du dossier enregistrement dans le dossier Campagne
         os.chdir(self._conf.CAMPAGNE_PATH)
-        self.video_file = f'{increment:04}'
+
+        # Construction du nom de fichier YYYYMMDDHHMMSS_XX_CODESTATION
+        try:
+            from datetime import datetime as _dt
+            now         = _dt.now()
+            date_str    = now.strftime("%Y%m%d")
+            year_2d     = now.strftime("%y")
+            territory   = getattr(self, 'campaign_territory', 'XX')
+            zone        = getattr(self, 'campaign_zone', 'ZZ')
+            codestation = f"{zone}{year_2d}{increment:04d}"
+            self.video_file = f"{date_str}_{territory}_{codestation}"
+        except Exception:
+            self.video_file = f'{increment:04}'
         if os.path.exists(self.video_file):
             pass
         else:
@@ -203,6 +215,7 @@ class kosmos_main():
                 logging.error("Erreur Luxmètre pour déclenchement LIGHT lors de l'enregistrement")
         
         # Run thread camera
+        self.thread_camera.station_file_name = self.video_file
         self.thread_camera.restart()
         
         # Attente d'un Event ou que le temps total soit dépassé
