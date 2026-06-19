@@ -308,12 +308,11 @@ class KosmosCam(Thread):
             i=0            
             while self._boucle == True:
                 # Création des codes stations
-                increment = self._Conf.system.getint(INCREMENT_SECTION,"increment")
-                base_name = getattr(self, 'station_file_name', None) or f'{increment:04}'
+                increment = self._Conf.system.getint(INCREMENT_SECTION,"increment") 
                 if i == 0: # Mode STAVIRO, une seule vidéo de longue durée
-                    self._file_name = base_name
+                    self._file_name = f'{increment:04}'
                 else: # Mode MICADO, découpage de la vidéo en morceau de XX minutes
-                    self._file_name = base_name + '_' + '{:02.0f}'.format(i)
+                    self._file_name = f'{increment:04}' + '_' + '{:02.0f}'.format(i) 
                 logging.info(f"Debut de l'enregistrement video {self._file_name}")
                 
                 self._output = self._file_name + '.h264'

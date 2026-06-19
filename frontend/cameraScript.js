@@ -38,15 +38,7 @@ async function start() {
     const storedData = localStorage.getItem("campaignData");
     if (storedData) {
       disableAllButtons();
-      const campaignParsed = JSON.parse(storedData);
-      const response = await fetch(serverUrl + "/start", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          campaign: campaignParsed?.zoneDict?.campaign || "XX",
-          zone:     campaignParsed?.zoneDict?.zone     || "ZZ"
-        })
-      });
+      const response = await fetch(serverUrl + "/start");
       const body = await response.json();
       // Enable only the stop button for camera
       stopButton.disabled = false;
