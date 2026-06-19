@@ -26,7 +26,7 @@ class Server:
         CORS(self.app)
         
         self.app.add_url_rule("/state", view_func=self.state)
-        self.app.add_url_rule("/start", view_func=self.start)
+        self.app.add_url_rule("/start", view_func=self.start, methods=['GET','POST'])
         self.app.add_url_rule("/stop", view_func=self.stop)
         self.app.add_url_rule("/shutdown", view_func=self.shutdown)
         self.app.add_url_rule("/getRecords", view_func=self.getRecords)
@@ -198,8 +198,17 @@ class Server:
     
     
     def start(self):
-        if(self.myMain.state==KState.STANDBY):   
-            self.myMain.record_event.set() 
+        if(self.myMain.state==KState.STANDBY):
+            data = request.get_json(silent=True) or {}
+            self.myMain.campaign_territory = data.get("campaign",  "XX").strip().upper()
+            self.myMain.campaign_zone      = data.get("zone",      "ZZ").strip().upper()
+            self.myMain.campaign_locality   = data.get("locality",   "")
+            self.myMain.campaign_protection = data.get("protection", "")
+            self.myMain.campaign_boat      = data.get("boat",      "")
+            self.myMain.campaign_pilot     = data.get("pilot",     "")
+            self.myMain.campaign_crew      = data.get("crew",      "")
+            self.myMain.campaign_partners  = data.get("partners",  "")
+            self.myMain.record_event.set()
             self.myMain.button_event.set()
             return {
                 "status" : "ok"
