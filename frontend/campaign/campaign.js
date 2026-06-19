@@ -39,29 +39,43 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Dynamically create form fields
     fields.forEach(field => {
-        const ligneH3 = document.createElement("h3");
+        const group = document.createElement("div");
+        group.className = "form-group";
+
         const label = document.createElement("label");
         label.setAttribute("for", field.id);
-        label.textContent = field.label + ": ";
-        
+        label.textContent = field.label;
+
         const input = document.createElement("input");
         input.id = field.id;
         input.placeholder = field.placeholder;
         input.type = field.type;
         input.tabIndex = field.tabIndex;
         input.maxLength = field.maxlength;
-        
-        ligneH3.appendChild(label);
-        ligneH3.appendChild(input);
-        form.appendChild(ligneH3);
-         
+
+        group.appendChild(label);
+        group.appendChild(input);
+        form.appendChild(group);
+    });
+
+    // Fix iOS Safari date input overflow
+    window.addEventListener('load', () => {
+        const dateInput = document.getElementById("date");
+        if (!dateInput) return;
+        const container = document.querySelector('.container');
+        if (!container) return;
+        const cs = getComputedStyle(container);
+        const w = container.clientWidth
+                  - parseFloat(cs.paddingLeft)
+                  - parseFloat(cs.paddingRight);
+        dateInput.style.setProperty('width', w + 'px', 'important');
+        dateInput.style.setProperty('max-width', w + 'px', 'important');
     });
 
     // Add "Save" and "Reset" buttons to the form
-    const lignevide = document.createElement("h4");
-    form.appendChild(lignevide)
-    
-    const ligneH3button = document.createElement("h3");
+    const actions = document.createElement("div");
+    actions.className = "form-actions";
+
     const saveButton = document.createElement("button");
     saveButton.type = "submit";
     saveButton.textContent = "Save";
@@ -69,11 +83,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const resetButton = document.createElement("button");
     resetButton.type = "reset";
     resetButton.textContent = "Reset";
-    resetButton.id = "campaignResetButton"
+    resetButton.id = "campaignResetButton";
 
-    ligneH3button.appendChild(saveButton);
-    ligneH3button.appendChild(resetButton);
-    form.appendChild(ligneH3button);
+    actions.appendChild(saveButton);
+    actions.appendChild(resetButton);
+    form.appendChild(actions);
 
     // Set automaticaly the date in the corresponding field
     fields.forEach(field => {
