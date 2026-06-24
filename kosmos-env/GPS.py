@@ -68,9 +68,13 @@ class GPS(Thread):
         self.arret_complet() 
      
     def get_latitude(self):
+        if self.latitude is None:
+            return None
         return f'{self.latitude:.5f}'
-    
+
     def get_longitude(self):
+        if self.longitude is None:
+            return None
         return f'{self.longitude:.5f}'
        
     def arret_complet(self):

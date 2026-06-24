@@ -1,4 +1,4 @@
-//let serverUrl = "http://10.42.0.1:5000";
+//let serverUrl = location.protocol === "https:" ? location.origin : "http://10.42.0.1:5000";
 
 const fields = [
   { id: "codestation", placeholder: "", type: "text", label: "Code Station", tabIndex: 1, maxlength: "200", isVisible:true },

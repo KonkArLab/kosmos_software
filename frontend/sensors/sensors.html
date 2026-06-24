@@ -51,7 +51,13 @@
       <p> <button id="testSensors"> Test </button> <button id="initSensors"> Init </button> <span id="init"> </span> </p>
       <p> <b>Luxmètre : </b> <span id="RGB"> </span> </p> 
       <p> <b>Capteur TP : </b> <span id="tp"> </span> </p> 
-      <p> <b>GPS : </b> <span id="gps"> </span> </p> 
+      <p style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+        <b>GPS : </b>
+        <span id="gps"></span>
+        <button id="usePhoneGPS" style="display:none; font-size:0.78rem; padding:2px 0.6rem;">
+          Utiliser le GPS du téléphone ?
+        </button>
+      </p>
       <p> <b>Compas : </b><span id="magneto"> </span> </p> 
       <p> <b>RTC : </b><span id="RTC"> </span> </p> 
       <p> <b>Date et heure : </b><span id="time"> </span> </p> 

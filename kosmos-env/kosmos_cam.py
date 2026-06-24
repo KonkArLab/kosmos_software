@@ -180,15 +180,17 @@ class KosmosCam(Thread):
             
     def init_gps(self):
         self._gps_ok = False
+        self._phone_gps_lat = None
+        self._phone_gps_lon = None
         try:
             self.gps = GPS()
             if self.gps.init():
                 logging.info("Capteur GPS OK")
                 self._gps_ok = True
                 self.gps.start()
-            else:    
+            else:
                 logging.error("Port Serie GPS OK mais non fonctionnel")
-        except:    
+        except:
             logging.error("Erreur d'initialisation du GPS")
     
     def init_tp(self):
@@ -371,6 +373,9 @@ class KosmosCam(Thread):
                                 LONG = self.gps.get_longitude()
                             except:
                                 logging.debug("Erreur de récupération des données GPS")
+                        if not LAT and self._phone_gps_lat is not None:
+                            LAT = self._phone_gps_lat
+                            LONG = self._phone_gps_lon
                         #Récupération données TP
                         pressStr = ""
                         tempStr = ""

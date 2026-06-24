@@ -47,7 +47,22 @@ class Server:
         
         self.app.add_url_rule("/testIP", view_func=self.testIP)
         self.app.add_url_rule("/changeIP", view_func=self.changeIP)
+        self.app.add_url_rule("/setPhoneGPS", view_func=self.setPhoneGPS, methods=['POST'])
 
+
+    def setPhoneGPS(self):
+        try:
+            data = request.get_json(silent=True) or {}
+            lat = str(data.get("lat", ""))
+            lon = str(data.get("lon", ""))
+            if not lat or not lon:
+                return jsonify({"status": "error", "message": "lat/lon manquants"}), 400
+            self.myMain.thread_camera._phone_gps_lat = lat
+            self.myMain.thread_camera._phone_gps_lon = lon
+            logging.info(f"GPS téléphone enregistré : {lat}, {lon}")
+            return jsonify({"status": "ok", "lat": lat, "lon": lon})
+        except Exception as e:
+            return jsonify({"status": "error", "message": str(e)}), 500
 
     def run(self) :
         logging.info("Server is running !")
