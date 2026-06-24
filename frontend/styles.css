@@ -333,6 +333,7 @@ body.in-iframe header {
 
 body.in-iframe section {
   margin-top: var(--sp-md) !important;
+  padding-bottom: env(safe-area-inset-bottom, 1rem);
 }
 
 /* ── RESPONSIVE ──────────────────────────────────────────── */

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./styles.css?v=4">
   <title>KOSMOS</title>
   <style>
     body { overflow: hidden; background: #20415D; }
@@ -15,7 +15,7 @@
       right: 0;
       bottom: 0;
       width: 100%;
-      height: calc(100vh - var(--header-h));
+      height: calc(100svh - var(--header-h));
       border: none;
       background: transparent;
     }
@@ -41,11 +41,25 @@
   <iframe id="app-frame" src="index.html" allowtransparency="true"></iframe>
 
   <script>
+    function adjustFrame() {
+      var h = document.querySelector('header').offsetHeight;
+      var frame = document.getElementById('app-frame');
+      var vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+      frame.style.top = h + 'px';
+      frame.style.height = (vh - h) + 'px';
+    }
+
     function navigate(e, url) {
       e.preventDefault();
       document.getElementById('app-frame').src = url;
       document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
       e.currentTarget.classList.add('active');
+    }
+
+    window.addEventListener('load', adjustFrame);
+    window.addEventListener('resize', adjustFrame);
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', adjustFrame);
     }
   </script>
 </body>
