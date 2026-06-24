@@ -6,7 +6,7 @@
   <link rel="stylesheet" href="./styles.css">
   <title>KOSMOS</title>
   <style>
-    body { overflow: hidden; }
+    body { overflow: hidden; background: #20415D; }
 
     #app-frame {
       position: fixed;
@@ -40,21 +40,7 @@
 
   <iframe id="app-frame" src="index.html" allowtransparency="true"></iframe>
 
-  <script src="./libs/vanta/three.min.js"></script>
-  <script src="./libs/vanta/vanta.waves.min.js"></script>
   <script>
-    VANTA.WAVES({
-      el: document.body,
-      mouseControls: true,
-      touchControls: true,
-      gyroControls: false,
-      color: 0x20415D,
-      shininess: 40,
-      waveHeight: 18,
-      waveSpeed: 0.6,
-      zoom: 0.9
-    });
-
     function navigate(e, url) {
       e.preventDefault();
       document.getElementById('app-frame').src = url;
