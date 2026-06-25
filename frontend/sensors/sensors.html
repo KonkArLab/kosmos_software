@@ -41,7 +41,10 @@
         <button id="startLive" onClick="setLive(true)">Start Live</button>
         <button id="stopLive" onClick="setLive(false)">Stop Live</button>
       </div>
-      <img id="frame" style="display:none; max-width:240px; height:auto; border-radius:var(--r-sm); box-shadow:var(--shadow-sm); margin-bottom:var(--sp-sm);">
+      <div id="live-frames" style="display:none; display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:var(--sp-sm);">
+        <img id="frame"  style="max-width:240px; height:auto; border-radius:var(--r-sm); box-shadow:var(--shadow-sm);">
+        <img id="frame2" style="display:none; max-width:240px; height:auto; border-radius:var(--r-sm); box-shadow:var(--shadow-sm);">
+      </div>
       
       <h3 class="titleCamera">Moteur</h3>
       

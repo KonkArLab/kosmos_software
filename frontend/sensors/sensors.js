@@ -218,25 +218,29 @@ async function setLive(state) {
     const response = await fetch(serverUrl + "/state");
     const body = await response.json();
     if (state) {
-      console.log(body.state.substr(body.state.length-7))
       if (body.state.substr(body.state.length-7) === "STANDBY") {
         live = true;
-        const frameEl = document.getElementById("frame");
-        frameEl.style.display = "block";
-        frameEl.style.maxWidth = "240px";
-        frameEl.style.height = "auto";
-        frameEl.style.borderRadius = "6px";
+        const framesDiv = document.getElementById("live-frames");
+        framesDiv.style.display = "flex";
+
+        // Caméra 2 uniquement si stéréo
+        const frame2El = document.getElementById("frame2");
+        if (body.stereo) {
+          frame2El.style.display = "block";
+          frameLoop2();
+        } else {
+          frame2El.style.display = "none";
+        }
+
         frameLoop();
         stopLiveButton.disabled = false;
         startLiveButton.disabled = true;
       } else {
-        alert(
-          "Cannot start live video while the camera is not in STANDBY state."
-        );
+        alert("Cannot start live video while the camera is not in STANDBY state.");
       }
     } else {
       live = false;
-      document.getElementById("frame").style.display = "none";
+      document.getElementById("live-frames").style.display = "none";
       stopLiveButton.disabled = true;
       startLiveButton.disabled = false;
     }
@@ -245,20 +249,22 @@ async function setLive(state) {
   }
 }
 
-// Function to fetch an image from the server and display it
-async function getImage() {
-  const response = await fetch(serverUrl + "/frame");
-  const imageBlob = await response.blob();
-  const imageObjectURL = URL.createObjectURL(imageBlob);
-  const image = document.getElementById("frame");
-  image.src = imageObjectURL;
+// Fetch et affiche un frame pour une caméra donnée
+async function getImage(endpoint, imgId) {
+  const response = await fetch(serverUrl + endpoint);
+  const blob = await response.blob();
+  const url = URL.createObjectURL(blob);
+  const img = document.getElementById(imgId);
+  if (img.src) URL.revokeObjectURL(img.src);
+  img.src = url;
 }
 
-// Function to continuously fetch and display frames in a loop
 async function frameLoop() {
-  while (live) {
-    await getImage();
-  }
+  while (live) { await getImage("/frame", "frame"); }
+}
+
+async function frameLoop2() {
+  while (live) { await getImage("/frame2", "frame2"); }
 }
 
 // Helper function to disable all buttons

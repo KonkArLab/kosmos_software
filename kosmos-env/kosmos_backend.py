@@ -51,6 +51,7 @@ class Server:
         self.app.add_url_rule("/setPhoneGPS", view_func=self.setPhoneGPS, methods=['POST'])
         self.app.add_url_rule("/resetPhoneGPS", view_func=self.resetPhoneGPS, methods=['POST'])
         self.app.add_url_rule("/gpsStatus", view_func=self.gpsStatus)
+        self.app.add_url_rule("/frame2", view_func=self.image2)
 
 
     def resetPhoneGPS(self):
@@ -89,10 +90,15 @@ class Server:
             
     def state(self):
         is_working = str(self.myMain.state).split('.')[1] == 'WORKING'
+        try:
+            stereo = bool(self.myMain.thread_camera.STEREO)
+        except Exception:
+            stereo = False
         return {
             "status" : "ok",
             "state" : self.myMain._conf.systemName + " state is " + str(self.myMain.state).split('.')[1],
-            "recording_start" : self._recording_start if is_working else None
+            "recording_start" : self._recording_start if is_working else None,
+            "stereo" : stereo
         }
     
     def checkConversion(self):
@@ -360,7 +366,19 @@ class Server:
         camera.capture_file(buf,format='jpeg')
         response=make_response(buf.getvalue())
         response.headers['Content-Type']='image/jpg'
-        return response    
+        return response
+
+    def image2(self):
+        try:
+            camera2 = self.myMain.thread_camera._camera2
+        except AttributeError:
+            return make_response('No second camera', 404)
+        buf = io.BytesIO()
+        camera2.options["quality"] = 10
+        camera2.capture_file(buf, format='jpeg')
+        response = make_response(buf.getvalue())
+        response.headers['Content-Type'] = 'image/jpg'
+        return response
 
     def get_metadata(self):
         metadata_path = GIT_PATH + "infoStationTemplate.json"
