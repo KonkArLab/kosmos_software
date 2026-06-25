@@ -1,0 +1,40 @@
+#planif-section {
+  margin-top: var(--header-h);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - var(--header-h));
+  gap: 0;
+}
+
+body.in-iframe #planif-section {
+  margin-top: 0 !important;
+  height: 100vh;
+}
+
+#map-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-sm);
+  padding: var(--sp-sm) var(--sp-md);
+  background: var(--c-primary);
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+#map-toolbar button {
+  padding: var(--sp-xs) var(--sp-md);
+  font-size: 0.85rem;
+}
+
+#point-count {
+  margin-left: auto;
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.75);
+}
+
+#map {
+  flex: 1;
+  width: 100%;
+  z-index: 1;
+}
