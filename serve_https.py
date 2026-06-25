@@ -5,7 +5,7 @@ Sert les fichiers statiques ET proxifie les appels API vers le backend Flask (po
 Requis pour la géolocalisation sur iOS/Android.
 
 Usage : python3 serve_https.py
-Puis visiter : https://10.42.0.1:4443  (accepter l'avertissement de sécurité une fois)
+Puis visiter : https://10.42.0.1
 """
 
 import http.server
@@ -78,7 +78,7 @@ class ProxyHandler(http.server.SimpleHTTPRequestHandler):
         self._proxy()
 
     def log_message(self, fmt, *args):
-        pass  # Silencieux
+        pass
 
 server = http.server.HTTPServer(("0.0.0.0", PORT), ProxyHandler)
 context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
@@ -86,5 +86,4 @@ context.load_cert_chain(CERT_FILE, KEY_FILE)
 server.socket = context.wrap_socket(server.socket, server_side=True)
 
 print(f"Serveur HTTPS démarré sur https://{IP}")
-print("Sur iPhone/Android : accepter l'avertissement de sécurité une fois.")
 server.serve_forever()

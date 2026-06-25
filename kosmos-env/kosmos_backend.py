@@ -23,6 +23,7 @@ class Server:
 
     def __init__(self,myMain):
         self.myMain=myMain
+        self._recording_start = None
         CORS(self.app)
         
         self.app.add_url_rule("/state", view_func=self.state)
@@ -87,9 +88,11 @@ class Server:
         self.app.run(host="0.0.0.0",port=5000,debug=False)
             
     def state(self):
+        is_working = str(self.myMain.state).split('.')[1] == 'WORKING'
         return {
             "status" : "ok",
-            "state" : self.myMain._conf.systemName + " state is " + str(self.myMain.state).split('.')[1]
+            "state" : self.myMain._conf.systemName + " state is " + str(self.myMain.state).split('.')[1],
+            "recording_start" : self._recording_start if is_working else None
         }
     
     def checkConversion(self):
@@ -241,10 +244,12 @@ class Server:
             self.myMain.campaign_pilot     = data.get("pilot",     "")
             self.myMain.campaign_crew      = data.get("crew",      "")
             self.myMain.campaign_partners  = data.get("partners",  "")
+            self._recording_start = time.time()
             self.myMain.record_event.set()
             self.myMain.button_event.set()
             return {
-                "status" : "ok"
+                "status" : "ok",
+                "recording_start" : self._recording_start
             }
         else :
             return {
