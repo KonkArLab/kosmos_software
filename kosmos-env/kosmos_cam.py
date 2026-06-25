@@ -373,9 +373,6 @@ class KosmosCam(Thread):
                                 LONG = self.gps.get_longitude()
                             except:
                                 logging.debug("Erreur de récupération des données GPS")
-                        if not LAT and self._phone_gps_lat is not None:
-                            LAT = self._phone_gps_lat
-                            LONG = self._phone_gps_lon
                         #Récupération données TP
                         pressStr = ""
                         tempStr = ""
@@ -517,7 +514,7 @@ class KosmosCam(Thread):
             infoStationDict["video_observation"]["video_file_name"]["value"]      = self._Conf.get_date_YMD() + '_' + self._Conf.systemName
             infoStationDict["video_observation"]["point_name"]["value"]           = f'{increment:04d}'
 
-            # From sensors
+            # From sensors (hardware GPS)
             try:
                 lalo = self.LatLong()
                 infoStationDict["video_observation"]["latitude"]["value"] = lalo[0]
@@ -525,6 +522,10 @@ class KosmosCam(Thread):
             except:
                 infoStationDict["video_observation"]["latitude"]["value"] = None
                 infoStationDict["video_observation"]["longitude"]["value"] = None
+
+            # From phone GPS (fallback when system GPS unavailable)
+            infoStationDict["video_observation"]["lat_tel"]["value"] = self._phone_gps_lat
+            infoStationDict["video_observation"]["lon_tel"]["value"] = self._phone_gps_lon
 
             try:
                 ma = self.PT()

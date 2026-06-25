@@ -299,7 +299,7 @@ class MagpiCam(Thread):
     
     def writeJSON(self,cam_file):
         # Creation du json contenant les infostations
-        with open(GIT_PATH+'nouveau_template.json') as f:
+        with open(GIT_PATH+'infoStationTemplate.json') as f:
 
             infoStationDict = json.load(f)
             infoStationDict["system"]["type_system"]["value"] = self._Conf.systemName

@@ -29,6 +29,50 @@ async function majStateButton() {
   } finally {}
 }
 
+async function askPhoneGPS() {
+  // Toujours réinitialiser les valeurs précédentes
+  try {
+    await fetch(serverUrl + "/resetPhoneGPS", { method: "POST" });
+  } catch {}
+
+  try {
+    const r = await fetch(serverUrl + "/gpsStatus");
+    const data = await r.json();
+    if (data.has_fix) return;
+  } catch { return; }
+
+  if (!navigator.geolocation) return;
+
+  const result = await Swal.fire({
+    title: 'GPS non disponible',
+    text: 'Aucune coordonnée GPS détectée. Utiliser le GPS du téléphone ?',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Oui, utiliser mon GPS',
+    cancelButtonText: 'Non, continuer sans GPS'
+  });
+  if (!result.isConfirmed) return;
+
+  await new Promise(function(resolve) {
+    navigator.geolocation.getCurrentPosition(
+      async function(pos) {
+        const lat = pos.coords.latitude.toFixed(6);
+        const lon = pos.coords.longitude.toFixed(6);
+        try {
+          await fetch(serverUrl + "/setPhoneGPS", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ lat: lat, lon: lon })
+          });
+        } catch {}
+        resolve();
+      },
+      function() { resolve(); },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  });
+}
+
 // Function to send a start request to the server
 async function start() {
   try {
@@ -37,6 +81,7 @@ async function start() {
     }
     const storedData = localStorage.getItem("campaignData");
     if (storedData) {
+      await askPhoneGPS();
       disableAllButtons();
       const campaignParsed = JSON.parse(storedData);
       const response = await fetch(serverUrl + "/start", {

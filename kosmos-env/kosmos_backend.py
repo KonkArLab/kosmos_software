@@ -48,7 +48,25 @@ class Server:
         self.app.add_url_rule("/testIP", view_func=self.testIP)
         self.app.add_url_rule("/changeIP", view_func=self.changeIP)
         self.app.add_url_rule("/setPhoneGPS", view_func=self.setPhoneGPS, methods=['POST'])
+        self.app.add_url_rule("/resetPhoneGPS", view_func=self.resetPhoneGPS, methods=['POST'])
+        self.app.add_url_rule("/gpsStatus", view_func=self.gpsStatus)
 
+
+    def resetPhoneGPS(self):
+        try:
+            self.myMain.thread_camera._phone_gps_lat = None
+            self.myMain.thread_camera._phone_gps_lon = None
+            return jsonify({"status": "ok"})
+        except Exception as e:
+            return jsonify({"status": "error", "message": str(e)}), 500
+
+    def gpsStatus(self):
+        try:
+            lat = self.myMain.thread_camera.gps.get_latitude()
+            has_fix = lat is not None
+        except:
+            has_fix = False
+        return jsonify({"has_fix": has_fix})
 
     def setPhoneGPS(self):
         try:
@@ -340,7 +358,7 @@ class Server:
         return response    
 
     def get_metadata(self):
-        metadata_path = GIT_PATH + "nouveau_template.json"
+        metadata_path = GIT_PATH + "infoStationTemplate.json"
         
         try:
             with open(metadata_path, 'r', encoding='utf-8') as f:

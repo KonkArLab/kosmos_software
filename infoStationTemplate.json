@@ -272,6 +272,30 @@
       "example": "-3.45678",
       "ifdo_id": null
     },
+    "lat_tel": {
+      "name": "Latitude (Phone GPS)",
+      "name_fr": "Latitude (GPS téléphone)",
+      "type": "float",
+      "format": "Numérique (Degrés décimaux WGS 84)",
+      "value": null,
+      "description": "Latitude obtained from phone GPS when system GPS is unavailable",
+      "description_fr": "Latitude obtenue via le GPS du téléphone si GPS système indisponible",
+      "acquisition_mode": "Phone GPS",
+      "example": "47.12345",
+      "ifdo_id": null
+    },
+    "lon_tel": {
+      "name": "Longitude (Phone GPS)",
+      "name_fr": "Longitude (GPS téléphone)",
+      "type": "float",
+      "format": "Numérique (Degrés décimaux WGS 84)",
+      "value": null,
+      "description": "Longitude obtained from phone GPS when system GPS is unavailable",
+      "description_fr": "Longitude obtenue via le GPS du téléphone si GPS système indisponible",
+      "acquisition_mode": "Phone GPS",
+      "example": "-3.45678",
+      "ifdo_id": null
+    },
     "depth": {
       "name": "Depth",
       "name_fr": "Profondeur",

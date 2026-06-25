@@ -292,12 +292,6 @@ document.getElementById("usePhoneGPS").addEventListener("click", function () {
       btn.style.display = "none";
       btn.disabled = false;
       btn.textContent = "Utiliser le GPS du téléphone ?";
-      // Envoyer au backend pour l'écriture dans le CSV/JSON
-      fetch(serverUrl + "/setPhoneGPS", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ lat: lat, lon: lon })
-      }).catch(function () {});
     },
     function (err) {
       let msg;
