@@ -38,3 +38,15 @@ body.in-iframe #planif-section {
   width: 100%;
   z-index: 1;
 }
+
+.leaflet-control-layers {
+  font-size: 0.72rem !important;
+}
+
+.leaflet-control-layers-expanded {
+  padding: 4px 8px !important;
+}
+
+.leaflet-control-layers label {
+  margin: 2px 0 !important;
+}

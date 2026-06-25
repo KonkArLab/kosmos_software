@@ -52,6 +52,7 @@ class Server:
         self.app.add_url_rule("/resetPhoneGPS", view_func=self.resetPhoneGPS, methods=['POST'])
         self.app.add_url_rule("/gpsStatus", view_func=self.gpsStatus)
         self.app.add_url_rule("/frame2", view_func=self.image2)
+        self.app.add_url_rule("/getRecordsGPS", view_func=self.getRecordsGPS)
 
 
     def resetPhoneGPS(self):
@@ -328,6 +329,32 @@ class Server:
         response["status"]="ok"
         return response
     
+
+    def getRecordsGPS(self):
+        results = []
+        campagne_path = self.myMain._conf.CAMPAGNE_PATH
+        try:
+            for folder in sorted(os.listdir(campagne_path)):
+                json_path = os.path.join(campagne_path, folder, folder + '.json')
+                if not os.path.isfile(json_path):
+                    continue
+                try:
+                    with open(json_path, 'r', encoding='utf-8') as f:
+                        data = json.load(f)
+                    obs = data.get('video_observation', {})
+                    lat = obs.get('latitude', {}).get('value')
+                    lon = obs.get('longitude', {}).get('value')
+                    if lat is None or lon is None:
+                        lat = obs.get('lat_tel', {}).get('value')
+                        lon = obs.get('lon_tel', {}).get('value')
+                    lat_f = float(lat)
+                    lon_f = float(lon)
+                    results.append({'name': folder, 'lat': lat_f, 'lon': lon_f})
+                except Exception:
+                    continue
+        except Exception:
+            pass
+        return jsonify({'status': 'ok', 'data': results})
 
     def getRecords(self):
         response=dict()
