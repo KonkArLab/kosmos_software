@@ -148,6 +148,8 @@ class Server:
     # Moteur
     def rotatePlus(self):
         if self.myMain.PRESENCE_MOTEUR == 1:
+            self.myMain.motorThread.power_on()
+            self.myMain.motorThread._state = 1
             self.myMain.motorThread.send_data(5)
             return{
                 "motor" : "Avance"
@@ -156,9 +158,11 @@ class Server:
             return{
                 "motor" : "Moteur non activé"
             }
-        
+
     def rotateMinus(self):
         if self.myMain.PRESENCE_MOTEUR == 1:
+            self.myMain.motorThread.power_on()
+            self.myMain.motorThread._state = 1
             self.myMain.motorThread.send_data(5)
             return{
                 "motor" : "Recul"
