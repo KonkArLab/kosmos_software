@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./styles.css?v=4">
   <title>KOSMOS</title>
   <style>
-    body { overflow: hidden; }
+    body { overflow: hidden; background: #20415D; }
 
     #app-frame {
       position: fixed;
@@ -15,7 +15,7 @@
       right: 0;
       bottom: 0;
       width: 100%;
-      height: calc(100vh - var(--header-h));
+      height: calc(100svh - var(--header-h));
       border: none;
       background: transparent;
     }
@@ -34,32 +34,33 @@
         <li><a href="#" onclick="navigate(event, 'index.html')" id="nav-camera" class="active">Camera</a></li>
         <li><a href="#" onclick="navigate(event, 'sensors/sensors.html')">Sensors</a></li>
         <li><a href="#" onclick="navigate(event, 'records/records.html')">Records</a></li>
+        <li><a href="#" onclick="navigate(event, 'planification/planification.html')">Carte</a></li>
       </ul>
     </nav>
   </header>
 
   <iframe id="app-frame" src="index.html" allowtransparency="true"></iframe>
 
-  <script src="./libs/vanta/three.min.js"></script>
-  <script src="./libs/vanta/vanta.waves.min.js"></script>
   <script>
-    VANTA.WAVES({
-      el: document.body,
-      mouseControls: true,
-      touchControls: true,
-      gyroControls: false,
-      color: 0x20415D,
-      shininess: 40,
-      waveHeight: 18,
-      waveSpeed: 0.6,
-      zoom: 0.9
-    });
+    function adjustFrame() {
+      var h = document.querySelector('header').offsetHeight;
+      var frame = document.getElementById('app-frame');
+      var vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+      frame.style.top = h + 'px';
+      frame.style.height = (vh - h) + 'px';
+    }
 
     function navigate(e, url) {
       e.preventDefault();
       document.getElementById('app-frame').src = url;
       document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
       e.currentTarget.classList.add('active');
+    }
+
+    window.addEventListener('load', adjustFrame);
+    window.addEventListener('resize', adjustFrame);
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', adjustFrame);
     }
   </script>
 </body>

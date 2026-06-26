@@ -1,5 +1,5 @@
 // This variable holds the URL of the server where the backend is hosted
-let serverUrl = "http://10.42.0.1:5000";
+let serverUrl = location.protocol === "https:" ? location.origin : "http://10.42.0.1:5000";
 // Alternative server URL (commented out)
 // let serverUrl = "http://10.29.225.198:5000";
 
@@ -163,10 +163,15 @@ async function sensors() {
       const Body = await response.json();
       document.getElementById("RGB").textContent = Body.RGB;
       document.getElementById("tp").textContent = "Pression " + Body.pression + " hPa  Température" + "   " + Body.temperature + " °C" ;
-      document.getElementById("gps").textContent = "Latitude " + Body.latitude + "°  Longitude " + Body.longitude + "°" ;
+      const lat = Body.latitude;
+      const lon = Body.longitude;
+      document.getElementById("gps").textContent = "Latitude " + lat + "°  Longitude " + lon + "°";
       document.getElementById("magneto").textContent = "Cap " + Body.magneto ;
       document.getElementById("RTC").textContent = Body.rtc ;
       document.getElementById("time").textContent = Body.time ;
+
+      const gpsAbsent = isNaN(parseFloat(lat)) || isNaN(parseFloat(lon));
+      document.getElementById("usePhoneGPS").style.display = gpsAbsent ? "inline-block" : "none";
 
       setTimeout(() => {
         document.getElementById("RGB").textContent = "";
@@ -175,6 +180,7 @@ async function sensors() {
         document.getElementById("magneto").textContent = "";
         document.getElementById("RTC").textContent = "";
         document.getElementById("time").textContent = "";
+        document.getElementById("usePhoneGPS").style.display = "none";
       }, 7000);
     } else {
       resetButtonState();
@@ -212,25 +218,29 @@ async function setLive(state) {
     const response = await fetch(serverUrl + "/state");
     const body = await response.json();
     if (state) {
-      console.log(body.state.substr(body.state.length-7))
       if (body.state.substr(body.state.length-7) === "STANDBY") {
         live = true;
-        const frameEl = document.getElementById("frame");
-        frameEl.style.display = "block";
-        frameEl.style.maxWidth = "240px";
-        frameEl.style.height = "auto";
-        frameEl.style.borderRadius = "6px";
+        const framesDiv = document.getElementById("live-frames");
+        framesDiv.style.display = "flex";
+
+        // Caméra 2 uniquement si stéréo
+        const frame2El = document.getElementById("frame2");
+        if (body.stereo) {
+          frame2El.style.display = "block";
+          frameLoop2();
+        } else {
+          frame2El.style.display = "none";
+        }
+
         frameLoop();
         stopLiveButton.disabled = false;
         startLiveButton.disabled = true;
       } else {
-        alert(
-          "Cannot start live video while the camera is not in STANDBY state."
-        );
+        alert("Cannot start live video while the camera is not in STANDBY state.");
       }
     } else {
       live = false;
-      document.getElementById("frame").style.display = "none";
+      document.getElementById("live-frames").style.display = "none";
       stopLiveButton.disabled = true;
       startLiveButton.disabled = false;
     }
@@ -239,20 +249,22 @@ async function setLive(state) {
   }
 }
 
-// Function to fetch an image from the server and display it
-async function getImage() {
-  const response = await fetch(serverUrl + "/frame");
-  const imageBlob = await response.blob();
-  const imageObjectURL = URL.createObjectURL(imageBlob);
-  const image = document.getElementById("frame");
-  image.src = imageObjectURL;
+// Fetch et affiche un frame pour une caméra donnée
+async function getImage(endpoint, imgId) {
+  const response = await fetch(serverUrl + endpoint);
+  const blob = await response.blob();
+  const url = URL.createObjectURL(blob);
+  const img = document.getElementById(imgId);
+  if (img.src) URL.revokeObjectURL(img.src);
+  img.src = url;
 }
 
-// Function to continuously fetch and display frames in a loop
 async function frameLoop() {
-  while (live) {
-    await getImage();
-  }
+  while (live) { await getImage("/frame", "frame"); }
+}
+
+async function frameLoop2() {
+  while (live) { await getImage("/frame2", "frame2"); }
 }
 
 // Helper function to disable all buttons
@@ -268,6 +280,41 @@ function disableAllButtons() {
   stopLiveButton.disabled = true;
   startLiveButton.disabled = true;
 }
+
+// GPS du téléphone comme fallback
+document.getElementById("usePhoneGPS").addEventListener("click", function () {
+  if (!navigator.geolocation) {
+    alert("La géolocalisation n'est pas supportée par ce navigateur.");
+    return;
+  }
+  const btn = document.getElementById("usePhoneGPS");
+  btn.disabled = true;
+  btn.textContent = "Localisation…";
+  navigator.geolocation.getCurrentPosition(
+    function (pos) {
+      const lat = pos.coords.latitude.toFixed(6);
+      const lon = pos.coords.longitude.toFixed(6);
+      document.getElementById("gps").textContent = "Latitude " + lat + "°  Longitude " + lon + "° (téléphone)";
+      btn.style.display = "none";
+      btn.disabled = false;
+      btn.textContent = "Utiliser le GPS du téléphone ?";
+    },
+    function (err) {
+      let msg;
+      if (location.protocol !== "https:") {
+        msg = "La géolocalisation nécessite HTTPS.\nConnectez-vous en https://10.42.0.1";
+      } else if (err.code === 1) {
+        msg = "Permission refusée. Autorisez la localisation dans les réglages du navigateur.";
+      } else {
+        msg = "Impossible d'obtenir la position : " + err.message;
+      }
+      alert(msg);
+      btn.disabled = false;
+      btn.textContent = "Utiliser le GPS du téléphone ?";
+    },
+    { enableHighAccuracy: true, timeout: 10000 }
+  );
+});
 
 // Helper function to reset buttons to their initial state
 function resetButtonState() {

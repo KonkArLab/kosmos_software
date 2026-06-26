@@ -180,15 +180,17 @@ class KosmosCam(Thread):
             
     def init_gps(self):
         self._gps_ok = False
+        self._phone_gps_lat = None
+        self._phone_gps_lon = None
         try:
             self.gps = GPS()
             if self.gps.init():
                 logging.info("Capteur GPS OK")
                 self._gps_ok = True
                 self.gps.start()
-            else:    
+            else:
                 logging.error("Port Serie GPS OK mais non fonctionnel")
-        except:    
+        except:
             logging.error("Erreur d'initialisation du GPS")
     
     def init_tp(self):
@@ -308,11 +310,11 @@ class KosmosCam(Thread):
             i=0            
             while self._boucle == True:
                 # Création des codes stations
-                increment = self._Conf.system.getint(INCREMENT_SECTION,"increment") 
+                increment = self._Conf.system.getint(INCREMENT_SECTION,"increment")
                 if i == 0: # Mode STAVIRO, une seule vidéo de longue durée
                     self._file_name = f'{increment:04}'
                 else: # Mode MICADO, découpage de la vidéo en morceau de XX minutes
-                    self._file_name = f'{increment:04}' + '_' + '{:02.0f}'.format(i) 
+                    self._file_name = f'{increment:04}' + '_' + '{:02.0f}'.format(i)
                 logging.info(f"Debut de l'enregistrement video {self._file_name}")
                 
                 self._output = self._file_name + '.h264'
@@ -494,7 +496,25 @@ class KosmosCam(Thread):
             infoStationDict["survey"]["date"]["value"] = "20"+self._Conf.get_date_Y()+self._Conf.get_date_m()+self._Conf.get_date_d()
             infoStationDict["video_observation"]["time"]["value"] = self._Conf.get_date_H()+":"+self._Conf.get_date_M()
 
-            # From sensors
+            # Champs campagne transmis par le frontend via /start
+            territory = getattr(self, 'campaign_territory', None) or None
+            zone      = getattr(self, 'campaign_zone',      None) or None
+            increment = self._Conf.system.getint(INCREMENT_SECTION, "increment")
+            year_2d   = self._Conf.get_date_Y()
+            codeobs   = f"{zone}{year_2d}{increment:04d}" if zone else None
+            infoStationDict["survey"]["survey_name"]["value"]       = territory
+            infoStationDict["survey"]["zone"]["value"]             = zone
+            infoStationDict["survey"]["site"]["value"]             = getattr(self, 'campaign_locality',   None) or None
+            infoStationDict["survey"]["region"]["value"]           = territory
+            infoStationDict["survey"]["protectionStatus2"]["value"]= getattr(self, 'campaign_protection', None) or None
+            infoStationDict["survey"]["boat_name"]["value"]        = getattr(self, 'campaign_boat',       None) or None
+            infoStationDict["survey"]["pilot_name"]["value"]       = getattr(self, 'campaign_pilot',      None) or None
+            infoStationDict["survey"]["crew_names"]["value"]       = getattr(self, 'campaign_crew',       None) or None
+            infoStationDict["video_observation"]["codeObs"]["value"]              = codeobs
+            infoStationDict["video_observation"]["video_file_name"]["value"]      = self._Conf.get_date_YMD() + '_' + self._Conf.systemName
+            infoStationDict["video_observation"]["point_name"]["value"]           = f'{increment:04d}'
+
+            # From sensors (hardware GPS)
             try:
                 lalo = self.LatLong()
                 infoStationDict["video_observation"]["latitude"]["value"] = lalo[0]
@@ -502,6 +522,10 @@ class KosmosCam(Thread):
             except:
                 infoStationDict["video_observation"]["latitude"]["value"] = None
                 infoStationDict["video_observation"]["longitude"]["value"] = None
+
+            # From phone GPS (fallback when system GPS unavailable)
+            infoStationDict["video_observation"]["lat_tel"]["value"] = self._phone_gps_lat
+            infoStationDict["video_observation"]["lon_tel"]["value"] = self._phone_gps_lon
 
             try:
                 ma = self.PT()

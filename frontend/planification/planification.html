@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../styles.css?v=4">
+  <link rel="stylesheet" href="../libs/leaflet/leaflet.css">
+  <link rel="stylesheet" href="planification.css">
+  <title>KOSMOS — Carte</title>
+  <script src="../iframe-detect.js?v=4"></script>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <img src="../img/logo_kosmos.png" alt="KOSMOS logo">
+      <span>KOSMOS</span>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="../campaign/campaign.html">Campaign</a></li>
+        <li><a href="../config/config.html">Configuration</a></li>
+        <li><a href="../index.html">Camera</a></li>
+        <li><a href="../sensors/sensors.html">Sensors</a></li>
+        <li><a href="../records/records.html">Records</a></li>
+        <li><a href="planification.html" class="active">Carte</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <section id="planif-section">
+    <div id="map-toolbar">
+      <button id="btn-add-point" title="Ajouter un point de planification">+ Point</button>
+      <button id="btn-clear" class="btn-danger" title="Effacer les points de planification">Effacer</button>
+      <span id="point-count">0 point(s)</span>
+      <button id="btn-reload-dives" title="Recharger les plongées enregistrées" style="margin-left:auto">↺ Plongées</button>
+    </div>
+    <div id="map"></div>
+  </section>
+
+  <script src="../libs/leaflet/leaflet.js"></script>
+  <script src="planification.js"></script>
+</body>
+</html>

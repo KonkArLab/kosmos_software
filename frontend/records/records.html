@@ -5,9 +5,11 @@
   <!-- Meta information -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" type="text/css" href="records.css">
+  <link rel="stylesheet" type="text/css" href="../styles.css?v=4">
+  <link rel="stylesheet" type="text/css" href="records.css?v=4">
+  <link rel="stylesheet" href="../libs/leaflet/leaflet.css">
   <title>KOSMOS</title>
-  <script src="../iframe-detect.js"></script>
+  <script src="../iframe-detect.js?v=4"></script>
 </head>
 
 <body>
@@ -43,10 +45,14 @@
           </tr>
         </thead>
       </table>
+
+      <h3 style="margin-top:var(--sp-lg)">Carte des plongées</h3>
+      <div id="records-map"></div>
     </div>
   </section>
 
   <!-- JavaScript files -->
+  <script src="../libs/leaflet/leaflet.js"></script>
   <script src="records.js"></script>
   <script src="../config/state.js"></script>
   <script src="../config/save.js"></script>

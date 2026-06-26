@@ -1,5 +1,5 @@
 // This variable holds the URL of the server where the backend is hosted
-let serverUrl = "http://10.42.0.1:5000";
+let serverUrl = location.protocol === "https:" ? location.origin : "http://10.42.0.1:5000";
 // Alternative server URL (commented out)
 // let serverUrl = "http://10.29.225.198:5000";
 
@@ -7,6 +7,48 @@ let serverUrl = "http://10.42.0.1:5000";
 const startButton = document.getElementById("startCamera");
 const stopButton = document.getElementById("stopCamera");
 const shutdownButton = document.getElementById("shutdown");
+const timerEl = document.getElementById("recording-timer");
+
+// ── Compteur d'enregistrement ────────────────────────────────────────────────
+let _timerInterval = null;
+let _recordingStartMs = null;  // Date.now() équivalent au début de l'enregistrement
+
+function _formatElapsed(ms) {
+  const s = Math.floor(ms / 1000);
+  const h = Math.floor(s / 3600).toString().padStart(2, '0');
+  const m = Math.floor((s % 3600) / 60).toString().padStart(2, '0');
+  const sec = (s % 60).toString().padStart(2, '0');
+  return `⏱ ${h}:${m}:${sec}`;
+}
+
+function startTimer(serverStartUnix) {
+  _recordingStartMs = serverStartUnix * 1000;
+  timerEl.style.display = 'block';
+  timerEl.textContent = _formatElapsed(Date.now() - _recordingStartMs);
+  if (_timerInterval) return;
+  _timerInterval = setInterval(function () {
+    timerEl.textContent = _formatElapsed(Date.now() - _recordingStartMs);
+  }, 1000);
+}
+
+function stopTimer() {
+  clearInterval(_timerInterval);
+  _timerInterval = null;
+  _recordingStartMs = null;
+  timerEl.style.display = 'none';
+  timerEl.textContent = '';
+}
+
+// Appelé par state.js à chaque poll — resynchronise si connexion retrouvée
+function syncTimer(body) {
+  const isWorking = body.state && body.state.endsWith('WORKING');
+  if (isWorking && body.recording_start) {
+    startTimer(body.recording_start);  // startTimer ignore si déjà actif, recale sinon
+  } else if (!isWorking) {
+    stopTimer();
+  }
+}
+// ─────────────────────────────────────────────────────────────────────────────
 
 // Initial setup: disable stop buttons and enable shutdown
 stopButton.disabled = true;
@@ -29,6 +71,50 @@ async function majStateButton() {
   } finally {}
 }
 
+async function askPhoneGPS() {
+  // Toujours réinitialiser les valeurs précédentes
+  try {
+    await fetch(serverUrl + "/resetPhoneGPS", { method: "POST" });
+  } catch {}
+
+  try {
+    const r = await fetch(serverUrl + "/gpsStatus");
+    const data = await r.json();
+    if (data.has_fix) return;
+  } catch { return; }
+
+  if (!navigator.geolocation) return;
+
+  const result = await Swal.fire({
+    title: 'GPS non disponible',
+    text: 'Aucune coordonnée GPS détectée. Utiliser le GPS du téléphone ?',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Oui, utiliser mon GPS',
+    cancelButtonText: 'Non, continuer sans GPS'
+  });
+  if (!result.isConfirmed) return;
+
+  await new Promise(function(resolve) {
+    navigator.geolocation.getCurrentPosition(
+      async function(pos) {
+        const lat = pos.coords.latitude.toFixed(6);
+        const lon = pos.coords.longitude.toFixed(6);
+        try {
+          await fetch(serverUrl + "/setPhoneGPS", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ lat: lat, lon: lon })
+          });
+        } catch {}
+        resolve();
+      },
+      function() { resolve(); },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  });
+}
+
 // Function to send a start request to the server
 async function start() {
   try {
@@ -37,11 +123,26 @@ async function start() {
     }
     const storedData = localStorage.getItem("campaignData");
     if (storedData) {
+      await askPhoneGPS();
       disableAllButtons();
-      const response = await fetch(serverUrl + "/start");
+      const campaignParsed = JSON.parse(storedData);
+      const response = await fetch(serverUrl + "/start", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          campaign:  campaignParsed?.zoneDict?.campaign        || "XX",
+          zone:      campaignParsed?.zoneDict?.zone            || "ZZ",
+          locality:   campaignParsed?.zoneDict?.locality          || "",
+          protection: campaignParsed?.zoneDict?.protection       || "",
+          boat:      campaignParsed?.deploiementDict?.boat     || "",
+          pilot:     campaignParsed?.deploiementDict?.pilot    || "",
+          crew:      campaignParsed?.deploiementDict?.crew     || "",
+          partners:  campaignParsed?.deploiementDict?.partners || ""
+        })
+      });
       const body = await response.json();
-      // Enable only the stop button for camera
       stopButton.disabled = false;
+      if (body.recording_start) startTimer(body.recording_start);
     } else {
       Swal.fire({
           title: 'Error',
@@ -59,6 +160,7 @@ async function start() {
 // Function to send a stop request to the server
 async function stop() {
   disableAllButtons();
+  stopTimer();
   try {
     const response = await fetch(serverUrl + "/stop");
     const body = await response.json();

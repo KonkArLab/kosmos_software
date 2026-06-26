@@ -5,9 +5,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="../libs/sweetAlert/sweetAlert.min.css">
-  <link rel="stylesheet" type="text/css" href="../styles.css">
+  <link rel="stylesheet" type="text/css" href="../styles.css?v=4">
   <title>KOSMOS</title>
-  <script src="../iframe-detect.js"></script>
+  <script src="../iframe-detect.js?v=4"></script>
 </head>
 
 <body>
@@ -41,7 +41,10 @@
         <button id="startLive" onClick="setLive(true)">Start Live</button>
         <button id="stopLive" onClick="setLive(false)">Stop Live</button>
       </div>
-      <img id="frame" style="display:none; max-width:240px; height:auto; border-radius:var(--r-sm); box-shadow:var(--shadow-sm); margin-bottom:var(--sp-sm);">
+      <div id="live-frames" style="display:none; display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:var(--sp-sm);">
+        <img id="frame"  style="max-width:240px; height:auto; border-radius:var(--r-sm); box-shadow:var(--shadow-sm);">
+        <img id="frame2" style="display:none; max-width:240px; height:auto; border-radius:var(--r-sm); box-shadow:var(--shadow-sm);">
+      </div>
       
       <h3 class="titleCamera">Moteur</h3>
       
@@ -51,7 +54,13 @@
       <p> <button id="testSensors"> Test </button> <button id="initSensors"> Init </button> <span id="init"> </span> </p>
       <p> <b>Luxmètre : </b> <span id="RGB"> </span> </p> 
       <p> <b>Capteur TP : </b> <span id="tp"> </span> </p> 
-      <p> <b>GPS : </b> <span id="gps"> </span> </p> 
+      <p style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+        <b>GPS : </b>
+        <span id="gps"></span>
+        <button id="usePhoneGPS" style="display:none; font-size:0.78rem; padding:2px 0.6rem;">
+          Utiliser le GPS du téléphone ?
+        </button>
+      </p>
       <p> <b>Compas : </b><span id="magneto"> </span> </p> 
       <p> <b>RTC : </b><span id="RTC"> </span> </p> 
       <p> <b>Date et heure : </b><span id="time"> </span> </p> 

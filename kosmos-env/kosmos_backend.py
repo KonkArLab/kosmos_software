@@ -23,10 +23,11 @@ class Server:
 
     def __init__(self,myMain):
         self.myMain=myMain
+        self._recording_start = None
         CORS(self.app)
         
         self.app.add_url_rule("/state", view_func=self.state)
-        self.app.add_url_rule("/start", view_func=self.start)
+        self.app.add_url_rule("/start", view_func=self.start, methods=['GET','POST'])
         self.app.add_url_rule("/stop", view_func=self.stop)
         self.app.add_url_rule("/shutdown", view_func=self.shutdown)
         self.app.add_url_rule("/getRecords", view_func=self.getRecords)
@@ -47,16 +48,58 @@ class Server:
         
         self.app.add_url_rule("/testIP", view_func=self.testIP)
         self.app.add_url_rule("/changeIP", view_func=self.changeIP)
+        self.app.add_url_rule("/setPhoneGPS", view_func=self.setPhoneGPS, methods=['POST'])
+        self.app.add_url_rule("/resetPhoneGPS", view_func=self.resetPhoneGPS, methods=['POST'])
+        self.app.add_url_rule("/gpsStatus", view_func=self.gpsStatus)
+        self.app.add_url_rule("/frame2", view_func=self.image2)
+        self.app.add_url_rule("/getRecordsGPS", view_func=self.getRecordsGPS)
 
+
+    def resetPhoneGPS(self):
+        try:
+            self.myMain.thread_camera._phone_gps_lat = None
+            self.myMain.thread_camera._phone_gps_lon = None
+            return jsonify({"status": "ok"})
+        except Exception as e:
+            return jsonify({"status": "error", "message": str(e)}), 500
+
+    def gpsStatus(self):
+        try:
+            lat = self.myMain.thread_camera.gps.get_latitude()
+            has_fix = lat is not None
+        except:
+            has_fix = False
+        return jsonify({"has_fix": has_fix})
+
+    def setPhoneGPS(self):
+        try:
+            data = request.get_json(silent=True) or {}
+            lat = str(data.get("lat", ""))
+            lon = str(data.get("lon", ""))
+            if not lat or not lon:
+                return jsonify({"status": "error", "message": "lat/lon manquants"}), 400
+            self.myMain.thread_camera._phone_gps_lat = lat
+            self.myMain.thread_camera._phone_gps_lon = lon
+            logging.info(f"GPS téléphone enregistré : {lat}, {lon}")
+            return jsonify({"status": "ok", "lat": lat, "lon": lon})
+        except Exception as e:
+            return jsonify({"status": "error", "message": str(e)}), 500
 
     def run(self) :
         logging.info("Server is running !")
         self.app.run(host="0.0.0.0",port=5000,debug=False)
             
     def state(self):
+        is_working = str(self.myMain.state).split('.')[1] == 'WORKING'
+        try:
+            stereo = bool(self.myMain.thread_camera.STEREO)
+        except Exception:
+            stereo = False
         return {
             "status" : "ok",
-            "state" : self.myMain._conf.systemName + " state is " + str(self.myMain.state).split('.')[1]
+            "state" : self.myMain._conf.systemName + " state is " + str(self.myMain.state).split('.')[1],
+            "recording_start" : self._recording_start if is_working else None,
+            "stereo" : stereo
         }
     
     def checkConversion(self):
@@ -105,6 +148,7 @@ class Server:
     # Moteur
     def rotatePlus(self):
         if self.myMain.PRESENCE_MOTEUR == 1:
+            self.myMain.motorThread._state = 1
             self.myMain.motorThread.send_data(5)
             return{
                 "motor" : "Avance"
@@ -113,9 +157,10 @@ class Server:
             return{
                 "motor" : "Moteur non activé"
             }
-        
+
     def rotateMinus(self):
         if self.myMain.PRESENCE_MOTEUR == 1:
+            self.myMain.motorThread._state = 1
             self.myMain.motorThread.send_data(5)
             return{
                 "motor" : "Recul"
@@ -198,11 +243,22 @@ class Server:
     
     
     def start(self):
-        if(self.myMain.state==KState.STANDBY):   
-            self.myMain.record_event.set() 
+        if(self.myMain.state==KState.STANDBY):
+            data = request.get_json(silent=True) or {}
+            self.myMain.campaign_territory = data.get("campaign",  "XX").strip().upper()
+            self.myMain.campaign_zone      = data.get("zone",      "ZZ").strip().upper()
+            self.myMain.campaign_locality   = data.get("locality",   "")
+            self.myMain.campaign_protection = data.get("protection", "")
+            self.myMain.campaign_boat      = data.get("boat",      "")
+            self.myMain.campaign_pilot     = data.get("pilot",     "")
+            self.myMain.campaign_crew      = data.get("crew",      "")
+            self.myMain.campaign_partners  = data.get("partners",  "")
+            self._recording_start = time.time()
+            self.myMain.record_event.set()
             self.myMain.button_event.set()
             return {
-                "status" : "ok"
+                "status" : "ok",
+                "recording_start" : self._recording_start
             }
         else :
             return {
@@ -276,6 +332,32 @@ class Server:
         return response
     
 
+    def getRecordsGPS(self):
+        results = []
+        campagne_path = self.myMain._conf.CAMPAGNE_PATH
+        try:
+            for folder in sorted(os.listdir(campagne_path)):
+                json_path = os.path.join(campagne_path, folder, folder + '.json')
+                if not os.path.isfile(json_path):
+                    continue
+                try:
+                    with open(json_path, 'r', encoding='utf-8') as f:
+                        data = json.load(f)
+                    obs = data.get('video_observation', {})
+                    lat = obs.get('latitude', {}).get('value')
+                    lon = obs.get('longitude', {}).get('value')
+                    if lat is None or lon is None:
+                        lat = obs.get('lat_tel', {}).get('value')
+                        lon = obs.get('lon_tel', {}).get('value')
+                    lat_f = float(lat)
+                    lon_f = float(lon)
+                    results.append({'name': folder, 'lat': lat_f, 'lon': lon_f})
+                except Exception:
+                    continue
+        except Exception:
+            pass
+        return jsonify({'status': 'ok', 'data': results})
+
     def getRecords(self):
         response=dict()
         try:
@@ -313,10 +395,22 @@ class Server:
         camera.capture_file(buf,format='jpeg')
         response=make_response(buf.getvalue())
         response.headers['Content-Type']='image/jpg'
-        return response    
+        return response
+
+    def image2(self):
+        try:
+            camera2 = self.myMain.thread_camera._camera2
+        except AttributeError:
+            return make_response('No second camera', 404)
+        buf = io.BytesIO()
+        camera2.options["quality"] = 10
+        camera2.capture_file(buf, format='jpeg')
+        response = make_response(buf.getvalue())
+        response.headers['Content-Type'] = 'image/jpg'
+        return response
 
     def get_metadata(self):
-        metadata_path = GIT_PATH + "nouveau_template.json"
+        metadata_path = GIT_PATH + "infoStationTemplate.json"
         
         try:
             with open(metadata_path, 'r', encoding='utf-8') as f:
