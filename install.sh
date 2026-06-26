@@ -33,7 +33,7 @@ sudo echo "sleep 20
 
 # Demarrage du serveur
 cd /home/$USER/kosmos_software/frontend
-sudo python3 -m http.server 80 &
+sudo python3 serve_https.py &
 
 #Lance kosmos_main.py 
 cd /home/$USER/kosmos_software/kosmos-env
