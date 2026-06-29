@@ -1,5 +1,10 @@
-/* ── GOOGLE FONTS ────────────────────────────────────────── */
-@import url('https://fonts.googleapis.com/css2?family=Grand+Hotel&family=Montserrat:wght@400;600;700&family=Roboto:wght@400;500&display=swap');
+/* ── FONTS (local) ───────────────────────────────────────── */
+@font-face { font-family: 'Grand Hotel'; font-style: normal; font-weight: 400; src: url('./fonts/GrandHotel-Regular.woff2') format('woff2'); }
+@font-face { font-family: 'Montserrat'; font-style: normal; font-weight: 400; src: url('./fonts/Montserrat-400.woff2') format('woff2'); }
+@font-face { font-family: 'Montserrat'; font-style: normal; font-weight: 600; src: url('./fonts/Montserrat-600.woff2') format('woff2'); }
+@font-face { font-family: 'Montserrat'; font-style: normal; font-weight: 700; src: url('./fonts/Montserrat-700.woff2') format('woff2'); }
+@font-face { font-family: 'Roboto'; font-style: normal; font-weight: 400; src: url('./fonts/Roboto-400.woff2') format('woff2'); }
+@font-face { font-family: 'Roboto'; font-style: normal; font-weight: 500; src: url('./fonts/Roboto-500.woff2') format('woff2'); }
 
 /* ── KOSMOS DESIGN TOKENS ────────────────────────────────── */
 :root {

@@ -14,6 +14,7 @@ import os
 import subprocess
 import urllib.request
 import urllib.error
+from socketserver import ThreadingMixIn
 
 BASE_DIR     = os.path.dirname(os.path.abspath(__file__))
 FRONTEND_DIR = os.path.join(BASE_DIR, "frontend")
@@ -80,7 +81,10 @@ class ProxyHandler(http.server.SimpleHTTPRequestHandler):
     def log_message(self, fmt, *args):
         pass
 
-server = http.server.HTTPServer(("0.0.0.0", PORT), ProxyHandler)
+class ThreadedHTTPSServer(ThreadingMixIn, http.server.HTTPServer):
+    daemon_threads = True
+
+server = ThreadedHTTPSServer(("0.0.0.0", PORT), ProxyHandler)
 context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
 context.load_cert_chain(CERT_FILE, KEY_FILE)
 server.socket = context.wrap_socket(server.socket, server_side=True)
