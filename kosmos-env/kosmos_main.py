@@ -65,7 +65,8 @@ class kosmos_main():
         self.threshold_lux = self._conf.config.getint(DEBUG_SECTION,"10_system_threshold_light")
         self.bool_light = False
         if self.LIGHT_ENABLED == 1:
-            self._light = LED(self._conf.config.getint(DEBUG_SECTION,"09_system_lumen"))
+            self._light = LED(self._conf.config.getint(DEBUG_SECTION,"09_system_lumen")) #37
+            self._light2 = LED(self._conf.config.getint(DEBUG_SECTION,"09_system_lumen")-2) #35
             logging.info("LIGHT demandé !")
         else:
             logging.info("LIGHT non demandé...")
@@ -125,6 +126,7 @@ class kosmos_main():
             try: 
                 if self.thread_camera.get_flux() < self.threshold_lux: 
                     self._light.on()
+                    self._light2.on()
                     self.bool_light = True
                     logging.info("LIGHT ON pour calcul des gains, flux total " + str(self.thread_camera.get_flux()))
                     time.sleep(0.5)
@@ -138,6 +140,7 @@ class kosmos_main():
         if self.LIGHT_ENABLED == 1:
             if self.bool_light == True:
                 self._light.off()
+                self._light2.off()
                 logging.info("LIGHT OFF")
                 self.bool_light = False
 
@@ -199,6 +202,7 @@ class kosmos_main():
                     self._conf.add_line(EVENT_FILE,event_line)
                     time.sleep(0.5)
                     self._light.on()
+                    self._light2.on()
                     self.bool_light = True
             except:
                 logging.error("Erreur Luxmètre pour déclenchement LIGHT lors de l'enregistrement")
@@ -243,6 +247,7 @@ class kosmos_main():
         if self.LIGHT_ENABLED == 1: 
             if self.bool_light == True:
                 self._light.off()
+                self._light2.off()
                 self.bool_light = False
                 event_line = self._conf.get_date_HMS()  + "; EXTINCTION LIGHT"
                 self._conf.add_line(EVENT_FILE,event_line)
@@ -302,7 +307,8 @@ class kosmos_main():
         if self.LIGHT_ENABLED == 1:
             self._light.off()
             self._light.close()
-        
+            self._light2.off()
+            self._light2.close()
             
     def shutdown(self):
         logging.info("SHUTDOWN : Kosmos passe à l'arrêt total")
