@@ -65,8 +65,8 @@ class kosmos_main():
         self.threshold_lux = self._conf.config.getint(DEBUG_SECTION,"10_system_threshold_light")
         self.bool_light = False
         if self.LIGHT_ENABLED == 1:
-            self._light = LED(self._conf.config.getint(DEBUG_SECTION,"09_system_lumen")) #37
-            self._light2 = LED(self._conf.config.getint(DEBUG_SECTION,"09_system_lumen")-2) #35
+            self._light = LED(self._conf.config.getint(DEBUG_SECTION,"09_system_lumen")) #26
+            self._light2 = LED(19) #19
             logging.info("LIGHT demandé !")
         else:
             logging.info("LIGHT non demandé...")
