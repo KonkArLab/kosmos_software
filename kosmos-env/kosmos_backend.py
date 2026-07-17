@@ -188,10 +188,14 @@ class Server:
             LONG = "ERR"
         # TP
         try:
-            press = self.myMain.thread_camera.pressure_sensor.pressure()
-            PRESSURE = f'{press:.1f}'
-            temp = self.myMain.thread_camera.pressure_sensor.temperature()  # Default is degrees C (no arguments)
-            TEMPERATURE = f'{temp:.1f}'
+            if self.myMain.thread_camera.pressure_sensor.read():
+                press = self.myMain.thread_camera.pressure_sensor.pressure()
+                PRESSURE = f'{press:.1f}'
+                temp = self.myMain.thread_camera.pressure_sensor.temperature()  # Default is degrees C (no arguments)
+                TEMPERATURE = f'{temp:.1f}'
+            else:
+                PRESSURE = "ERR"
+                TEMPERATURE = "ERR"
         except:
             PRESSURE = "ERR"
             TEMPERATURE = "ERR"
