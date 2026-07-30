@@ -53,7 +53,21 @@ class Server:
         self.app.add_url_rule("/gpsStatus", view_func=self.gpsStatus)
         self.app.add_url_rule("/frame2", view_func=self.image2)
         self.app.add_url_rule("/getRecordsGPS", view_func=self.getRecordsGPS)
+        self.app.add_url_rule("/setTime", view_func=self.setTime, methods=['POST'])
 
+
+    def setTime(self):
+        try:
+            data = request.get_json(silent=True) or {}
+            new_time = str(data.get("datetime", "")).strip()
+            if not new_time:
+                return jsonify({"status": "error", "message": "datetime manquant"}), 400
+            subprocess.run(["timedatectl", "set-ntp", "false"], check=False)
+            subprocess.run(["date", "-s", new_time], check=True)
+            logging.info(f"Heure système synchronisée sur : {new_time}")
+            return jsonify({"status": "ok", "time": new_time})
+        except Exception as e:
+            return jsonify({"status": "error", "message": str(e)}), 500
 
     def resetPhoneGPS(self):
         try:
@@ -195,7 +209,7 @@ class Server:
                 TEMPERATURE = f'{temp:.1f}'
             else:
                 PRESSURE = "ERR"
-                TEMPERATURE = "ERR"
+                TEMPERATURE = "ERR"    
         except:
             PRESSURE = "ERR"
             TEMPERATURE = "ERR"

@@ -63,7 +63,12 @@
       </p>
       <p> <b>Compas : </b><span id="magneto"> </span> </p> 
       <p> <b>RTC : </b><span id="RTC"> </span> </p> 
-      <p> <b>Date et heure : </b><span id="time"> </span> </p> 
+      <p style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+        <b>Date et heure : </b>
+        <span id="time"></span>
+        <button id="syncTime" style="font-size:0.78rem; padding:2px 0.6rem;">Synchroniser heure</button>
+        <span id="syncTimeMsg"></span>
+      </p>
 
       <h3 class="titleCamera">Eclairage</h3>
       

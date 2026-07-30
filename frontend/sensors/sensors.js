@@ -190,6 +190,31 @@ async function sensors() {
   } finally{testSensorsButton.disabled = false};
 }
 
+// Synchronisation de l'heure du Rpi sur celle du téléphone
+document.getElementById("syncTime").addEventListener("click", syncTime);
+async function syncTime() {
+  const btn = document.getElementById("syncTime");
+  const msgEl = document.getElementById("syncTimeMsg");
+  btn.disabled = true;
+  try {
+    const now = new Date();
+    const pad = n => String(n).padStart(2, '0');
+    const formatted = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+    const response = await fetch(serverUrl + "/setTime", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ datetime: formatted })
+    });
+    const body = await response.json();
+    msgEl.textContent = body.status === "ok" ? "Heure synchronisée ✓" : "Erreur : " + body.message;
+  } catch (err) {
+    msgEl.textContent = "Erreur de synchronisation";
+  } finally {
+    btn.disabled = false;
+    setTimeout(() => { msgEl.textContent = ""; }, 4000);
+  }
+}
+
 // Initialisation des capteurs
 
 document.getElementById("initSensors").addEventListener("click", initSensors);
