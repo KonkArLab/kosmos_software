@@ -90,7 +90,7 @@ Plusieurs fenêtres vont s'afficher:
 
 ## [Rpi5 seulement] Opération pour préparer la Rpi au mode de consommation minimale pour le mode MICADO
 
-<!--
+
 ### Activation du mode veille profonde
 
 - Dans un terminal taper la commande suivante:
@@ -106,7 +106,7 @@ WAKE_ON_GPIO=0
 - Sauvegarder les modifications en appuyant sur `Ctrl + Shift + o`
 - Quitter le fichier en appuyant sur `Ctrl + Shift + x`
 - Taper sur `Entrée`
--->
+
 
 ### Activation de la recharge de la batterie
 

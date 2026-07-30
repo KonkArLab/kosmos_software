@@ -526,7 +526,7 @@ class KosmosCam(Thread):
 
             try:
                 ma = self.PT()
-                depth = (ma[0]-ma[1])/(1029*9.80665)
+                depth = (ma[0]-ma[1])/(1029*9.80665)*100 # car ma en hectopascal
                 infoStationDict["video_observation"]["depth"]["value"] = int(depth*100)/100
                 infoStationDict["video_observation"]["water_temperature"]["value"] = ma[2]
                 infoStationDict["video_observation"]["airTemp"]["value"] = ma[3]
