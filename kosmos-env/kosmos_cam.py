@@ -134,9 +134,6 @@ class KosmosCam(Thread):
             # Instanciation Encoder    
             self._encoder2=H264Encoder(framerate=self._FRAMERATE, bitrate=10000000)            
         
-        # Initialisation Capteur TP        
-        
-        
         #Initialisation capteurs
         self.init_tp()    
         self.init_gps()
