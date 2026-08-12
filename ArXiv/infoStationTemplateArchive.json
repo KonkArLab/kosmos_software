@@ -1,0 +1,69 @@
+{
+    "system": {
+        "camera": null,
+        "model": null,
+        "system": null,
+        "version": null
+    },
+    "campaign": {
+        "zoneDict": {
+            "campaign": null,
+            "zone": null,
+            "locality": null,
+            "protection": null
+        },
+        "dateDict": {
+            "date": null
+        },
+        "deploiementDict": {
+            "boat": null,
+            "pilot": null,
+            "crew": null,
+            "partners": null
+        }
+    },
+    "video": {
+        "stationDict": {
+            "increment": null,
+            "codestation": null
+        },
+        "hourDict": {
+            "hour": null,
+            "minute": null,
+            "second": null,
+            "ymdOS": null,
+            "HMSOS": null
+        },
+        "gpsDict": {
+            "site": null,
+            "latitude": null,
+            "longitude": null
+        },
+        "ctdDict": {
+            "depth": null,
+            "temperature": null,
+            "salinity": null
+        },
+        "astroDict": {
+            "moon": null,
+            "tide": null,
+            "coefficient": null
+        },
+        "meteoAirDict": {
+            "sky": null,
+            "wind": null,
+            "direction": null,
+            "tempAir": null
+        },
+        "meteoMerDict": {
+            "seaState": null,
+            "swell": null
+        },
+        "analyseDict": {
+            "exploitability": null,
+            "habitat": null,
+            "fauna": null,
+            "visibility" : null
+        }
+    }
+}

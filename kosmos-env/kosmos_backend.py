@@ -65,7 +65,12 @@ class Server:
             subprocess.run(["timedatectl", "set-ntp", "false"], check=False)
             subprocess.run(["date", "-s", new_time], check=True)
             logging.info(f"Heure système synchronisée sur : {new_time}")
+            
+            # On regenere le bon dossier de campagne
+            self.myMain._conf.createSurveyFile()
+
             return jsonify({"status": "ok", "time": new_time})
+        
         except Exception as e:
             return jsonify({"status": "error", "message": str(e)}), 500
 

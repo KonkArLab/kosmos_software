@@ -65,33 +65,35 @@ class KosmosConfig:
             if len(os.listdir(USB_ROOT_PATH)) == 1 :
                 logging.info("Présence d'une seule clé usb")
                 USB_NAME = os.listdir(USB_ROOT_PATH)[0]
-                USB_INSIDE_PATH = USB_ROOT_PATH+"/"+USB_NAME+"/"
+                self.USB_INSIDE_PATH = USB_ROOT_PATH+"/"+USB_NAME+"/"
                 self.sauvegarde = "sur la clé usb"
             else:
                 raise ValueError('toto')
         except:
             logging.info("Absence de clé usb ou clé usb fantome -> Ecriture en Local")
             subprocess.run(["sudo", "mkdir", "-p", ROOT_PATH + "kosmos_local_sd"])
-            USB_INSIDE_PATH = ROOT_PATH + "kosmos_local_sd/"
+            self.USB_INSIDE_PATH = ROOT_PATH + "kosmos_local_sd/"
             subprocess.run(["sudo", "chown", "-R", os.listdir("/home")[0]+":"+os.listdir("/home")[0] , ROOT_PATH+"kosmos_local_sd"])
             self.sauvegarde = "en local"
             
-        subprocess.run(["sudo", "cp", "-n", GIT_PATH+CONF_FILE_TEMPLATE,USB_INSIDE_PATH+CONF_FILE])
+        subprocess.run(["sudo", "cp", "-n", GIT_PATH+CONF_FILE_TEMPLATE,self.USB_INSIDE_PATH+CONF_FILE])
         logging.info("Version " + self.systemVersion)
-        
-            
-        
-        self._config_path=USB_INSIDE_PATH+CONF_FILE
+
+        self._config_path=self.USB_INSIDE_PATH+CONF_FILE
         self.config = configparser.ConfigParser()
         self.config.read(self._config_path)
         
+        self.createSurveyFile()
+
+    def createSurveyFile(self, work_path = WORK_PATH):
         # Création Dossier Campagne si non existant               
         campagneFile = self.get_date_YMD() + '_' + self.systemName  
-        os.chdir(USB_INSIDE_PATH)            
+        os.chdir(self.USB_INSIDE_PATH)            
         if not os.path.exists(campagneFile):
             os.mkdir(campagneFile)
-        self.CAMPAGNE_PATH = USB_INSIDE_PATH + campagneFile + "/"
-        os.chdir(WORK_PATH)
+            logging.info("Création du dossier de campagne journalière " + campagneFile)
+        self.CAMPAGNE_PATH = self.USB_INSIDE_PATH + campagneFile + "/"
+        os.chdir(work_path)
 
     def get_date_Y(self) -> str:
         date = datetime.now()
