@@ -5,22 +5,22 @@ document.addEventListener("DOMContentLoaded", function () {
     // Define the form fields with their properties like ID, placeholder, type, etc.
     const fields = [
         { id: "date", placeholder: "", type: "date", label: "Date", tabIndex: 1,  isDate:true },
-        { id: "campaign", placeholder: "ATL", type: "text", label: "Campaign", tabIndex: 2, maxlength: "3"},
-        { id: "zone", placeholder: "BR", type: "text", label: "Zone", tabIndex: 3, maxlength: "3"},
-        { id: "locality", placeholder: "Illien", type: "text", label: "Location", tabIndex: 4, maxlength: "100" },
-        { id: "protection", placeholder: "Parc naturel marin d'iroise", type: "text", label: "Protection", tabIndex: 5, maxlength: "100" },
-        { id: "boat", placeholder: "Beneteau Capelan", type: "text", label: "Boat", tabIndex: 6, maxlength: "100" },
-        { id: "pilot", placeholder: "Olivier F.", type: "text", label: "Pilot", tabIndex: 7, maxlength: "100" },
-        { id: "crew", placeholder: "C.H., J.C.", type: "text", label: "Crew", tabIndex: 8, maxlength: "100" },
-        { id: "partners", placeholder: "Ifremer RDT, Ifremer Halgo", type: "text", label: "Partners", tabIndex: 9, maxlength: "200" }
+        { id: "campaign", placeholder: "Concarneau 2026", type: "text", label: "Campagne", tabIndex: 2, maxlength: "100"},
+        { id: "region", placeholder: "ATL", type: "text", label: "Région", tabIndex: 3, maxlength: "100" },
+        { id: "zone", placeholder: "BR", type: "text", label: "Zone", tabIndex: 4, maxlength: "3"},
+        { id: "type", placeholder: "SVR", type: "text", label: "Type", tabIndex: 5, maxlength: "3" },
+        { id: "boat", placeholder: "PEQUOD", type: "text", label: "Bateau", tabIndex: 6, maxlength: "100" },
+        { id: "pilot", placeholder: "Capitaine ACHAB", type: "text", label: "Pilote", tabIndex: 7, maxlength: "100" },
+        { id: "crew", placeholder: "C.H., J.C.", type: "text", label: "Equipage", tabIndex: 8, maxlength: "100" },
+        { id: "partners", placeholder: "Ifremer, KAL", type: "text", label: "Partenaires", tabIndex: 9, maxlength: "200" }
     ];
 
     const campaignFinal = {
         zoneDict: {
             campaign: String,
             zone: String,
-            locality: String,
-            protection: String
+            region: String,
+            type: String
         },
         dateDict:
         {
@@ -93,7 +93,7 @@ document.addEventListener("DOMContentLoaded", function () {
     fields.forEach(field => {
             let value = null;
             if (field.id === 'date') {
-                value = new Date().toISOString().split("T")[0] 
+                value = new Date().toISOString().split("T")[0]
             } 
             if (value) {
                 const element = document.getElementById(field.id);
@@ -173,8 +173,8 @@ document.addEventListener("DOMContentLoaded", function () {
         campaignFinal.deploiementDict.pilot = formData.pilot;
 
         campaignFinal.zoneDict.campaign = formData.campaign;
-        campaignFinal.zoneDict.locality = formData.locality;
-        campaignFinal.zoneDict.protection = formData.protection;
+        campaignFinal.zoneDict.type = formData.type;
+        campaignFinal.zoneDict.region = formData.region;
         campaignFinal.zoneDict.zone = formData.zone;
         
         // Save the data to localStorage

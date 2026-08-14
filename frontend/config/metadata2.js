@@ -291,12 +291,15 @@ function submitForm() {
   // Remplir la section survey avec les données de campagne
   const campaignData = JSON.parse(localStorage.getItem("campaignData"));
   if (campaignData && outputData.survey) {
+    outputData.survey.date.value = campaignData.dateDict?.date || null;
     outputData.survey.survey_name.value = campaignData.zoneDict?.campaign || null;
     outputData.survey.zone.value        = campaignData.zoneDict?.zone || null;
-    outputData.survey.site.value        = campaignData.zoneDict?.locality || null;
+    outputData.survey.region.value        = campaignData.zoneDict?.region || null;
+    outputData.survey.type.value        = campaignData.zoneDict?.type || null;
     outputData.survey.boat_name.value   = campaignData.deploiementDict?.boat || null;
     outputData.survey.pilot_name.value  = campaignData.deploiementDict?.pilot || null;
     outputData.survey.crew_names.value  = campaignData.deploiementDict?.crew || null;
+    outputData.survey.partners.value  = campaignData.deploiementDict?.partners|| null;
   }
 
   // Mettre à jour les champs video_observation depuis le formulaire

@@ -490,26 +490,29 @@ class KosmosCam(Thread):
             infoStationDict["system"]["camera"]["value"] = self._CAM1_SENSOR
 
             # On sauvegarde date et heure venant de l'OS
-            infoStationDict["survey"]["date"]["value"] = "20"+self._Conf.get_date_Y()+self._Conf.get_date_m()+self._Conf.get_date_d()
+            infoStationDict["survey"]["date"]["value"] = self._Conf.get_date_Y()+self._Conf.get_date_m()+self._Conf.get_date_d()
             infoStationDict["video_observation"]["time"]["value"] = self._Conf.get_date_H()+":"+self._Conf.get_date_M()
 
             # Champs campagne transmis par le frontend via /start
-            territory = getattr(self, 'campaign_territory', None) or None
-            zone      = getattr(self, 'campaign_zone',      None) or None
-            increment = self._Conf.system.getint(INCREMENT_SECTION, "increment")
+            infoStationDict["survey"]["survey_name"]["value"] = getattr(self, 'campaign_survey',   None) or None
+            region = getattr(self, 'campaign_region',   None) or None
+            infoStationDict["survey"]["region"]["value"] = region
+            zone = getattr(self, 'campaign_zone', None) or None
+            infoStationDict["survey"]["zone"]["value"] = zone
+            type_system = getattr(self, 'campaign_type', None) or None
+            infoStationDict["survey"]["type"]["value"] = type_system
+            
+            boat = getattr(self, 'campaign_boat', None) or None
+            infoStationDict["survey"]["boat_name"]["value"] = boat
+            infoStationDict["survey"]["pilot_name"]["value"] = getattr(self, 'campaign_pilot',      None) or None
+            infoStationDict["survey"]["crew_names"]["value"] = getattr(self, 'campaign_crew',       None) or None
+            infoStationDict["survey"]["partners"]["value"] = getattr(self, 'campaign_partners',       None) or None
+
             year_2d   = self._Conf.get_date_Y()
-            codeobs   = f"{zone}{year_2d}{increment:04d}" if zone else None
-            infoStationDict["survey"]["survey_name"]["value"]       = territory
-            infoStationDict["survey"]["zone"]["value"]             = zone
-            infoStationDict["survey"]["site"]["value"]             = getattr(self, 'campaign_locality',   None) or None
-            infoStationDict["survey"]["region"]["value"]           = territory
-            infoStationDict["survey"]["protectionStatus2"]["value"]= getattr(self, 'campaign_protection', None) or None
-            infoStationDict["survey"]["boat_name"]["value"]        = getattr(self, 'campaign_boat',       None) or None
-            infoStationDict["survey"]["pilot_name"]["value"]       = getattr(self, 'campaign_pilot',      None) or None
-            infoStationDict["survey"]["crew_names"]["value"]       = getattr(self, 'campaign_crew',       None) or None
-            infoStationDict["video_observation"]["codeObs"]["value"]              = codeobs
-            infoStationDict["video_observation"]["video_file_name"]["value"]      = self._Conf.get_date_YMD() + '_' + self._Conf.systemName
-            infoStationDict["video_observation"]["point_name"]["value"]           = f'{increment:04d}'
+            codeobs   = f"{zone}{year_2d}" if zone else None
+            infoStationDict["video_observation"]["codeObs"]["value"] = str(codeobs) + self._Conf.get_date_Y()
+            infoStationDict["video_observation"]["video_path"]["value"] = self._Conf.get_date_YMD() + '_' + str(region) + '_' + str(zone) + '_' + str(boat) + '\\' + self._Conf.get_date_YMD() + '_' + str(type_system) + '_' + self._Conf.systemName
+            infoStationDict["video_observation"]["video_number"]["value"] = self._Conf.system.getint(INCREMENT_SECTION, "increment")
 
             # From sensors (hardware GPS)
             try:

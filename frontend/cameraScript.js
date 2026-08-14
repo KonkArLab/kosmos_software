@@ -130,9 +130,10 @@ async function start() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          campaign:  campaignParsed?.zoneDict?.campaign        || "XX",
-          zone:      campaignParsed?.zoneDict?.zone            || "ZZ",
-          locality:   campaignParsed?.zoneDict?.locality          || "",
+          campaign:  campaignParsed?.zoneDict?.campaign        || "",
+          region:    campaignParsed?.zoneDict?.region        || "", 
+          zone:      campaignParsed?.zoneDict?.zone            || "",
+          type:   campaignParsed?.zoneDict?.type          || "",
           protection: campaignParsed?.zoneDict?.protection       || "",
           boat:      campaignParsed?.deploiementDict?.boat     || "",
           pilot:     campaignParsed?.deploiementDict?.pilot    || "",
