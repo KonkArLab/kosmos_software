@@ -40,7 +40,8 @@
       "acquisition_mode": "System (KosmOS)",
       "example": "K51, K52, STAVIRO, Transect bar, PLZ...",
       "ifdo_id": null,
-      "infoStation_visibility": "oui"
+      "infoStation_visibility": "oui",
+      "infoStation_equivalent": "Systeme"
     },
     "system_version": {
       "name": "Version",
@@ -57,19 +58,6 @@
     }
   },
   "survey": {
-    "survey_name": {
-      "name": "Survey",
-      "name_fr": "Campagne",
-      "type": "str",
-      "format": "Alphanumérique",
-      "value": null,
-      "description": "Name of the survey",
-      "description_fr": "Nom de la campagne en mer",
-      "acquisition_mode": "Web application - IHM qualification",
-      "example": "Concarneau survey 2025",
-      "ifdo_id": null,
-      "infoStation_visibility": "oui"
-    },
     "region": {
       "name": "Region",
       "name_fr": "Région",
@@ -94,7 +82,8 @@
       "acquisition_mode": "Web application - IHM qualification",
       "example": "CC (pour Concarneau), CB (pour Cote bleue), (BR pour Brest)...",
       "ifdo_id": null,
-      "infoStation_visibility": "oui"
+      "infoStation_visibility": "oui",
+      "infoStation_equivalent": "Zone"
     },
     "type": {
       "name": "Type",
@@ -107,7 +96,8 @@
       "acquisition_mode": "Web Application - IHM qualification",
       "example": "SVR (pour Staviro), MIC (pour Micado), TRV (pour Transect vidéo), FIX (pour Non-rotating",
       "ifdo_id": null,
-      "infoStation_visibility": "oui"
+      "infoStation_visibility": "oui",
+      "infoStation_equivalent": "Type"
     },
     "date": {
       "name": "Date",
@@ -120,7 +110,8 @@
       "acquisition_mode": "System (RTC) - Web application - IHM qualification",
       "example": "250118",
       "ifdo_id": null,
-      "infoStation_visibility": "oui"
+      "infoStation_visibility": "oui",
+      "infoStation_equivalent": "Date"
     },
     "boat_name": {
       "name": "Boat Name",
@@ -133,7 +124,8 @@
       "acquisition_mode": "Web application - IHM qualification",
       "example": "Enezeg, Astrolabe, Pequod...",
       "ifdo_id": null,
-      "infoStation_visibility": "oui"
+      "infoStation_visibility": "oui",
+      "infoStation_equivalent": "Bateau"
     },
     "pilot_name": {
       "name": "Pilot Name",
@@ -146,7 +138,8 @@
       "acquisition_mode": "Web application - IHM qualification",
       "example": "Jacques-Yves Cousteau",
       "ifdo_id": null,
-      "infoStation_visibility": "oui"
+      "infoStation_visibility": "oui",
+      "infoStation_equivalent": "Pilote"
     },
     "crew_names": {
       "name": "Crew Names",
@@ -159,7 +152,8 @@
       "acquisition_mode": "Web application - IHM qualification",
       "example": "Anita Conti, Eric Tabarly... ",
       "ifdo_id": null,
-      "infoStation_visibility": "oui"
+      "infoStation_visibility": "oui",
+      "infoStation_equivalent": "Equipage"
     },
     "partners": {
       "name": "Partners",
@@ -187,7 +181,8 @@
       "acquisition_mode": "IHM qualification",
       "example": "260701_ATL_CC_ENEZEG\\260701_SVR_K54",
       "ifdo_id": null,
-      "infoStation_visibility": "oui"
+      "infoStation_visibility": "oui",
+      "infoStation_equivalent": "Dossier Datawork"
     },
     "video_number": {
       "name": "Video number",
@@ -200,7 +195,8 @@
       "acquisition_mode": "IHM qualification",
       "example": "0148",
       "ifdo_id": null,
-      "infoStation_visibility": "oui"
+      "infoStation_visibility": "oui",
+      "infoStation_equivalent": "sous-dossier video & metadata"
     },
     "exploitable": {
       "name": "Exploitable",
@@ -214,6 +210,7 @@
       "example": "oui, non, habitat, ?",
       "ifdo_id": null,
       "infoStation_visibility": "oui",
+      "infoStation_equivalent": "Exploitable",
       "authorized_values_fr": [
         "oui",
         "non",
@@ -239,7 +236,8 @@
       "description_fr": "Commentaire au dérushage rapide",
       "acquisition_mode": "IHM validation",
       "ifdo_id": null,
-      "infoStation_visibility": "oui"
+      "infoStation_visibility": "oui",
+      "infoStation_equivalent": "Commentaires video"
     },
     "timecode_ardoise": {
       "name": "Timecode Board",
@@ -264,7 +262,8 @@
       "acquisition_mode": "IHM validation (whiteboard)",
       "example": "CC250125",
       "ifdo_id": null,
-      "infoStation_visibility": "oui"
+      "infoStation_visibility": "oui",
+      "infoStation_equivalent": "Codestation"
     },
     "point_name": {
       "name": "Point code",
@@ -277,7 +276,8 @@
       "acquisition_mode": "IHM métadonnées (field sheet)",
       "example": "0125",
       "ifdo_id": null,
-      "infoStation_visibility": "oui"
+      "infoStation_visibility": "oui",
+      "infoStation_equivalent": "Nom du point"
     },
     "time": {
       "name": "Time",
@@ -290,7 +290,8 @@
       "acquisition_mode": "System (RTC) - IHM métadonnées (field sheet)",
       "example": "13:50",
       "ifdo_id": null,
-      "infoStation_visibility": "oui"
+      "infoStation_visibility": "oui",
+      "infoStation_equivalent": "Heure"
     },
     "gps_waypoint": {
       "name": "GPS Waypoint",
@@ -303,7 +304,8 @@
       "acquisition_mode": "IHM métadonnées (field sheet)",
       "example": "101",
       "ifdo_id": null,
-      "infoStation_visibility": "oui"
+      "infoStation_visibility": "oui",
+      "infoStation_equivalent": "Pt GPS Garmin"
     },
     "latitude": {
       "name": "Latitude",
@@ -316,7 +318,8 @@
       "acquisition_mode": "System (GPS) - Web application (phone GPS) - IHM métadonnées (field sheet, import GPX)",
       "example": "47.12345",
       "ifdo_id": null,
-      "infoStation_visibility": "oui"
+      "infoStation_visibility": "oui",
+      "infoStation_equivalent": "Latitude"
     },
     "longitude": {
       "name": "Longitude",
@@ -329,7 +332,8 @@
       "acquisition_mode": "System (GPS) - Web application (phone GPS) - IHM métadonnées (field sheet)",
       "example": "-3.45678",
       "ifdo_id": null,
-      "infoStation_visibility": "oui"
+      "infoStation_visibility": "oui",
+      "infoStation_equivalent": "Longitude"
     },
     "lat_tel": {
       "name": "Latitude (Phone GPS)",
@@ -368,7 +372,8 @@
       "acquisition_mode": "System (TP sensor) - IHM métadonnées (field sheet)",
       "example": "25.5",
       "ifdo_id": null,
-      "infoStation_visibility": "oui"
+      "infoStation_visibility": "oui",
+      "infoStation_equivalent": "Profondeur"
     },
     "deployment_comment": {
       "name": "Deployment Comment",
@@ -381,7 +386,8 @@
       "acquisition_mode": "IHM métadonnées (field sheet)",
       "example": "Remonté deux fois avant de trouver l'aplomb",
       "ifdo_id": null,
-      "infoStation_visibility": "oui"
+      "infoStation_visibility": "oui",
+      "infoStation_equivalent": "Commentaires terrain pose"
     },
     "location_comment": {
       "name": "Location Comment",
@@ -394,7 +400,8 @@
       "acquisition_mode": "IHM métadonnées (field sheet)",
       "example": "Engin de pêche à proximité",
       "ifdo_id": null,
-      "infoStation_visibility": "oui"
+      "infoStation_visibility": "oui",
+      "infoStation_equivalent": "Commentaires terrain localisation"
     },
     "boatgps_waypoint": {
       "name": "Boat GPS Waypoint",
@@ -407,7 +414,8 @@
       "acquisition_mode": "IHM métadonnées (field sheet)",
       "example": "404",
       "ifdo_id": null,
-      "infoStation_visibility": "oui"
+      "infoStation_visibility": "oui",
+      "infoStation_equivalent": "Pt gps bateau"
     },
     "site": {
       "name": "Site",
@@ -420,20 +428,8 @@
       "acquisition_mode": "IHM métadonnées (whiteboard)",
       "example": "Glénan Nord",
       "ifdo_id": null,
-      "infoStation_visibility": "oui"
-    },
-    "monitoring_program": {
-      "name": "Monitoring Program",
-      "name_fr": "Programme de suivi",
-      "type": "str",
-      "format": "Texte",
-      "value": null,
-      "description": "Indicates if this station is part of another monitoring program and its type",
-      "description_fr": "Cette station fait elle l'objet d'un autre suivi, si oui de quel type",
-      "acquisition_mode": "IHM métadonnées",
-      "example": "Estimation Stock Oursins KOSAQH",
-      "ifdo_id": null,
-      "infoStation_visibility": "oui"
+      "infoStation_visibility": "oui",
+      "infoStation_equivalent": "Site"
     },
     "protectionStatus1": {
       "name": "Protection Status 1",
@@ -447,6 +443,7 @@
       "example": "RI (réserve intégrale), PP (protection partielle), RE (zone de non-prélèvement), HR (pas de protection particulière)",
       "ifdo_id": null,
       "infoStation_visibility": "oui",
+      "infoStation_equivalent": "Codestatut",
       "authorized_values_en": [
         "RE",
         "HR",
@@ -471,7 +468,8 @@
       "acquisition_mode": "IHM métadonnées",
       "example": "PM (patrimoine mondial), WH (world heritage), N2000, RNN, PNM",
       "ifdo_id": null,
-      "infoStation_visibility": "oui"
+      "infoStation_visibility": "oui",
+      "infoStation_equivalent": "Codestatut2"
     },
     
     "tide": {
@@ -486,6 +484,7 @@
       "ifdo_id": null,
       "example":"Pleine Mer",
       "infoStation_visibility": "oui",
+      "infoStation_equivalent": "Maree"
       "authorized_values_en": [
         "HT",
         "HT+1",
@@ -540,6 +539,7 @@
       "ifdo_id": null,
       "example": "Pleine Lune",
       "infoStation_visibility": "oui",
+      "infoStation_equivalent": "Lune",
       "authorized_values_en": [
         "New Moon",
         "Waxing Crescent",
@@ -573,7 +573,8 @@
       "acquisition_mode": "IHM métadonnées (weather API)",
       "example": "Soleil, nuageux, pluie...",
       "ifdo_id": null,
-      "infoStation_visibility": "oui"
+      "infoStation_visibility": "oui",
+      "infoStation_equivalent": "Meteo"
     },
     "wind": {
       "name": "Wind Speed",
@@ -587,6 +588,7 @@
       "ifdo_id": null,
       "example": "3",
       "infoStation_visibility": "oui",
+      "infoStation_equivalent": "Vent",
       "authorized_values_en": [
         0,
         1,
@@ -670,6 +672,7 @@
       "type": "str",
       "format": "Alphanumérique (Échelle de Douglas)",
       "infoStation_visibility": "oui",
+      "infoStation_equivalent": "Mer",
       "example": "1",
       "authorized_values_en": [
         "0",
@@ -710,6 +713,7 @@
       "description": "Swell height (meter)",
       "description_fr": "Hauteur de la houle (mètre)",
       "infoStation_visibility": "oui",
+      "infoStation_equivalent": "Houle",
       "acquisition_mode": "IHM métadonnées (sea weather API)",
       "example": 1,
       "ifdo_id": null
@@ -835,7 +839,8 @@
       "acquisition_mode": "IHM events (analyse rapide)",
       "example": "5",
       "ifdo_id": null,
-      "infoStation_visibility": "oui"
+      "infoStation_visibility": "oui",
+      "infoStation_equivalent": "Visibilite"
     },
     "distance_min": {
       "name": "Min Analysable Distance",
@@ -847,7 +852,8 @@
       "description_fr": "Distance minimale à laquelle les poissons sont identifiables",
       "acquisition_mode": "IHM events (analyse rapide)",
       "ifdo_id": null,
-      "infoStation_visibility": "oui"
+      "infoStation_visibility": "oui",
+      "infoStation_equivalent": "Distance analysable min (m)"
     },
     "distance_max": {
       "name": "Max Analysable Distance",
@@ -859,7 +865,8 @@
       "description_fr": "Distance maximale à laquelle les poissons sont identifiables",
       "acquisition_mode": "IHM events (analyse rapide)",
       "ifdo_id": null,
-      "infoStation_visibility": "oui"
+      "infoStation_visibility": "oui",
+      "infoStation_equivalent": "Distance analysable max (m)"
     },
 
     "habitat": {
@@ -873,7 +880,8 @@
       "acquisition_mode": "IHM events (analyse rapide)",
       "example": "Herbier, algueraie, roche, sable...",
       "ifdo_id": null,
-      "infoStation_visibility": "oui"
+      "infoStation_visibility": "oui",
+      "infoStation_equivalent": "Milieu/Habitat"
     },
     "events_motor": [
       {
@@ -937,8 +945,6 @@
         "values": []
       }
     ],
-
-
     "derusher": {
       "name": "Derusher",
       "name_fr": "Derusher",
@@ -962,7 +968,8 @@
       "description_fr": "Nom de la personne qui analyse la vidéo pour les poissons",
       "acquisition_mode": "IHM/Annotation",
       "ifdo_id": null,
-      "infoStation_visibility": "oui"
+      "infoStation_visibility": "oui",
+      "infoStation_equivalent": "Analyseur poisson"
     },
     "habitat_annotator": {
       "name": "Habitat Annotator",
@@ -974,7 +981,8 @@
       "description_fr": "Nom de la personne qui analyse la vidéo pour l'habitat",
       "acquisition_mode": "IHM/Annotation",
       "ifdo_id": null,
-      "infoStation_visibility": "oui"
+      "infoStation_visibility": "oui",
+      "infoStation_equivalent": "Analyseur habitat"
     }
   }
 }
