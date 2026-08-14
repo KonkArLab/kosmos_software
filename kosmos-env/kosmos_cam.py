@@ -494,7 +494,6 @@ class KosmosCam(Thread):
             infoStationDict["video_observation"]["time"]["value"] = self._Conf.get_date_H()+":"+self._Conf.get_date_M()
 
             # Champs campagne transmis par le frontend via /start
-            infoStationDict["survey"]["survey_name"]["value"] = getattr(self, 'campaign_survey',   None) or None
             region = getattr(self, 'campaign_region',   None) or None
             infoStationDict["survey"]["region"]["value"] = region
             zone = getattr(self, 'campaign_zone', None) or None
