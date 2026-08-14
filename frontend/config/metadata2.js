@@ -292,7 +292,6 @@ function submitForm() {
   const campaignData = JSON.parse(localStorage.getItem("campaignData"));
   if (campaignData && outputData.survey) {
     outputData.survey.date.value = campaignData.dateDict?.date || null;
-    outputData.survey.survey_name.value = campaignData.zoneDict?.campaign || null;
     outputData.survey.zone.value        = campaignData.zoneDict?.zone || null;
     outputData.survey.region.value        = campaignData.zoneDict?.region || null;
     outputData.survey.type.value        = campaignData.zoneDict?.type || null;
