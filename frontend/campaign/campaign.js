@@ -5,19 +5,17 @@ document.addEventListener("DOMContentLoaded", function () {
     // Define the form fields with their properties like ID, placeholder, type, etc.
     const fields = [
         { id: "date", placeholder: "", type: "date", label: "Date", tabIndex: 1,  isDate:true },
-        { id: "campaign", placeholder: "Concarneau 2026", type: "text", label: "Campagne", tabIndex: 2, maxlength: "100"},
-        { id: "region", placeholder: "ATL", type: "text", label: "Région", tabIndex: 3, maxlength: "100" },
-        { id: "zone", placeholder: "BR", type: "text", label: "Zone", tabIndex: 4, maxlength: "3"},
-        { id: "type", placeholder: "SVR", type: "text", label: "Type", tabIndex: 5, maxlength: "3" },
-        { id: "boat", placeholder: "PEQUOD", type: "text", label: "Bateau", tabIndex: 6, maxlength: "100" },
-        { id: "pilot", placeholder: "Capitaine ACHAB", type: "text", label: "Pilote", tabIndex: 7, maxlength: "100" },
-        { id: "crew", placeholder: "C.H., J.C.", type: "text", label: "Equipage", tabIndex: 8, maxlength: "100" },
-        { id: "partners", placeholder: "Ifremer, KAL", type: "text", label: "Partenaires", tabIndex: 9, maxlength: "200" }
+        { id: "region", placeholder: "ATL", type: "text", label: "Région", tabIndex: 2, maxlength: "100" },
+        { id: "zone", placeholder: "BR", type: "text", label: "Zone", tabIndex: 3, maxlength: "3"},
+        { id: "type", placeholder: "SVR", type: "text", label: "Type", tabIndex: 4, maxlength: "3" },
+        { id: "boat", placeholder: "PEQUOD", type: "text", label: "Bateau", tabIndex: 5, maxlength: "100" },
+        { id: "pilot", placeholder: "Capitaine ACHAB", type: "text", label: "Pilote", tabIndex: 6, maxlength: "100" },
+        { id: "crew", placeholder: "C.H., J.C.", type: "text", label: "Equipage", tabIndex: 7, maxlength: "100" },
+        { id: "partners", placeholder: "Ifremer, KAL", type: "text", label: "Partenaires", tabIndex: 8, maxlength: "200" }
     ];
 
     const campaignFinal = {
         zoneDict: {
-            campaign: String,
             zone: String,
             region: String,
             type: String
@@ -172,7 +170,6 @@ document.addEventListener("DOMContentLoaded", function () {
         campaignFinal.deploiementDict.partners = formData.partners;
         campaignFinal.deploiementDict.pilot = formData.pilot;
 
-        campaignFinal.zoneDict.campaign = formData.campaign;
         campaignFinal.zoneDict.type = formData.type;
         campaignFinal.zoneDict.region = formData.region;
         campaignFinal.zoneDict.zone = formData.zone;
