@@ -187,7 +187,7 @@
     "video_number": {
       "name": "Video number",
       "name_fr": "Numéro de la vidéo",
-      "type": "int",
+      "type": "str",
       "format": "4digits",
       "value": null,
       "description": "Video number",
@@ -281,7 +281,7 @@
     "point_name": {
       "name": "Point code",
       "name_fr": "Numéro du point",
-      "type": "in",
+      "type": "int",
       "format": "4digits",
       "value": null,
       "description": "Point code (usually last 4 digits of station number)",
