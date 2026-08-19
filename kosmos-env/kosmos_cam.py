@@ -490,28 +490,30 @@ class KosmosCam(Thread):
             infoStationDict["system"]["camera"]["value"] = self._CAM1_SENSOR
 
             # On sauvegarde date et heure venant de l'OS
-            infoStationDict["survey"]["date"]["value"] = self._Conf.get_date_Y()+self._Conf.get_date_m()+self._Conf.get_date_d()
+            #infoStationDict["survey"]["date"]["value"] = self._Conf.get_date_Y()+self._Conf.get_date_m()+self._Conf.get_date_d()
             infoStationDict["video_observation"]["time"]["value"] = self._Conf.get_date_H()+":"+self._Conf.get_date_M()
 
+            '''
+            self.thread_camera.campaign_region   = getattr(self, 'campaign_region',   '')
+            self.thread_camera.campaign_zone = getattr(self, 'campaign_zone', '')
+            self.thread_camera.campaign_mode = getattr(self, 'campaign_type', '')
+            self.thread_camera.campaign_boat     = getattr(self, 'campaign_boat', '')
+            self.thread_camera.campaign_pilot    = getattr(self, 'campaign_pilot', '')
+            self.thread_camera.campaign_crew     = getattr(self, 'campaign_crew', '')
+            self.thread_camera.campaign_partners = getattr(self, 'campaign_partners', '')
+            '''
             # Champs campagne transmis par le frontend via /start
             region = getattr(self, 'campaign_region',   None) or None
-            infoStationDict["survey"]["region"]["value"] = region
             zone = getattr(self, 'campaign_zone', None) or None
-            infoStationDict["survey"]["zone"]["value"] = zone
-            type_system = getattr(self, 'campaign_type', None) or None
-            infoStationDict["survey"]["type"]["value"] = type_system
-            
+            mode = getattr(self, 'campaign_type', None) or None
             boat = getattr(self, 'campaign_boat', None) or None
-            infoStationDict["survey"]["boat_name"]["value"] = boat
-            infoStationDict["survey"]["pilot_name"]["value"] = getattr(self, 'campaign_pilot',      None) or None
-            infoStationDict["survey"]["crew_names"]["value"] = getattr(self, 'campaign_crew',       None) or None
-            infoStationDict["survey"]["partners"]["value"] = getattr(self, 'campaign_partners',       None) or None
-
+            
             year_2d   = self._Conf.get_date_Y()
             codeobs   = f"{zone}{year_2d}" if zone else None
             infoStationDict["video_observation"]["codeObs"]["value"] = str(codeobs) + self._Conf.get_date_Y()
-            infoStationDict["video_observation"]["video_path"]["value"] = self._Conf.get_date_YMD() + '_' + str(region) + '_' + str(zone) + '_' + str(boat) + '\\' + self._Conf.get_date_YMD() + '_' + str(type_system) + '_' + self._Conf.systemName
-            infoStationDict["video_observation"]["video_number"]["value"] = self._Conf.system.getint(INCREMENT_SECTION, "increment")
+            infoStationDict["video_observation"]["video_path"]["value"] = self._Conf.get_date_YMD() + '_' + str(region) + '_' + str(zone) + '_' + str(boat) + '\\' + self._Conf.get_date_YMD() + '_' + str(mode) + '_' + self._Conf.systemName
+            increment_json = self._Conf.system.getint(INCREMENT_SECTION, "increment")-1
+            infoStationDict["video_observation"]["video_number"]["value"] = f'{increment_json:04}'
 
             # From sensors (hardware GPS)
             try:
@@ -536,7 +538,6 @@ class KosmosCam(Thread):
                 infoStationDict["video_observation"]["depth"]["value"] = None
                 infoStationDict["video_observation"]["water_temperature"]["value"] = None
                 infoStationDict["video_observation"]["airTemp"]["value"] = None
-
 
             with open(cam_file + '.json',mode = 'w', encoding = "utf-8") as ff:
                 ff.write(json.dumps(infoStationDict, indent=4, ensure_ascii=False))

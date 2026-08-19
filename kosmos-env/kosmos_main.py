@@ -202,14 +202,8 @@ class kosmos_main():
                     self.bool_light = True
             except:
                 logging.error("Erreur Luxmètre pour déclenchement LIGHT lors de l'enregistrement")
-        
+
         # Run thread camera
-        self.thread_camera.campaign_locality   = getattr(self, 'campaign_locality',   '')
-        self.thread_camera.campaign_protection = getattr(self, 'campaign_protection', '')
-        self.thread_camera.campaign_boat     = getattr(self, 'campaign_boat', '')
-        self.thread_camera.campaign_pilot    = getattr(self, 'campaign_pilot', '')
-        self.thread_camera.campaign_crew     = getattr(self, 'campaign_crew', '')
-        self.thread_camera.campaign_partners = getattr(self, 'campaign_partners', '')
         self.thread_camera.restart()
         
         # Attente d'un Event ou que le temps total soit dépassé

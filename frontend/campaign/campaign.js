@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
         { id: "type", placeholder: "SVR", type: "text", label: "Type", tabIndex: 4, maxlength: "3" },
         { id: "boat", placeholder: "PEQUOD", type: "text", label: "Bateau", tabIndex: 5, maxlength: "100" },
         { id: "pilot", placeholder: "Capitaine ACHAB", type: "text", label: "Pilote", tabIndex: 6, maxlength: "100" },
-        { id: "crew", placeholder: "C.H., J.C.", type: "text", label: "Equipage", tabIndex: 7, maxlength: "100" },
+        { id: "crew", placeholder: "Anita Conti, Jacques-Yves Cousteau", type: "text", label: "Equipage", tabIndex: 7, maxlength: "100" },
         { id: "partners", placeholder: "Ifremer, KAL", type: "text", label: "Partenaires", tabIndex: 8, maxlength: "200" }
     ];
 
@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", function () {
         },
         dateDict:
         {
-            date: Date
+            date: String
         },
         deploiementDict: {
             boat: String,
@@ -91,7 +91,7 @@ document.addEventListener("DOMContentLoaded", function () {
     fields.forEach(field => {
             let value = null;
             if (field.id === 'date') {
-                value = new Date().toISOString().split("T")[0]
+                value = new Date().toISOString().split("T")[0]//.split("-")[0].slice(-2)+new Date().toISOString().split("T")[0].split("-")[1]+new Date().toISOString().split("T")[0].split("-")[2]
             } 
             if (value) {
                 const element = document.getElementById(field.id);
@@ -112,9 +112,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 value = formData.zoneDict[field.id];
             } else if (field.id in formData.deploiementDict) {
                 value = formData.deploiementDict[field.id];
-            } else if (field.id in formData.dateDict) { // on ne se fie pas à la date RTC mais à celle pré-rentrée si elle existe
-                value = formData.dateDict[field.id];
-            }
+            } //else if (field.id in formData.dateDict) { // on ne se fie pas à la date RTC mais à celle pré-rentrée si elle existe
+              //  value = formData.dateDict[field.id];
+            //}
             if (value) {
                 const element = document.getElementById(field.id);
                 if (element) {
@@ -163,7 +163,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
         
-        campaignFinal.dateDict.date = formData.date;
+        campaignFinal.dateDict.date = formData.date.split("-")[0].slice(-2)+formData.date.split("-")[1]+formData.date.split("-")[2];
 
         campaignFinal.deploiementDict.boat = formData.boat;
         campaignFinal.deploiementDict.crew = formData.crew;

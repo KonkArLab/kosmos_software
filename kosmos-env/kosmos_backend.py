@@ -268,14 +268,10 @@ class Server:
     def start(self):
         if(self.myMain.state==KState.STANDBY):
             data = request.get_json(silent=True) or {}
-            self.myMain.campaign_territory = data.get("campaign",  "XX").strip().upper()
-            self.myMain.campaign_zone      = data.get("zone",      "ZZ").strip().upper()
-            self.myMain.campaign_locality   = data.get("locality",   "")
-            self.myMain.campaign_protection = data.get("protection", "")
-            self.myMain.campaign_boat      = data.get("boat",      "")
-            self.myMain.campaign_pilot     = data.get("pilot",     "")
-            self.myMain.campaign_crew      = data.get("crew",      "")
-            self.myMain.campaign_partners  = data.get("partners",  "")
+            self.myMain.thread_camera.campaign_region = data.get("region",  "XX").strip().upper()
+            self.myMain.thread_camera.campaign_zone      = data.get("zone",      "ZZ").strip().upper()
+            self.myMain.thread_camera.campaign_type   = data.get("type",   "")
+            self.myMain.thread_camera.campaign_boat      = data.get("boat",      "")
             self._recording_start = time.time()
             self.myMain.record_event.set()
             self.myMain.button_event.set()
