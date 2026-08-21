@@ -571,7 +571,7 @@ class Server:
             
             if result.stdout == 'Déjà à jour.\n':
                 return {
-                    "maj_txt" :  result.sdout,
+                    "maj_txt" :  result.stdout,
                     }
             else : 
                 return {
