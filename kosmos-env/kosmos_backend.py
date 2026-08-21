@@ -567,12 +567,15 @@ class Server:
                 text=True,
                 check=True
             )
-            print(result)
-    
-            return {
-                "maj_txt" : "MAJ effectuée, redémarrez le système",
+
+            if result.sdout == 'Déjà à jour.\n':
+                return {
+                    "maj_txt" :  result.sdout,
+                    }
+            else : 
+                return 
+                    "maj_txt" :  "Git pull effectué, reboot pour finaliser la màj",
                 }
-    
         except:
             return {
                 "maj_txt" : "ERR",
