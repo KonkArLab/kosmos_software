@@ -566,8 +566,8 @@ class Server:
                 capture_output=True,
                 text=True,
                 check=True
-            print(result)
             )
+            print(result)
     
             return {
                 "maj_txt" : "MAJ effectuée, redémarrez le système",
