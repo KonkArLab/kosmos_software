@@ -48,13 +48,15 @@ class Server:
         
         self.app.add_url_rule("/testIP", view_func=self.testIP)
         self.app.add_url_rule("/changeIP", view_func=self.changeIP)
+        self.app.add_url_rule("/maj", view_func=self.gitPull)
+
+        
         self.app.add_url_rule("/setPhoneGPS", view_func=self.setPhoneGPS, methods=['POST'])
         self.app.add_url_rule("/resetPhoneGPS", view_func=self.resetPhoneGPS, methods=['POST'])
         self.app.add_url_rule("/gpsStatus", view_func=self.gpsStatus)
         self.app.add_url_rule("/frame2", view_func=self.image2)
         self.app.add_url_rule("/getRecordsGPS", view_func=self.getRecordsGPS)
         self.app.add_url_rule("/setTime", view_func=self.setTime, methods=['POST'])
-        self.app.add_url_rule("/maj", view_func=self.gitPull)
 
     def setTime(self):
         try:
