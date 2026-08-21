@@ -500,13 +500,13 @@ class Server:
             )
             if result == "manual\n":
                 subprocess.run(["sh", "/home/"+os.listdir("/home")[0]+"/kosmos_software/InternetActif.sh"])
-                print('sh internet')
+                #print('sh internet')
                 return{
                 "ip" : "Internet activé",
                 }
             elif result == "auto\n":
                 subprocess.run(["sh", "/home/"+os.listdir("/home")[0]+"/kosmos_software/TransfertDonneesActif.sh"])
-                print('sh transfert')
+                #print('sh transfert')
                 return{
                 "ip" : "Transfert de données activé",
                 }
