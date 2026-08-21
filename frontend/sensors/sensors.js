@@ -163,9 +163,9 @@ async function maj() {
     if (body.state.substr(body.state.length-7) === "STANDBY") {
         const majresponse = await fetch(serverUrl + "/maj");
         const majbody = await majresponse.json();
-        document.getElementById("maj").textContent = majbody.maj;
+        document.getElementById("maj_txt").textContent = majbody.maj_txt;
         setTimeout(() => {
-          document.getElementById("maj").textContent = "";
+          document.getElementById("maj_txt").textContent = "";
         }, 2000);
     } else {
       resetButtonState()
