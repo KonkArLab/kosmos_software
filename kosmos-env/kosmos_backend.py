@@ -569,10 +569,10 @@ class Server:
             )
     
             return {
-                "maj" : "MAJ effectuée, redémarrez le système",
+                "maj_txt" : "MAJ effectuée, redémarrez le système",
                 }
     
         except subprocess.CalledProcessError as e:
             return {
-                "maj" : "ERR",
+                "maj_txt" : "ERR",
                 }
