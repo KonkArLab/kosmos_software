@@ -161,7 +161,7 @@ async function maj() {
     const response = await fetch(serverUrl + "/maj");
     const body = await response.json();
     if (body.state.substr(body.state.length-7) === "STANDBY") {
-        const majresponse = await fetch(serverUrl + "/changeIP");
+        const majresponse = await fetch(serverUrl + "/maj");
         const majbody = await majresponse.json();
         document.getElementById("maj").textContent = majbody.maj;
         setTimeout(() => {
