@@ -531,7 +531,6 @@ class Server:
             ...
         
         repo_path = "/home/"+os.listdir("/home")[0]+"/kosmos_software"
-        result = "ERR"
         try:
             # Vérifie l'état du dépôt
             status = subprocess.run(
@@ -570,7 +569,7 @@ class Server:
             )
     
             return {
-                "maj" : result,
+                "maj" : "MAJ effectuée, redémarrez le système",
                 }
     
         except subprocess.CalledProcessError as e:
