@@ -531,6 +531,7 @@ class Server:
             ...
         
         repo_path = "/home/"+os.listdir("/home")[0]+"/kosmos_software"
+        result = "ERR"
         try:
             # Vérifie l'état du dépôt
             status = subprocess.run(
@@ -568,14 +569,11 @@ class Server:
                 check=True
             )
     
-            print(result.stdout)
             return {
-                "maj" : "OK",
+                "maj" : result,
                 }
     
         except subprocess.CalledProcessError as e:
-            print("Erreur Git :")
-            print(e.stderr)
             return {
                 "maj" : "ERR",
                 }
