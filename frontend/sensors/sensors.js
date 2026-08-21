@@ -158,7 +158,7 @@ async function changeIP() {
 document.getElementById("maj").addEventListener("click", maj);
 async function maj() {
   try {
-    const response = await fetch(serverUrl + "/maj");
+    const response = await fetch(serverUrl + "/state");
     const body = await response.json();
     if (body.state.substr(body.state.length-7) === "STANDBY") {
         const majresponse = await fetch(serverUrl + "/maj");
