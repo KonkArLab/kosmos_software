@@ -573,7 +573,7 @@ class Server:
                     "maj_txt" :  result.sdout,
                     }
             else : 
-                return 
+                return {
                     "maj_txt" :  "Git pull effectué, reboot pour finaliser la màj",
                 }
         except:
