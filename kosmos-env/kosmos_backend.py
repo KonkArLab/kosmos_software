@@ -566,6 +566,7 @@ class Server:
                 capture_output=True,
                 text=True,
                 check=True
+            print(result)
             )
     
             return {
