@@ -569,12 +569,10 @@ class Server:
             )
     
             return {
-                print('toto')
                 "maj_txt" : "MAJ effectuée, redémarrez le système",
                 }
     
         except:
             return {
-                print('tata')
                 "maj_txt" : "ERR",
                 }
