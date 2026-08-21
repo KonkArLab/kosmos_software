@@ -118,40 +118,52 @@ async function askPhoneGPS() {
 // Function to send a start request to the server
 async function start() {
   try {
-    if (localStorage.getItem("pending")) {
-      window.location.href = "./metadata/metadata.html";
-    }
-    const storedData = localStorage.getItem("campaignData");
-    if (storedData) {
-      await askPhoneGPS();
-      disableAllButtons();
-      const campaignParsed = JSON.parse(storedData);
-      const response = await fetch(serverUrl + "/start", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          region:    campaignParsed?.zoneDict?.region        || "", 
-          zone:      campaignParsed?.zoneDict?.zone            || "",
-          type:   campaignParsed?.zoneDict?.type          || "",
-          protection: campaignParsed?.zoneDict?.protection       || "",
-          boat:      campaignParsed?.deploiementDict?.boat     || "",
-          pilot:     campaignParsed?.deploiementDict?.pilot    || "",
-          crew:      campaignParsed?.deploiementDict?.crew     || "",
-          partners:  campaignParsed?.deploiementDict?.partners || ""
-        })
-      });
-      const body = await response.json();
-      stopButton.disabled = false;
-      if (body.recording_start) startTimer(body.recording_start);
-    } else {
+    const response2 = await fetch(serverUrl + "/checkConversion");
+    const body2 = await response2.json();
+    if (body2.checkConversion === "Conversion en cours") {
       Swal.fire({
           title: 'Error',
-          text: 'Please fill campaign before starting',
+          text: 'Conversion en cours, veuillez attendre avant de relancer une vidéo',
           icon: 'error',
           confirmButtonText: 'OK'
         });
       return;
-    }
+    } else {
+      if (localStorage.getItem("pending")) {
+        window.location.href = "./metadata/metadata.html";
+      }
+      const storedData = localStorage.getItem("campaignData");
+      if (storedData) {
+        await askPhoneGPS();
+        disableAllButtons();
+        const campaignParsed = JSON.parse(storedData);
+        const response = await fetch(serverUrl + "/start", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            region:    campaignParsed?.zoneDict?.region        || "", 
+            zone:      campaignParsed?.zoneDict?.zone            || "",
+            type:   campaignParsed?.zoneDict?.type          || "",
+            protection: campaignParsed?.zoneDict?.protection       || "",
+            boat:      campaignParsed?.deploiementDict?.boat     || "",
+            pilot:     campaignParsed?.deploiementDict?.pilot    || "",
+            crew:      campaignParsed?.deploiementDict?.crew     || "",
+            partners:  campaignParsed?.deploiementDict?.partners || ""
+          })
+        });
+        const body = await response.json();
+        stopButton.disabled = false;
+        if (body.recording_start) startTimer(body.recording_start);
+      } else {
+        Swal.fire({
+            title: 'Error',
+            text: 'Please fill campaign before starting',
+            icon: 'error',
+            confirmButtonText: 'OK'
+          });
+        return;
+      }
+    }      
   } catch (error) {
     console.error("Error starting the camera:", error);
   }
