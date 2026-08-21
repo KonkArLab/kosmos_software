@@ -474,7 +474,6 @@ class Server:
                 ["nmcli", "-g", "ipv4.method", "connection", "show", "EthernetPort"],
                 text=True
             )
-            print(result)
             if result == "manual\n":
                 return{
                 "ip" : "Transfert de données actif",
@@ -500,13 +499,11 @@ class Server:
             )
             if result == "manual\n":
                 subprocess.run(["sh", "/home/"+os.listdir("/home")[0]+"/kosmos_software/InternetActif.sh"])
-                #print('sh internet')
                 return{
                 "ip" : "Internet activé",
                 }
             elif result == "auto\n":
                 subprocess.run(["sh", "/home/"+os.listdir("/home")[0]+"/kosmos_software/TransfertDonneesActif.sh"])
-                #print('sh transfert')
                 return{
                 "ip" : "Transfert de données activé",
                 }
@@ -520,6 +517,19 @@ class Server:
             }
 
     def gitPull(self):
+        # Bascule vers Internet actif 
+        try:
+            result = subprocess.check_output(
+                ["nmcli", "-g", "ipv4.method", "connection", "show", "EthernetPort"],
+                text=True
+            )
+            if result == "manual\n":
+                subprocess.run(["sh", "/home/"+os.listdir("/home")[0]+"/kosmos_software/InternetActif.sh"])
+            else:
+                ...
+        except:
+            ...
+        
         repo_path = "/home/"+os.listdir("/home")[0]+"/kosmos_software"
         try:
             # Vérifie l'état du dépôt
