@@ -11,6 +11,7 @@ const testLumenButton = document.getElementById("testLumen");
 
 const testIPButton = document.getElementById("testIP");
 const changeIPButton = document.getElementById("changeIP");
+const majButton = document.getElementById("maj");
 
 const startLiveButton = document.getElementById("startLive");
 const stopLiveButton = document.getElementById("stopLive");
@@ -20,6 +21,7 @@ const initSensorsButton = document.getElementById("initSensors");
 
 const motorPlusButton = document.getElementById("motorPlus");
 const motorMinusButton = document.getElementById("motorMinus");
+
 
 // Initial setup: disable stop buttons and enable shutdown
 testLumenButton.disabled = false;
@@ -145,6 +147,25 @@ async function changeIP() {
         document.getElementById("ip").textContent = cipbody.ip;
         setTimeout(() => {
           document.getElementById("ip").textContent = "";
+        }, 2000);
+    } else {
+      resetButtonState()
+    }
+  } finally {}
+}
+
+// Maj logiciel
+document.getElementById("maj").addEventListener("click", maj);
+async function maj() {
+  try {
+    const response = await fetch(serverUrl + "/maj");
+    const body = await response.json();
+    if (body.state.substr(body.state.length-7) === "STANDBY") {
+        const majresponse = await fetch(serverUrl + "/changeIP");
+        const majbody = await majresponse.json();
+        document.getElementById("maj").textContent = majbody.maj;
+        setTimeout(() => {
+          document.getElementById("maj").textContent = "";
         }, 2000);
     } else {
       resetButtonState()
