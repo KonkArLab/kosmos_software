@@ -568,7 +568,8 @@ class Server:
                 check=True
             )
 
-            if result.sdout == 'Déjà à jour.\n':
+            
+            if result.stdout == 'Déjà à jour.\n':
                 return {
                     "maj_txt" :  result.sdout,
                     }
@@ -576,6 +577,7 @@ class Server:
                 return {
                     "maj_txt" :  "Git pull effectué, reboot pour finaliser la màj",
                 }
+            
         except:
             return {
                 "maj_txt" : "ERR",
