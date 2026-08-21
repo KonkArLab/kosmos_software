@@ -54,7 +54,7 @@ class Server:
         self.app.add_url_rule("/frame2", view_func=self.image2)
         self.app.add_url_rule("/getRecordsGPS", view_func=self.getRecordsGPS)
         self.app.add_url_rule("/setTime", view_func=self.setTime, methods=['POST'])
-
+        self.app.add_url_rule("/maj", view_func=self.gitPull)
 
     def setTime(self):
         try:
@@ -518,8 +518,54 @@ class Server:
             return{
             "ip" : "ERR",
             }
-        
+
+    def gitPull(self):
+        repo_path = "/home/"+os.listdir("/home")[0]+"/kosmos_software"
+        try:
+            # Vérifie l'état du dépôt
+            status = subprocess.run(
+                ["git", "status", "--porcelain"],
+                cwd=repo_path,
+                capture_output=True,
+                text=True,
+                check=True
+            )
     
-      
-                
+            # Si le dépôt contient des modifications
+            if status.stdout.strip():
+                print("Modifications locales détectées.")
+                print("Restauration du dépôt...")
     
+                subprocess.run(
+                    ["git", "restore", "."],
+                    cwd=repo_path,
+                    check=True
+                )
+    
+                # Supprime les fichiers/dossiers non suivis
+                subprocess.run(
+                    ["git", "clean", "-fd"],
+                    cwd=repo_path,
+                    check=True
+                )
+    
+            # Effectue le pull
+            result = subprocess.run(
+                ["git", "pull"],
+                cwd=repo_path,
+                capture_output=True,
+                text=True,
+                check=True
+            )
+    
+            print(result.stdout)
+            return {
+                "maj" : "OK",
+                }
+    
+        except subprocess.CalledProcessError as e:
+            print("Erreur Git :")
+            print(e.stderr)
+            return {
+                "maj" : "ERR",
+                }
