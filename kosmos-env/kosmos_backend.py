@@ -9,6 +9,7 @@ import time
 import subprocess
 import re
 from datetime import datetime
+import shutil
 
 import logging
 log = logging.getLogger('werkzeug')
@@ -143,10 +144,15 @@ class Server:
         }
     
     def save(self):
+        try:
+            disque = shutil.disk_usage(self.myMain._conf.USB_INSIDE_PATH)
+            libre_go =disque.free / 2**30
+            memory = f"{libre_go:.1f} Go restants"
+        except:
+            memory = ""
         return {
             "status" : "ok",
-            "save" : "Stockage des vidéos " + self.myMain._conf.sauvegarde 
-        }
+            "save" : "Stockage des vidéos " + self.myMain._conf.sauvegarde +', ' + memory}
     
     def testLumen(self):
         try:
@@ -244,7 +250,7 @@ class Server:
             )
             RTC = str(result)
         except:
-            RTC = "ERR"
+            RTC = "ERR" 
         # Heure Rpi
         try:
             maintenant = datetime.now()
@@ -252,9 +258,7 @@ class Server:
             date = maintenant.strftime("%d/%m/%Y")
             time = date + " " + heure
         except:
-            time = "ERR"   
-            
-        
+            time = "ERR"    
         return{
             "latitude" : LAT,
             "longitude" : LONG,
@@ -263,7 +267,7 @@ class Server:
             "magneto" : MAGNETO,
             "RGB" : LUX,
             "rtc": RTC,
-            "time": time
+            "time": time,
         }
     
     

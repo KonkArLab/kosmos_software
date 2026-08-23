@@ -6,4 +6,5 @@ setInterval(async function () {
 
   // Update the HTML element with the fetched state information
   document.getElementById("save").innerHTML = body.save;
-}, 1000);
+
+}, 2000);

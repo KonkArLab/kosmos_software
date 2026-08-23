@@ -20,8 +20,6 @@ const testSensorsButton = document.getElementById("testSensors");
 const initSensorsButton = document.getElementById("initSensors");
 
 const motorPlusButton = document.getElementById("motorPlus");
-const motorMinusButton = document.getElementById("motorMinus");
-
 
 // Initial setup: disable stop buttons and enable shutdown
 testLumenButton.disabled = false;
@@ -30,7 +28,6 @@ testSensorsButton.disabled = false;
 initSensorsButton.disabled = false;
 
 motorPlusButton.disabled = false;
-motorMinusButton.disabled = false;
 
 stopLiveButton.disabled = true;
 startLiveButton.disabled = false;
@@ -48,7 +45,6 @@ async function majStateButton() {
       initSensorsButton.disabled = true;
 
       motorPlusButton.disabled = true;
-      motorMinusButton.disabled = true;
 
       stopLiveButton.disabled = true;
       startLiveButton.disabled = true;
@@ -58,7 +54,7 @@ async function majStateButton() {
   } finally {}
 }
 
-// Avance et recul moteur
+// Avance moteur
 document.getElementById("motorPlus").addEventListener("click", rotatePlus);
 async function rotatePlus() {
   try {
@@ -76,26 +72,6 @@ async function rotatePlus() {
     }
   } finally {}
 }
-
-document.getElementById("motorMinus").addEventListener("click", rotateMinus);
-async function rotateMinus() {
-  try {
-    const response = await fetch(serverUrl + "/state");
-    const body = await response.json();
-    if (body.state.substr(body.state.length-7) === "STANDBY") {
-        const motorresponse = await fetch(serverUrl + "/motorMinus");
-        const motorbody = await motorresponse.json();
-        document.getElementById("motor").textContent = motorbody.motor;
-        setTimeout(() => {
-          document.getElementById("motor").textContent = "";
-        }, 1000);
-    } else {
-      resetButtonState()
-    }
-  } finally {}
-}
-
-
 
 // Test de l'éclairage
 document.getElementById("testLumen").addEventListener("click", lumen);
@@ -189,10 +165,10 @@ async function sensors() {
       document.getElementById("gps").textContent = "Latitude " + lat + "°  Longitude " + lon + "°";
       document.getElementById("magneto").textContent = "Cap " + Body.magneto ;
       document.getElementById("RTC").textContent = Body.rtc ;
-      document.getElementById("time").textContent = Body.time ;
-
-      const gpsAbsent = isNaN(parseFloat(lat)) || isNaN(parseFloat(lon));
-      document.getElementById("usePhoneGPS").style.display = gpsAbsent ? "inline-block" : "none";
+      document.getElementById("time").textContent = Body.time ;      
+      
+      //const gpsAbsent = isNaN(parseFloat(lat)) || isNaN(parseFloat(lon));
+      //document.getElementById("usePhoneGPS").style.display = gpsAbsent ? "inline-block" : "none";
 
       setTimeout(() => {
         document.getElementById("RGB").textContent = "";
@@ -201,7 +177,8 @@ async function sensors() {
         document.getElementById("magneto").textContent = "";
         document.getElementById("RTC").textContent = "";
         document.getElementById("time").textContent = "";
-        document.getElementById("usePhoneGPS").style.display = "none";
+
+        //document.getElementById("usePhoneGPS").style.display = "none";
       }, 7000);
     } else {
       resetButtonState();
@@ -258,6 +235,7 @@ async function initSensors() {
   } finally{sensors()};
 }
 
+
 // Function to set the live streaming state based on camera state
 async function setLive(state) {
   try {
@@ -295,6 +273,7 @@ async function setLive(state) {
   }
 }
 
+
 // Fetch et affiche un frame pour une caméra donnée
 async function getImage(endpoint, imgId) {
   const response = await fetch(serverUrl + endpoint);
@@ -321,12 +300,13 @@ function disableAllButtons() {
   initSensorsButton.disabled = true;
   
   motorPlusButton.disabled = true;
-  motorMinusButton.disabled = true;
   
   stopLiveButton.disabled = true;
   startLiveButton.disabled = true;
 }
 
+
+/*
 // GPS du téléphone comme fallback
 document.getElementById("usePhoneGPS").addEventListener("click", function () {
   if (!navigator.geolocation) {
@@ -361,6 +341,9 @@ document.getElementById("usePhoneGPS").addEventListener("click", function () {
     { enableHighAccuracy: true, timeout: 10000 }
   );
 });
+*/
+
+
 
 // Helper function to reset buttons to their initial state
 function resetButtonState() {
@@ -373,5 +356,4 @@ function resetButtonState() {
   startLiveButton.disabled = false;
   
   motorPlusButton.disabled = false;
-  motorMinusButton.disabled = false;
 }

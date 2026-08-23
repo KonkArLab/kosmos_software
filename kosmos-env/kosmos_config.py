@@ -83,11 +83,18 @@ class KosmosConfig:
         self.config = configparser.ConfigParser()
         self.config.read(self._config_path)
         
+        if self.config.getint(CONFIG_SECTION,"00_STAVIRO_MICADO") == 1:
+            self.configMode = "SVR"
+        elif self.config.getint(CONFIG_SECTION,"00_STAVIRO_MICADO") == 2:
+            self.configMode = "MIC"
+        else:
+            self.configMode = "None"
+        
         self.createSurveyFile()
 
     def createSurveyFile(self, work_path = WORK_PATH):
         # Création Dossier Campagne si non existant               
-        campagneFile = self.get_date_YMD() + '_' + self.systemName  
+        campagneFile = self.get_date_YMD() + '_' + self.configMode + '_' + self.systemName  
         os.chdir(self.USB_INSIDE_PATH)            
         if not os.path.exists(campagneFile):
             os.mkdir(campagneFile)

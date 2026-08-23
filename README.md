@@ -90,7 +90,7 @@ Plusieurs fenêtres vont s'afficher:
 
 ## [Rpi5 seulement] Opération pour préparer la Rpi au mode de consommation minimale pour le mode MICADO
 
-
+<!--
 ### Activation du mode veille profonde
 
 - Dans un terminal taper la commande suivante:
@@ -106,7 +106,7 @@ WAKE_ON_GPIO=0
 - Sauvegarder les modifications en appuyant sur `Ctrl + Shift + o`
 - Quitter le fichier en appuyant sur `Ctrl + Shift + x`
 - Taper sur `Entrée`
-
+-->
 
 ### Activation de la recharge de la batterie
 
@@ -182,7 +182,6 @@ Dans la section `[KOSMOS-system]` renseigner les champs suivants :
 - `version` pour la version du système, typiquement `3.0` ou `4.0`
 
 Si besoin, mettre également à jour l'`increment`.  Si c'est le premier usage du système, il doit être à 1. Si le système a déjà été utilisé remettre l'incrément + 1 de la dernière vidéo. A noter que cet incrément doit être remis à 1 à chaque nouvelle année.  
-
 
 ## Stockage des données
 
