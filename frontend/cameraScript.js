@@ -104,7 +104,7 @@ async function askPhoneGPS() {
           await fetch(serverUrl + "/setPhoneGPS", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ lat: lat, lon: lon })
+            body: { lat: lat, lon: lon }
           });
         } catch {}
         resolve();
