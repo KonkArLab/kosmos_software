@@ -163,7 +163,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
         
-        campaignFinal.dateDict.date = formData.date.split("-")[0].slice(-2)+formData.date.split("-")[1]+formData.date.split("-")[2];
+        campaignFinal.dateDict.date = formData.date.split("-")[0]+formData.date.split("-")[1]+formData.date.split("-")[2];
 
         campaignFinal.deploiementDict.boat = formData.boat;
         campaignFinal.deploiementDict.crew = formData.crew;
