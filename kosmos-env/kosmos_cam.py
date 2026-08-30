@@ -337,7 +337,8 @@ class KosmosCam(Thread):
                 # Bloc d'enregistrement/encodage à proprement parler
                 event_line = self._Conf.get_date_HMS()  + ";START ENCODER;" + self._output
                 self._Conf.add_line(EVENT_FILE,event_line)
-                   
+
+                self.time_encoder = self._Conf.get_date_H()+":"+self._Conf.get_date_M() # Capture de l'heure de démarrage
                 self._camera.start_encoder(self._encoder,self._output,pts = self._file_name+'.txt')
                 if self.STEREO:
                     self._camera2.start_encoder(self._encoder2,self._output2,pts = self._file_name+'_stereo.txt')
@@ -491,26 +492,14 @@ class KosmosCam(Thread):
 
             # On sauvegarde date et heure venant de l'OS
             #infoStationDict["survey"]["date"]["value"] = self._Conf.get_date_Y()+self._Conf.get_date_m()+self._Conf.get_date_d()
-            infoStationDict["video_observation"]["time"]["value"] = self._Conf.get_date_H()+":"+self._Conf.get_date_M()
+            infoStationDict["video_observation"]["time"]["value"] = self.time_encoder 
 
-            '''
-            self.thread_camera.campaign_region   = getattr(self, 'campaign_region',   '')
-            self.thread_camera.campaign_zone = getattr(self, 'campaign_zone', '')
-            self.thread_camera.campaign_mode = getattr(self, 'campaign_type', '')
-            self.thread_camera.campaign_boat     = getattr(self, 'campaign_boat', '')
-            self.thread_camera.campaign_pilot    = getattr(self, 'campaign_pilot', '')
-            self.thread_camera.campaign_crew     = getattr(self, 'campaign_crew', '')
-            self.thread_camera.campaign_partners = getattr(self, 'campaign_partners', '')
-            '''
             # Champs campagne transmis par le frontend via /start
-            region = getattr(self, 'campaign_region',   None) or None
+            region = getattr(self, 'campaign_region', None) or None
             zone = getattr(self, 'campaign_zone', None) or None
             mode = getattr(self, 'campaign_type', None) or None
             boat = getattr(self, 'campaign_boat', None) or None
             
-            year_2d   = self._Conf.get_date_Y()
-            codeobs   = f"{zone}{year_2d}" if zone else None
-            infoStationDict["video_observation"]["codeObs"]["value"] = str(codeobs) + self._Conf.get_date_Y()
             infoStationDict["video_observation"]["video_path"]["value"] = self._Conf.get_date_YMD() + '_' + str(region) + '_' + str(zone) + '_' + str(boat) + '\\' + self._Conf.get_date_YMD() + '_' + str(mode) + '_' + self._Conf.systemName
             increment_json = self._Conf.system.getint(INCREMENT_SECTION, "increment")-1
             infoStationDict["video_observation"]["video_number"]["value"] = f'{increment_json:04}'
