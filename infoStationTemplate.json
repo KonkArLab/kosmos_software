@@ -172,31 +172,31 @@
   "video_observation": {
     "video_path": {
       "name": "Video path",
-      "name_fr": "Dossier vidéos",
+      "name_fr": "Dossier vidéo",
       "type": "str",
       "format": "Texte",
       "value": null,
-      "description": "Path towrds the videos file ",
-      "description_fr": "Chemin vers le dossier des vidéos",
+      "description": "Path towrds the video file ",
+      "description_fr": "Chemin vers le dossier de la vidéo",
       "acquisition_mode": "IHM qualification",
-      "example": "ATL_CC_260701_ENEZEG\\260701_SVR_K54",
+      "example": "ATL_CC_260701_ENEZEG\\260701_SVR_K54\\0041",
       "ifdo_id": null,
       "infoStation_visibility": "oui",
       "infoStation_equivalent": "Dossier Datawork"
     },
     "video_number": {
-      "name": "Video number",
-      "name_fr": "Numéro de la vidéo",
+      "name": "Video name",
+      "name_fr": "Nom de la video",
       "type": "str",
-      "format": "4digits",
+      "format": "name + extension",
       "value": null,
       "description": "Video number",
-      "description_fr": "Numéro de la vidéo",
+      "description_fr": "Nom de la vidéo",
       "acquisition_mode": "IHM qualification",
-      "example": "0148",
+      "example": "0148.mp4",
       "ifdo_id": null,
       "infoStation_visibility": "oui",
-      "infoStation_equivalent": "sous-dossier video & metadata"
+      "infoStation_equivalent": "Nom de la video"
     },
     "exploitable": {
       "name": "Exploitable",
