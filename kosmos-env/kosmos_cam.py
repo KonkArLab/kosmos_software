@@ -500,9 +500,9 @@ class KosmosCam(Thread):
             mode = getattr(self, 'campaign_type', None) or None
             boat = getattr(self, 'campaign_boat', None) or None
             
-            infoStationDict["video_observation"]["video_path"]["value"] = str(region) + '_' + str(zone) + '_' + self._Conf.get_date_YMD() + '_' + str(boat) + '\\' + self._Conf.get_date_YMD() + '_' + str(mode) + '_' + self._Conf.systemName
             increment_json = self._Conf.system.getint(INCREMENT_SECTION, "increment")-1
-            infoStationDict["video_observation"]["video_number"]["value"] = f'{increment_json:04}'
+            infoStationDict["video_observation"]["video_path"]["value"] = str(region) + '_' + str(zone) + '_' + self._Conf.get_date_YMD() + '_' + str(boat) + '\\' + self._Conf.get_date_YMD() + '_' + str(mode) + '_' + self._Conf.systemName + '\\' + f'{increment_json:04}'
+            infoStationDict["video_observation"]["video_number"]["value"] = f'{increment_json:04}' + '.mp4'
 
             # From sensors (hardware GPS)
             try:
