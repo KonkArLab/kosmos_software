@@ -179,7 +179,7 @@
       "description": "Path towrds the videos file ",
       "description_fr": "Chemin vers le dossier des vidéos",
       "acquisition_mode": "IHM qualification",
-      "example": "260701_ATL_CC_ENEZEG\\260701_SVR_K54",
+      "example": "ATL_CC_260701_ENEZEG\\260701_SVR_K54",
       "ifdo_id": null,
       "infoStation_visibility": "oui",
       "infoStation_equivalent": "Dossier Datawork"
