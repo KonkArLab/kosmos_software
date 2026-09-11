@@ -188,7 +188,7 @@
       "name": "Video name",
       "name_fr": "Nom de la video",
       "type": "str",
-      "format": "name + extension",
+      "format": "Texte + extension",
       "value": null,
       "description": "Video number",
       "description_fr": "Nom de la vidéo",
