@@ -643,7 +643,8 @@
       "description_fr": "Direction du vent",
       "acquisition_mode": "IHM métadonnées (weather API)",
       "ifdo_id": null,
-      "infoStation_visibility": "non",
+      "infoStation_visibility": "oui",
+      "infoStation_equivalent": "Direction du vent",
       "example": "N",
       "authorized_values_en": [
         "N",
@@ -789,7 +790,8 @@
       "acquisition_mode": "IHM metadonnnnées",
       "example": "20190626161037_MED_CB190004",
       "ifdo_id": null,
-      "infoStation_visibility": "oui"
+      "infoStation_visibility": "oui",
+      "infoStation_equivalent": "Nom du fichier"
     },
 
     "timecode_landing": {
