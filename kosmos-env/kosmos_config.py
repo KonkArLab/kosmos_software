@@ -8,7 +8,7 @@ import subprocess
 from datetime import datetime
 import json
 import pandas as pd
-
+import csv
         
 # Arborescence Picam
 ROOT_PATH = "/home/"+os.listdir("/home")[0]+"/"
@@ -22,6 +22,9 @@ CONF_FILE_TEMPLATE= "kosmos_config_template.ini"
 CONF_FILE = "kosmos_config.ini"
 CONFIG_SECTION = "KOSMOS-config"
 DEBUG_SECTION = "KOSMOS-debug"
+
+#fichier de date de démarrage en mode PROGRAMMABLE
+DATE_FILE = "dates.csv"
 
 # Section video
 VIDEO_SECTION = "KOSMOS-video"
@@ -87,10 +90,13 @@ class KosmosConfig:
             self.configMode = "SVR"
         elif self.config.getint(CONFIG_SECTION,"00_STAVIRO_MICADO") == 2:
             self.configMode = "MIC"
+        elif self.config.getint(CONFIG_SECTION,"00_STAVIRO_MICADO") == 3:
+            self.configMode = "PRG"    
         else:
             self.configMode = "None"
         
         self.createSurveyFile()
+        self.createDatesCSV()
 
     def createSurveyFile(self, work_path = WORK_PATH):
         # Création Dossier Campagne si non existant               
@@ -100,6 +106,12 @@ class KosmosConfig:
             os.mkdir(campagneFile)
             logging.info("Création du dossier de campagne journalière " + campagneFile)
         self.CAMPAGNE_PATH = self.USB_INSIDE_PATH + campagneFile + "/"
+        os.chdir(work_path)
+        
+    def createDatesCSV(self, work_path = WORK_PATH):
+        # Création CSV dates                
+        os.chdir(self.USB_INSIDE_PATH)
+        open(DATE_FILE, "a").close()
         os.chdir(work_path)
 
     def get_date_Y(self) -> str:
@@ -227,3 +239,23 @@ class KosmosConfig:
             model = f.read()
             model2 = model.split('\u0000')
         return model2[0]
+        
+    def lire_dates(self):
+        try:
+            with open(self.USB_INSIDE_PATH+DATE_FILE, newline="", encoding="utf-8") as f:
+                return [
+                    datetime.strptime(ligne[0].strip(), "%Y-%m-%d %H:%M:%S")
+                    for ligne in csv.reader(f)
+                    if ligne and ligne[0].strip()
+                ]
+        except:
+            return []
+            
+    def dates_plus_proches(self):
+        dates = self.lire_dates()
+        dates.append(datetime(2000,1,1,0,0))
+        dates.append(datetime(2100,1,1,0,0))
+        dates_passees = [d for d in dates if d <= datetime.now()]
+        dates_futures = [d for d in dates if d >= datetime.now()]
+        return max(dates_passees),min(dates_futures)     
+        

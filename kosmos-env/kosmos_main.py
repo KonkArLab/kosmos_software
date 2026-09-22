@@ -8,6 +8,7 @@ from gpiozero import LED, Button, TonalBuzzer,DigitalOutputDevice
 import os
 import json
 import glob
+from datetime import datetime, timedelta
 
 #Le programme est divisé en deux threads donc on a besoind du bibliotheque Thread
 from threading import Thread
@@ -32,7 +33,7 @@ import sys
 import ms5837
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)s : %(message)s',
-                    datefmt='%d/%m %I:%M:%S')#,filename='kosmos.log')
+                    datefmt='%d/%m %H:%M:%S')#,filename='kosmos.log')
 
 class kosmos_main():
     """ 
@@ -40,6 +41,7 @@ class kosmos_main():
         Dans le constructeur, on a conservé la creation des evenement qui doit s'executé seulement une fois dans tous le programme.
         Une methode init() qui contient le reste d'initialisation qui peut étre appeler plusieur fois au besoin.
     """
+
     def __init__(self):
         
         # évènements
@@ -76,15 +78,17 @@ class kosmos_main():
         self.Button_Record = Button(self._conf.config.getint(DEBUG_SECTION,"01_SYSTEM_record_button_gpio"))
         
         # Mode du système   #1 STAVIRO     #2 MICADO
+        self.date_prog = self._conf.dates_plus_proches()[0] # détermination de la date d'allumage en mode PORGRAMMABLE, non utilisé si SVR ou Séquentiel
         self.MODE = self._conf.config.getint(CONFIG_SECTION,"00_STAVIRO_MICADO") 
+        self.bool_micado = 1 # init du booléen micado
         if self.MODE==1:
             logging.info("MODE STAVIRO demandé")    
         elif self.MODE==2: 
             logging.info("MODE MICADO demandé")
             # Chargement du temps de veille entre deux prises de vue
             self.tps_veille =  self._conf.config.getint(CONFIG_SECTION,"04_TPS_VEILLE")#temps de veille en seconde
-        self.bool_micado = 1 # init du booléen micado
-
+        elif self.MODE==3:
+            logging.info("MODE PROGRAMMABLE demandé")
         # Temps total de fonctionnement de l'appareil (pour éviter des crashs batteries)
         self.tps_total_acquisition = self._conf.config.getint(CONFIG_SECTION,"03_TPS_FONCTIONNEMENT")         
         
@@ -155,7 +159,9 @@ class kosmos_main():
         # Gestion des modes MICADO/STAVIRO
         if self.MODE == 2 and self.bool_micado == 1: # Mode MICADO sans intervention de l'opérateur via bouton 'stop record' 
             self.state = KState.WORKING
-        else: # Mode STAVIRO ou MODE MICADO avec arrêt via bouton 'stop record'      
+        elif self.MODE == 3 and (0 < (datetime.now() - self.date_prog).total_seconds() < 300) and self.bool_micado == 1: #si la date actuelle est a une distance < 5 minutes de l'heure de démarrage prévu alors WORKING
+            self.state = KState.WORKING     
+        else: # Mode STAVIRO MICADO ou PRGM avec arrêt via bouton 'stop record'      
             self.button_event.wait()
             if myMain.stop_event.is_set():
                 self.state = KState.SHUTDOWN
@@ -165,7 +171,7 @@ class kosmos_main():
     def working(self):
         logging.info("WORKING : Debut de l'enregistrement")
         
-        if self.MODE == 2: # Mode MICADO
+        if self.MODE == 2 or self.MODE == 3: # Mode MICADO
             #On remet le booléen à 1 pour que l'enregistrement suive la programmation automatique
             self.bool_micado = 1
         
@@ -247,7 +253,7 @@ class kosmos_main():
         
         if self._extinction == False:
             # On s'est arrêté via un bouton, on retourne donc en stand by
-            if self.MODE==2: #En mode MICADO, si on est passé par un arrêt via bouton, la vidéo ne doit pas se lancer
+            if self.MODE == 2 or self.MODE == 3: #En mode MICADO ou PRGM, si on est passé par un arrêt via bouton, la vidéo ne doit pas se lancer
                 self.bool_micado = 0
             self.state = KState.STANDBY
             event_line = self._conf.get_date_HMS()  + "; SORTIE BOUTON"
@@ -304,11 +310,25 @@ class kosmos_main():
         self.arretThreads()
    
         if self.MODE == 2 and self.bool_micado == 1: #Mode MICADO avec temps écoulé
-            logging.info("MISE EN VEILLE PROFONDE")
+            logging.info("MISE EN VEILLE PROFONDE, MODE SEQUENTIEL")
             self.copyLog()
             logging.shutdown()
             os.system("echo +"+str(self.tps_veille)+" | sudo tee /sys/class/rtc/rtc0/wakealarm")
             os.system("sudo halt")
+        elif self.MODE == 3: #Mode PROGRAMMABLE
+            date_prog_str = self._conf.dates_plus_proches()[1].strftime("%Y-%m-%d %H:%M:%S") # la plus proche dans le futur parmi la liste
+            logging.info("MODE PROGRAMMABLE, allumage prévu à : " + date_prog_str)
+            os.system('echo 0 | sudo tee /sys/class/rtc/rtc0/wakealarm')
+            os.system('date -d "'+ date_prog_str + '" +%s | sudo tee /sys/class/rtc/rtc0/wakealarm')
+            if self._conf.config.getint(CONFIG_SECTION,"06_SHUTDOWN") != 0 :
+                logging.info("MISE EN VEILLE PROFONDE")
+                self.copyLog()
+                logging.shutdown()
+                os.system("sudo halt") #on passe en veille profonde
+            else:
+                logging.info("ARRET DU SOFT KOSMOS, 'sudo halt' pour lancer la prochaine acquisition")
+                logging.shutdown()
+                os._exit(0)
         else: # Mode STAVIRO ou Mode MICADO avec arrêt par bouton
             # Commande de stop au choix arrêt du programme ou du PC
             if self._conf.config.getint(CONFIG_SECTION,"06_SHUTDOWN") != 0 :
