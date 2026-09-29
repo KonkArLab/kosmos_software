@@ -67,6 +67,7 @@ class Server:
                 return jsonify({"status": "error", "message": "datetime manquant"}), 400
             subprocess.run(["timedatectl", "set-ntp", "false"], check=False)
             subprocess.run(["date", "-s", new_time], check=True)
+            subprocess.run(["hwclock", "--systohc"], check = True)
             logging.info(f"Heure système synchronisée sur : {new_time}")
             
             # On regenere le bon dossier de campagne
