@@ -141,7 +141,7 @@ class KosmosCam(Thread):
         self.init_magneto()
    
         # Definition Thread Hydrophone
-        self.PRESENCE_HYDRO = self._Conf.config.getint(CONFIG_SECTION,"07_HYDROPHONE") # Fonctionnement hydrophone si 1
+        self.PRESENCE_HYDRO = self._Conf.config.getint(DEBUG_SECTION,"07_HYDROPHONE") # Fonctionnement hydrophone si 1
         if self.PRESENCE_HYDRO==1:
             self.thread_hydrophone = KHydro.KosmosHydro(self._Conf)
             logging.info("Hydrophone démarré")

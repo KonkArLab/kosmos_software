@@ -5,6 +5,8 @@ sudo apt update
 sudo apt upgrade
 sudo apt autoremove
 
+sudo apt install util-linux-extra
+
 #Installation des packages python necessaires 
 sudo dpkg --configure -a
 sudo apt install -y `cat requirements.txt`

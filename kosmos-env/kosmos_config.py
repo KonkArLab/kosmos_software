@@ -34,6 +34,7 @@ SYSTEM_FILE_TEMPLATE = "kosmos_system_template.ini"
 SYSTEM_FILE = "kosmos_system.ini"
 SYSTEM_SECTION = "KOSMOS-system"
 INCREMENT_SECTION = "KOSMOS-increment"
+MOTOR_SECTION = "KOSMOS-motor"
 
 # Choix des infos station résumées dans le infoStation.csv 
 headerInfoStation = ['codeStation','zone','system','latitude','longitude','date']

@@ -46,15 +46,15 @@ class kosmosMotor(Thread):
         self._Conf = aConf
         
         # Paramètres Moteur
-        self.motor_revolutions = aConf.config.getint(CONFIG_SECTION, "10_MOTOR_revolutions")
+        self.motor_revolutions = aConf.config.getint(MOTOR_SECTION, "10_MOTOR_revolutions")
         # 10 revolutions : 60°
-        self.motor_vitesse = aConf.config.getint(CONFIG_SECTION, "11_MOTOR_vitesse")
+        self.motor_vitesse = aConf.config.getint(MOTOR_SECTION, "11_MOTOR_vitesse")
         # minimum : 1 ; maximum : 250
-        self.motor_accel = aConf.config.getint(CONFIG_SECTION, "12_MOTOR_acceleration")
+        self.motor_accel = aConf.config.getint(MOTOR_SECTION, "12_MOTOR_acceleration")
         # minimum : 1 ; maximum : 250
-        self.pause_time = aConf.config.getint(CONFIG_SECTION, "13_MOTOR_pause_time")
+        self.pause_time = aConf.config.getint(MOTOR_SECTION, "13_MOTOR_pause_time")
         # en s
-        self.step_mode = aConf.config.getint(CONFIG_SECTION, "14_MOTOR_step_mode")
+        self.step_mode = aConf.config.getint(MOTOR_SECTION, "14_MOTOR_step_mode")
         # 1 pour full_step, 2 pour 1/2 microstep, 4 pour 1/4 microstep, 16 pour 1/16 microstep etc
         self.i2c_period = 1 # en s
 
@@ -74,18 +74,26 @@ class kosmosMotor(Thread):
         self.send_data(self.motor_revolutions)
         self._bus.close()
 
-    def send_data(self, motor_revolutions):
+    def send_data(self, motor_revolutions, writingInEvents = True):
         i2c_Data = [self._state + 1, motor_revolutions, self.motor_vitesse, self.motor_accel, self._sleep_mode + 1, self.step_mode]
         # self.step_mode paramètre à enlever de la transmission à l'avenir
         try:
                 self._bus.write_i2c_block_data(self._address, 0x00, i2c_Data)
+                if writingInEvents == True:
+                    #écriture dans évènement
+                    event_line = self._Conf.get_date_HMS()  + ";START MOTEUR; " 
+                    self._Conf.add_line(EVENT_FILE,event_line)
         except:
                 logging.error('Erreur moteur : transmission Arduino i2c impossible')
+                if writingInEvents == True:
+                    #écriture dans évènement
+                    event_line = self._Conf.get_date_HMS()  + ";PROBLEME MOTEUR; " 
+                    self._Conf.add_line(EVENT_FILE,event_line)
           
     def autoArm(self): 
         '''activation de la rotation moteur 1 fois pour témoigner de son fonctionnement à l'allumage'''
         self.power_on()
-        self.send_data(self.motor_revolutions)
+        self.send_data(self.motor_revolutions, False)
         
         logging.info('Moteur prêt !')
     
@@ -98,16 +106,16 @@ class kosmosMotor(Thread):
                     self._state = True
                     self.send_data(self.motor_revolutions)
                     rotation_done = False
-                    #écriture dans évènement
-                    event_line = self._Conf.get_date_HMS()  + ";START MOTEUR; " 
-                    self._Conf.add_line(EVENT_FILE,event_line)
                     
                     while not self._pause_event.isSet() and not rotation_done :
-                            try :
-                                rotation_done = self._bus.read_byte(self._address)
-                            except :
-                                logging.error('Erreur moteur : réception Arduino impossible')
-                            time.sleep(0.5)
+                        try :
+                            rotation_done = self._bus.read_byte(self._address) #sert à checker qu'on a fini la rotation
+                            # c'est peut-être ici qu'on devrait mettre "END MOTEUR"
+                            #event_line =  self._Conf.get_date_HMS()  + ";END MOTEUR; " 
+                            #self._Conf.add_line(EVENT_FILE,event_line)
+                        except :
+                            logging.error('Erreur moteur : réception Arduino impossible')
+                        time.sleep(0.5)
                             
                     time_debut=time.time()
                     delta_time=0
@@ -116,8 +124,8 @@ class kosmosMotor(Thread):
                             time.sleep(0.1)
             else:
                 self._state = 0
-                event_line =  self._Conf.get_date_HMS()  + ";END MOTEUR; " 
-                self._Conf.add_line(EVENT_FILE,event_line)
+                #event_line =  self._Conf.get_date_HMS()  + ";END MOTEUR; " 
+                #self._Conf.add_line(EVENT_FILE,event_line)
                 
                 self._continue_event.wait()  
         # End While        
