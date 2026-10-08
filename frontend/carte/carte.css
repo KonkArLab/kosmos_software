@@ -1,0 +1,236 @@
+/* La zone carte occupe tout l'écran sous l'en-tête, quelle que soit la hauteur
+   réelle de celui-ci (il passe sur 2 lignes sur mobile) : top est ajusté en JS. */
+#carte-section {
+  position: fixed;
+  top: var(--header-h);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: 0 !important;
+  padding: 0 !important;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;   /* le style commun des sections centre le contenu */
+  gap: 0;
+}
+
+body.in-iframe #carte-section {
+  top: 0;
+}
+
+#map-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-sm);
+  padding: var(--sp-sm) var(--sp-md);
+  background: var(--c-primary);
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+#map-toolbar button {
+  padding: var(--sp-xs) var(--sp-md);
+  font-size: 0.85rem;
+}
+
+#btn-locate {
+  margin-left: auto;
+}
+
+#mission-info {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.85);
+}
+
+#map-wrap {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+#map {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+/* ── Panneau distance vers le point sélectionné ── */
+#nav-panel {
+  position: absolute;
+  left: 50%;
+  bottom: var(--sp-lg);
+  transform: translateX(-50%);
+  z-index: 1000;
+  min-width: 220px;
+  padding: var(--sp-sm) var(--sp-md);
+  background: var(--c-primary);
+  color: var(--c-white);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-md);
+  text-align: center;
+}
+
+#nav-panel[hidden] {
+  display: none;
+}
+
+#nav-target {
+  font-size: 0.8rem;
+  color: var(--c-accent-light);
+  font-weight: 600;
+}
+
+#nav-values {
+  display: flex;
+  justify-content: center;
+  gap: var(--sp-xl);
+}
+
+#nav-distance,
+#nav-cap {
+  font-family: var(--f-title);
+  font-size: 2.2rem;
+  font-weight: 700;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.nav-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(255,255,255,0.6);
+}
+
+#nav-details {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.75);
+}
+
+.leaflet-control-layers {
+  font-size: 0.72rem !important;
+}
+
+/* Icône du sélecteur de couches (les images Leaflet ne sont pas embarquées) */
+.leaflet-control-layers-toggle,
+.leaflet-retina .leaflet-control-layers-toggle {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2320415D' stroke-width='2' stroke-linejoin='round'%3E%3Cpath d='M12 3 2 8l10 5 10-5-10-5z'/%3E%3Cpath d='m2 13 10 5 10-5'/%3E%3Cpath d='m2 17.5 10 5 10-5' opacity='.5'/%3E%3C/svg%3E") !important;
+  background-size: 24px 24px !important;
+}
+
+/* Progression du téléchargement de la carte hors ligne */
+#offline-status {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.7);
+  white-space: nowrap;
+}
+
+@media (max-width: 520px) {
+  #map-toolbar {
+    flex-wrap: wrap;
+    padding: var(--sp-xs) var(--sp-sm);
+  }
+  #mission-info {
+    font-size: 0.75rem;
+  }
+  #nav-distance,
+  #nav-cap {
+    font-size: 1.8rem;
+  }
+  #nav-panel {
+    bottom: var(--sp-md);
+    width: calc(100% - 2 * var(--sp-md));
+  }
+}
+
+/* ── Légende / filtres par date ── */
+.legend-dates {
+  background: var(--c-white);
+  font-size: 0.78rem;
+  color: var(--c-text);
+  min-width: 150px;
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+.legend-toggle {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--sp-sm);
+  padding: 4px 8px;
+  border: none;
+  border-radius: 0;
+  background: var(--c-primary);
+  color: var(--c-white);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.legend-dates.collapsed .legend-body {
+  display: none;
+}
+
+.legend-dates.collapsed .legend-arrow {
+  display: inline-block;
+  transform: rotate(-90deg);
+}
+
+.legend-body {
+  padding: 4px 8px 6px;
+}
+
+.legend-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 0;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.legend-row input {
+  margin: 0;
+}
+
+.legend-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.25);
+  flex-shrink: 0;
+}
+
+.legend-date em {
+  font-style: normal;
+  font-size: 0.68rem;
+  color: var(--c-accent);
+  font-weight: 600;
+}
+
+.legend-count {
+  margin-left: auto;
+  padding-left: 8px;
+  color: var(--c-text-muted);
+  font-size: 0.7rem;
+}
+
+.legend-actions {
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px solid var(--c-border);
+  font-size: 0.72rem;
+  text-align: center;
+}
+
+.legend-actions a {
+  color: var(--c-secondary);
+}
+
+.legend-empty {
+  color: var(--c-text-muted);
+}

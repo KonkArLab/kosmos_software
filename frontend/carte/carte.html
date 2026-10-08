@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../styles.css?v=4">
+  <link rel="stylesheet" href="../libs/leaflet/leaflet.css">
+  <link rel="stylesheet" href="carte.css?v=8">
+  <title>KOSMOS — Carte</title>
+  <script src="../iframe-detect.js?v=4"></script>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <img src="../img/logo_kosmos.png" alt="KOSMOS logo">
+      <span>KOSMOS</span>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="../campaign/campaign.html">Campaign</a></li>
+        <li><a href="../config/config.html">Configuration</a></li>
+        <li><a href="../index.html">Camera</a></li>
+        <li><a href="../sensors/sensors.html">Sensors</a></li>
+        <li><a href="../records/records.html">Records</a></li>
+        <li><a href="carte.html" class="active">Carte</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <section id="carte-section">
+    <div id="map-toolbar">
+      <span id="mission-info">Chargement…</span>
+      <span id="offline-status"></span>
+      <button id="btn-locate" title="Centrer sur ma position">📍 Moi</button>
+    </div>
+    <div id="map-wrap">
+      <div id="map"></div>
+      <div id="nav-panel" hidden>
+        <div id="nav-target"></div>
+        <div id="nav-values">
+          <div>
+            <div id="nav-distance">—</div>
+            <div class="nav-label">distance</div>
+          </div>
+          <div>
+            <div id="nav-cap">—</div>
+            <div class="nav-label">cap</div>
+          </div>
+        </div>
+        <div id="nav-details"></div>
+      </div>
+    </div>
+  </section>
+
+  <script src="../libs/leaflet/leaflet.js"></script>
+  <script src="carte.js?v=9"></script>
+</body>
+</html>
