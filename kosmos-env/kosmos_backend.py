@@ -55,6 +55,7 @@ class Server:
         self.app.add_url_rule("/setPhoneGPS", view_func=self.setPhoneGPS, methods=['POST'])
         self.app.add_url_rule("/resetPhoneGPS", view_func=self.resetPhoneGPS, methods=['POST'])
         self.app.add_url_rule("/gpsStatus", view_func=self.gpsStatus)
+        self.app.add_url_rule("/gpsPosition", view_func=self.gpsPosition)
         self.app.add_url_rule("/frame2", view_func=self.image2)
         self.app.add_url_rule("/getRecordsGPS", view_func=self.getRecordsGPS)
         self.app.add_url_rule("/setTime", view_func=self.setTime, methods=['POST'])
@@ -93,6 +94,20 @@ class Server:
         except:
             has_fix = False
         return jsonify({"has_fix": has_fix})
+
+    def gpsPosition(self):
+        """Position du GPS du KOSMOS (null si pas de fix)."""
+        try:
+            lat = self.myMain.thread_camera.gps.get_latitude()
+            lon = self.myMain.thread_camera.gps.get_longitude()
+        except:
+            lat = lon = None
+        has_fix = lat is not None and lon is not None
+        return jsonify({
+            "has_fix": has_fix,
+            "lat": float(lat) if has_fix else None,
+            "lon": float(lon) if has_fix else None
+        })
 
     def setPhoneGPS(self):
         try:
