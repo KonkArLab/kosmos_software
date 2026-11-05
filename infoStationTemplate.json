@@ -950,7 +950,8 @@
           "oiseau",
           "autre"
         ],
-        "values": []
+        "values": [],
+        "species": null
       }
     ],
     "events_interesting_images": [
